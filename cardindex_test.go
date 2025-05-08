@@ -3,10 +3,10 @@
 
 package main
 
-import (
-	"fmt"
-)
+import "testing"
 
-func main() {
-	fmt.Printf("%s v%s", APPNAME, Version)
+func Test01(t *testing.T) {
+	if false {
+		t.Errorf("unexpected")
+	}
 }

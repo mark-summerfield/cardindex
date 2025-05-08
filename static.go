@@ -3,10 +3,11 @@
 
 package main
 
-import (
-	"fmt"
-)
+import _ "embed"
 
-func main() {
-	fmt.Printf("%s v%s", APPNAME, Version)
-}
+//go:embed Version.dat
+var Version string
+
+const (
+	APPNAME = "CardIndex"
+)

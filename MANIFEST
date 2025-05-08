@@ -1,9 +1,31 @@
 cardindex.go
+static.go
+
+test_cardindex.go
+
+sql/prepare.sql
+sql/create.sql
 
 README.md
 
 go.mod
 
 st.sh
+
+# Three MDI window types:
+#
+# Query        (X)
+# /Query\/Cards\
+# ... details of query|list of matching cards if any ...
+# 0 cards match
+#
+# Card               (X)
+# Name [               ]
+# Body
+# ...
+#
+# Group           (X)
+# gid | Name
+# ... | ...
 
 # vim: syn=yaml
