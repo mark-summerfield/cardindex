@@ -1,3 +1,4 @@
+PRAGMA USER_VERSION = 1;
 PRAGMA encoding = 'UTF-8';
 PRAGMA foreign_keys = TRUE;
 PRAGMA synchronous = NORMAL;
