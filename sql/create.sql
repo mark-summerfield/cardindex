@@ -8,6 +8,7 @@ CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT NOT NULL,
     Body TEXT,
+    Image BLOB,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -28,6 +29,7 @@ CREATE TABLE Card_x_Group (
 
 CREATE TABLE Queries (
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    Name TEXT, -- NOTE should autocreate if not user-specified
     Query TEXT NOT NULL -- TODO details of saved query; may use more fields
 );
 
