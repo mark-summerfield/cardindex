@@ -1,5 +1,7 @@
 -- Copyright © 2024-25 Mark Summerfield. All Rights Reserved.
 
+PRAGMA user_version = 1;
+
 -- body should be in markup (e.g., for bold, italic, color) and for links
 -- (e.g., http://... card://123) and for dates (e.g., YYYY-MM-DD).
 CREATE TABLE Cards (
@@ -30,7 +32,7 @@ CREATE TABLE Queries (
 );
 
 -- e.g., for MDI window sizes and positions
-CREATE TABLE config (
+CREATE TABLE Config (
     key TEXT PRIMARY KEY NOT NULL,
     value TEXT
 ) WITHOUT ROWID;
@@ -41,6 +43,13 @@ BEGIN
     UPDATE Cards SET updated = CURRENT_TIMESTAMP WHERE cid = old.cid;
 END;
 
+-- Disallow deleting the Hidden group
+CREATE TRIGGER delete_group_gid
+    BEFORE DELETE ON Groups FOR EACH ROW WHEN OLD.gid = 1
+BEGIN
+    SELECT RAISE(ABORT, 'Cannot delete the Hidden Group');
+END;
+
 -- NOTE always check that a group is not in use before deleting it
 CREATE TRIGGER delete_group
     BEFORE DELETE ON Groups FOR EACH ROW
@@ -49,3 +58,5 @@ BEGIN
     SELECT RAISE(ABORT,
                  'Cannot delete a Group that at least one card uses');
 END;
+
+INSERT INTO Groups (gid, name) VALUES (1, '«Hidden»');
