@@ -6,15 +6,15 @@ PRAGMA user_version = 1;
 -- (e.g., http://... card://123) and for dates (e.g., YYYY-MM-DD).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name TEXT NOT NULL,
-    body TEXT,
+    Name TEXT NOT NULL,
+    Body TEXT,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE Groups (
     gid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name TEXT UNIQUE NOT NULL
+    Name TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE Card_x_Group (
@@ -28,13 +28,13 @@ CREATE TABLE Card_x_Group (
 
 CREATE TABLE Queries (
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    query TEXT NOT NULL -- TODO details of saved query; may use more fields
+    Query TEXT NOT NULL -- TODO details of saved query; may use more fields
 );
 
 -- e.g., for MDI window sizes and positions
 CREATE TABLE Config (
-    key TEXT PRIMARY KEY NOT NULL,
-    value TEXT
+    Key TEXT PRIMARY KEY NOT NULL,
+    Value TEXT
 ) WITHOUT ROWID;
 
 CREATE TRIGGER update_cards_timestamp_trigger
@@ -59,4 +59,4 @@ BEGIN
                  'Cannot delete a Group that at least one card uses');
 END;
 
-INSERT INTO Groups (gid, name) VALUES (1, '«Hidden»');
+INSERT INTO Groups (gid, Name) VALUES (0, '«Hidden»');
