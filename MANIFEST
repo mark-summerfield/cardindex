@@ -1,7 +1,12 @@
+# TODO Card Body's first line (to \n </p> or <br>) is Card's Name
+# TODO register custom SQLite text_for_html(string)→string and
+#      name_for_html(string)→string functions
+#     (check with Notebox to see if text is case-folded)
+
 cardindex.go
 static.go
 
-test_cardindex.go
+cardindex_test.go
 
 sql/prepare.sql
 sql/create.sql
@@ -12,6 +17,21 @@ go.mod
 
 st.sh
 
+# TODO on loading and existing .cix execute:
+#      BEGIN;
+#      UPDATE Config SET Value = Value + 1 WHERE Key = 'N';
+#      COMMIT;
+# TODO on saving a .cix execute:
+#      BEGIN;
+#      UPDATE Config SET Value = DATETIME('NOW') WHERE Key = 'Updated';
+#      COMMIT;
+# and if N > 11 execute:
+#      BEGIN;
+#      UPDATE Config SET Value = 0 WHERE Key = 'N';
+#      COMMIT;
+#      INSERT INTO Card_Words(Card_Words) VALUES ('optimize');
+#      VACUUM;
+
 # Three MDI window types:
 #
 # Query        (X)
@@ -19,8 +39,7 @@ st.sh
 # ... details of query|list of matching cards if any ...
 # 0 cards match
 #
-# Card               (X)
-# Name [               ]
+# Name               (X)
 # Body
 # ...
 #
