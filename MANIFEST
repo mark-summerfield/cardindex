@@ -2,6 +2,8 @@
 # TODO register custom SQLite text_for_html(string)→string and
 #      name_for_html(string)→string functions
 #     (check with Notebox to see if text is case-folded)
+# TODO statically link in both build.sh and
+#	buildwin.sh (the latter in Deb VM)
 
 cardindex.go
 static.go
