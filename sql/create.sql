@@ -8,11 +8,14 @@ CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Body TEXT NOT NULL, -- HTML; first "line" is Card's Name
     Image BLOB, -- SVG or PNG etc.
+    hidden BOOL DEFAULT FALSE NOT NULL,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+    CHECK(hidden IN (0, 1))
 );
 
-CREATE VIRTUAL TABLE v_card_words USING FTS5(Body, tokenize=porter);
+CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
 CREATE TABLE Groups (
     gid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -28,9 +31,24 @@ CREATE TABLE Card_x_Group (
     FOREIGN KEY(gid) REFERENCES Groups(gid)
 );
 
-CREATE TABLE Queries (
+CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Query TEXT NOT NULL -- NOTE JSON-format details of saved query
+    Name TEXT NOT NULL,
+    MatchText TEXT,
+    HasImage BOOL,
+    Ungrouped BOOL, -- if TRUE match: Card.gid NOT IN Card_x_Group.gid
+    InGroups TEXT, -- Space-separated list of gids
+    NotInGroups TEXT,
+    UpdatedAfter TEXT,
+    UpdatedBefore TEXT,
+    CreatedAfter TEXT, -- For all these NULL means don't care
+    CreatedBefore TEXT,
+    Hidden BOOL DEFAULT FALSE, -- by default not Hidden
+    OrderBy TEXT DEFAULT 'updated DESC' -- default most to least recent
+
+    CHECK(HasImage IS NULL OR HasImage IN (0, 1)),
+    CHECK(Hidden IS NULL OR Hidden IN (0, 1)),
+    CHECK(Ungrouped IS NULL OR Ungrouped IN (0, 1))
 );
 
 -- e.g., for MDI window sizes and positions
@@ -48,22 +66,21 @@ END;
 CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
-    INSERT OR REPLACE INTO v_card_words (rowid, Body) VALUES
+    INSERT OR REPLACE INTO v_fts_cards (rowid, Body) VALUES
         (NEW.cid, text_for_html(NEW.Body));
 END;
 
 CREATE TRIGGER update_card_body_trigger AFTER UPDATE OF Body ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
-    INSERT OR REPLACE INTO v_card_words (rowid, Body) VALUES
+    INSERT OR REPLACE INTO v_fts_cards (rowid, Body) VALUES
         (NEW.cid, text_for_html(NEW.Body));
 END;
 
 CREATE TRIGGER delete_card_trigger_before BEFORE DELETE ON Cards
     FOR EACH ROW
-        WHEN EXISTS (SELECT 1 FROM Card_x_Group
-                     WHERE Card_x_Group.cid = OLD.cid AND
-                           Card_x_Group.gid = 0) -- 0 is Hidden group's gid
+        WHEN EXISTS (SELECT 1 FROM Cards WHERE Cards.cid = OLD.cid AND
+                                               OLD.hidden = FALSE)
 BEGIN
     SELECT RAISE(ABORT, 'can only delete hidden cards');
 END;
@@ -71,7 +88,7 @@ END;
 CREATE TRIGGER delete_card_trigger_after AFTER DELETE ON Cards
     FOR EACH ROW
 BEGIN
-    DELETE FROM v_card_words WHERE rowid = OLD.cid; -- remove from FTS
+    DELETE FROM v_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
     DELETE FROM Card_x_Group WHERE cid = OLD.cid; -- leave any groups
 END;
 
@@ -89,15 +106,13 @@ BEGIN
     SELECT RAISE(ABORT, 'can only delete user created queries');
 END;
 
-INSERT INTO Config (Key, Value) VALUES ('Created', DATETIME('NOW'));
-INSERT INTO Config (Key, Value) VALUES ('Updated', DATETIME('NOW'));
+INSERT INTO Config (Key, Value) VALUES ('Created', CURRENT_TIMESTAMP);
+INSERT INTO Config (Key, Value) VALUES ('Updated', CURRENT_TIMESTAMP);
 INSERT INTO Config (Key, Value) VALUES ('N', 1); -- for optimizing
 
-INSERT INTO Groups (gid, Name) VALUES (0, '«Hidden»');
-
-INSERT INTO Queries (qid, Query) VALUES
-    (0, '{"name": "All Cards (excl. Hidden)", "predefined": "all"}');
-INSERT INTO Queries (qid, Query) VALUES
-    (1, '{"name": "Ungrouped Cards", "predefined": "ungrouped"}');
-INSERT INTO Queries (qid, Query) VALUES
-    (2, '{"name": "Hidden Cards", "predefined": "ungrouped"}');
+INSERT INTO Queries (qid, Name) VALUES
+    (0, 'All Cards'); -- Excludes hidden (hidden is FALSE by default)
+INSERT INTO Queries (qid, Name, Ungrouped) VALUES
+    (1, 'Ungrouped Cards', TRUE); -- Excludes hidden
+INSERT INTO Queries (qid, Name, Hidden) VALUES
+    (2, 'Hidden Cards', TRUE);
