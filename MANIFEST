@@ -1,9 +1,4 @@
-# TODO Card Body's first line (to \n </p> or <br>) is Card's Name
-# TODO register custom SQLite text_for_html(string)→string and
-#      name_for_html(string)→string functions
-#     (check with Notebox to see if text is case-folded)
-# TODO statically link in both build.sh and
-#	buildwin.sh (the latter in Deb VM)
+# TODO Card Body's first line (to \n or first 60 chars) is Card's Name
 
 cardindex.go
 static.go
@@ -39,11 +34,11 @@ st.sh
 # Three MDI window types:
 #
 # Query        (X)
-# /Query\/Cards\
+# ... use a vertical splitter, Query at the top List of cards below ...
 # ... details of query|list of matching cards if any ...
 # 0 cards match
 #
-# Name               (X)
+# Name (of Card)  (X)
 # Body
 # ...
 #

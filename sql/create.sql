@@ -67,14 +67,14 @@ CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
     INSERT OR REPLACE INTO v_fts_cards (rowid, Body) VALUES
-        (NEW.cid, text_for_html(NEW.Body));
+        (NEW.cid, NEW.Body);
 END;
 
 CREATE TRIGGER update_card_body_trigger AFTER UPDATE OF Body ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
     INSERT OR REPLACE INTO v_fts_cards (rowid, Body) VALUES
-        (NEW.cid, text_for_html(NEW.Body));
+        (NEW.cid, NEW.Body);
 END;
 
 CREATE TRIGGER delete_card_trigger_before BEFORE DELETE ON Cards
