@@ -17,18 +17,18 @@ CREATE TABLE Cards (
 
 CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
-CREATE TABLE Groups (
+CREATE TABLE Boxes (
     gid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT UNIQUE NOT NULL
 );
 
-CREATE TABLE Card_x_Group (
+CREATE TABLE Card_x_Box (
     cid TEXT NOT NULL,
     gid TEXT NOT NULL,
 
     PRIMARY KEY (cid, gid),
     FOREIGN KEY(cid) REFERENCES Cards(cid),
-    FOREIGN KEY(gid) REFERENCES Groups(gid)
+    FOREIGN KEY(gid) REFERENCES Boxes(gid)
 );
 
 CREATE TABLE Queries ( -- See default queries INSERTed below
@@ -36,9 +36,9 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     Name TEXT NOT NULL,
     MatchText TEXT,
     HasImage BOOL,
-    Ungrouped BOOL, -- if TRUE match: Card.gid NOT IN Card_x_Group.gid
-    InGroups TEXT, -- Space-separated list of gids
-    NotInGroups TEXT,
+    Unboxed BOOL, -- if TRUE match: Card.gid NOT IN Card_x_Box.gid
+    InBoxes TEXT, -- Space-separated list of gids
+    NotInBoxes TEXT,
     UpdatedAfter TEXT,
     UpdatedBefore TEXT,
     CreatedAfter TEXT, -- For all these NULL means don't care
@@ -48,7 +48,7 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
 
     CHECK(HasImage IS NULL OR HasImage IN (0, 1)),
     CHECK(Hidden IS NULL OR Hidden IN (0, 1)),
-    CHECK(Ungrouped IS NULL OR Ungrouped IN (0, 1))
+    CHECK(Unboxed IS NULL OR Unboxed IN (0, 1))
 );
 
 -- e.g., for MDI window sizes and positions
@@ -89,14 +89,14 @@ CREATE TRIGGER delete_card_trigger_after AFTER DELETE ON Cards
     FOR EACH ROW
 BEGIN
     DELETE FROM v_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
-    DELETE FROM Card_x_Group WHERE cid = OLD.cid; -- leave any groups
+    DELETE FROM Card_x_Box WHERE cid = OLD.cid; -- leave any boxes
 END;
 
-CREATE TRIGGER delete_group BEFORE DELETE ON Groups
+CREATE TRIGGER delete_box BEFORE DELETE ON Boxes
     FOR EACH ROW
         WHEN EXISTS (SELECT 1 FROM Cards WHERE Cards.gid = OLD.gid)
 BEGIN
-    SELECT RAISE(ABORT, 'can only delete unused groups');
+    SELECT RAISE(ABORT, 'can only delete unused boxes');
 END;
 
 CREATE TRIGGER delete_query BEFORE DELETE ON Queries
@@ -112,7 +112,7 @@ INSERT INTO Config (Key, Value) VALUES ('N', 1); -- for optimizing
 
 INSERT INTO Queries (qid, Name) VALUES
     (0, 'All Cards'); -- Excludes hidden (hidden is FALSE by default)
-INSERT INTO Queries (qid, Name, Ungrouped) VALUES
-    (1, 'Ungrouped Cards', TRUE); -- Excludes hidden
+INSERT INTO Queries (qid, Name, Unboxed) VALUES
+    (1, 'Unboxed Cards', TRUE); -- Excludes hidden
 INSERT INTO Queries (qid, Name, Hidden) VALUES
     (2, 'Hidden Cards', TRUE);
