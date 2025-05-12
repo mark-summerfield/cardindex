@@ -18,17 +18,17 @@ CREATE TABLE Cards (
 CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
 CREATE TABLE Boxes (
-    gid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    bid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE Card_x_Box (
     cid TEXT NOT NULL,
-    gid TEXT NOT NULL,
+    bid TEXT NOT NULL,
 
-    PRIMARY KEY (cid, gid),
+    PRIMARY KEY (cid, bid),
     FOREIGN KEY(cid) REFERENCES Cards(cid),
-    FOREIGN KEY(gid) REFERENCES Boxes(gid)
+    FOREIGN KEY(bid) REFERENCES Boxes(bid)
 );
 
 CREATE TABLE Queries ( -- See default queries INSERTed below
@@ -36,8 +36,8 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     Name TEXT NOT NULL,
     MatchText TEXT,
     HasImage BOOL,
-    Unboxed BOOL, -- if TRUE match: Card.gid NOT IN Card_x_Box.gid
-    InBoxes TEXT, -- Space-separated list of gids
+    Unboxed BOOL, -- if TRUE match: Card.bid NOT IN Card_x_Box.bid
+    InBoxes TEXT, -- Space-separated list of bids
     NotInBoxes TEXT,
     UpdatedAfter TEXT,
     UpdatedBefore TEXT,
@@ -94,7 +94,7 @@ END;
 
 CREATE TRIGGER delete_box BEFORE DELETE ON Boxes
     FOR EACH ROW
-        WHEN EXISTS (SELECT 1 FROM Cards WHERE Cards.gid = OLD.gid)
+        WHEN EXISTS (SELECT 1 FROM Cards WHERE Cards.bid = OLD.bid)
 BEGIN
     SELECT RAISE(ABORT, 'can only delete unused boxes');
 END;
