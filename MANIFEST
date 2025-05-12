@@ -17,6 +17,8 @@ README.md
 
 go.mod
 
+build.sh
+buildwin.sh
 st.sh
 
 # TODO on loading and existing .cix execute:
