@@ -2,11 +2,11 @@
 
 PRAGMA user_version = 1;
 
--- HTML body (e.g., for bold, italic, color) and for links
--- (e.g., http://... card://123) and for dates (e.g., YYYY-MM-DD).
+-- Markdown Body (e.g., for bold, italic, and lists), and for links
+-- [Apple II](card://123) and for dates (e.g., YYYY-MM-DD).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Body TEXT NOT NULL, -- HTML; first "line" is Card's Name
+    Body TEXT NOT NULL, -- Simple Markdown; first "line" is Card's Name
     Image BLOB, -- SVG or PNG etc.
     hidden BOOL DEFAULT FALSE NOT NULL,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
