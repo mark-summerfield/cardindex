@@ -41,9 +41,11 @@ st.sh
 # Name (of Card)  (X)
 # Body
 # ...
+# [Boxes          v] # boxes this card belongs to
+# [Linked Cards   v] # cards this card is linked to
 #
 # Box           (X)
-# bid | Name
-# ... | ...
+# Name
+# ...
 
 # vim: syn=yaml

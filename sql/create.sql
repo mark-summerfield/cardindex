@@ -26,7 +26,7 @@ CREATE TABLE Card_x_Card (
     FOREIGN KEY(cid1) REFERENCES Cards(cid),
     FOREIGN KEY(cid2) REFERENCES Cards(cid),
 
-    CHECK(cid1 != cid2 AND cid1 < cid2)
+    CHECK(cid1 < cid2)
 );
 
 -- Any box may contain any cards
@@ -81,14 +81,12 @@ CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
 -- ==================== TRIGGERS ====================
 
--- CREATE TRIGGER insert_card_x_card_trigger BEFORE INSERT ON Card_x_Card
---     FOR EACH ROW
--- BEGIN
---     CASE
---         WHEN NEW.cid1 > NEW.cid2 THEN
---             -- TODO swap cid1 with cid2
---     END;
--- END;
+CREATE TRIGGER insert_card_x_card_trigger BEFORE INSERT ON Card_x_Card
+    FOR EACH ROW WHEN NEW.cid1 > NEW.cid2
+BEGIN
+    INSERT INTO Card_x_Card (cid1, cid2) VALUES (NEW.cid2, NEW.cid1);
+    SELECT RAISE(IGNORE);
+END;
 
 CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
     FOR EACH ROW
