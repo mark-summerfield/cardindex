@@ -42,8 +42,8 @@ st.sh
 # Body
 # ...
 #
-# Group           (X)
-# gid | Name
+# Box           (X)
+# bid | Name
 # ... | ...
 
 # vim: syn=yaml

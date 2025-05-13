@@ -9,11 +9,16 @@ CREATE TABLE Cards (
     Body TEXT NOT NULL, -- Simple Markdown; first "line" is Card's Name
     Image BLOB, -- SVG or PNG etc.
     hidden BOOL DEFAULT FALSE NOT NULL,
-    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    created REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
+    updated REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
 
     CHECK(hidden IN (0, 1))
 );
+
+CREATE VIEW CardsView AS
+    SELECT cid, Body, Image, hidden, DATETIME(created) AS created,
+                                     DATETIME(updated) AS updated
+    FROM Cards ORDER BY updated DESC;
 
 CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
@@ -33,15 +38,15 @@ CREATE TABLE Card_x_Box (
 
 CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Name TEXT NOT NULL,
+    Name TEXT DEFAULT '' NOT NULL, -- Use "Query #qid" if empty
     MatchText TEXT,
     HasImage BOOL,
     Unboxed BOOL, -- if TRUE match: Card.bid NOT IN Card_x_Box.bid
     InBoxes TEXT, -- Space-separated list of bids
     NotInBoxes TEXT,
-    UpdatedAfter TEXT,
+    UpdatedAfter TEXT, -- For all these NULL means don't care
     UpdatedBefore TEXT,
-    CreatedAfter TEXT, -- For all these NULL means don't care
+    CreatedAfter TEXT,
     CreatedBefore TEXT,
     Hidden BOOL DEFAULT FALSE, -- by default not Hidden
     OrderBy TEXT DEFAULT 'updated DESC' -- default most to least recent
@@ -57,10 +62,19 @@ CREATE TABLE Config (
     Value TEXT
 ) WITHOUT ROWID;
 
+CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
+    FOR EACH ROW
+        WHEN EXISTS (SELECT 1 FROM Queries WHERE Queries.Name = '' AND
+                                                 Queries.qid = NEW.qid)
+BEGIN
+    UPDATE Queries SET Name = FORMAT('Query #%d', NEW.qid)
+    WHERE qid = NEW.qid;
+END;
+
 CREATE TRIGGER update_cards_timestamp_trigger AFTER UPDATE ON Cards
     FOR EACH ROW
 BEGIN
-    UPDATE Cards SET updated = CURRENT_TIMESTAMP WHERE cid = OLD.cid;
+    UPDATE Cards SET updated = (JULIANDAY('NOW')) WHERE cid = OLD.cid;
 END;
 
 CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
