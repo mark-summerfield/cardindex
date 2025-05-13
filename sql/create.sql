@@ -120,8 +120,8 @@ BEGIN
     SELECT RAISE(ABORT, 'can only delete user created queries');
 END;
 
-INSERT INTO Config (Key, Value) VALUES ('Created', CURRENT_TIMESTAMP);
-INSERT INTO Config (Key, Value) VALUES ('Updated', CURRENT_TIMESTAMP);
+INSERT INTO Config (Key, Value) VALUES ('Created', JULIANDAY('NOW'));
+INSERT INTO Config (Key, Value) VALUES ('Updated', JULIANDAY('NOW'));
 INSERT INTO Config (Key, Value) VALUES ('N', 1); -- for optimizing
 
 INSERT INTO Queries (qid, Name) VALUES
