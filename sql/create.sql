@@ -2,9 +2,11 @@
 
 PRAGMA user_version = 1;
 
--- Markdown Body (e.g., for **bold**, _italic_, and lists), and for links
--- [Apple II](card://123) and for dates (e.g., YYYY-MM-DD) and for images
--- ![Cover Image](file:///home/mark/mags/image.png).
+-- ==================== TABLES ====================
+
+-- Markdown Body, e.g., for **bold**, _italic_, lists,
+-- urls [Website](http://www.eg.com), dates (e.g., YYYY-MM-DD) and
+-- images ![Cover Image](file:///home/mark/mags/image.png).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Body TEXT NOT NULL, -- Simple Markdown; first "line" is Card's Name
@@ -14,13 +16,6 @@ CREATE TABLE Cards (
 
     CHECK(hidden IN (0, 1))
 );
-
-CREATE VIEW CardsView AS
-    SELECT cid, Body, hidden, DATETIME(created) AS created,
-                              DATETIME(updated) AS updated
-    FROM Cards ORDER BY updated DESC;
-
-CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
 -- Any card may be linked to any other card
 CREATE TABLE Card_x_Card (
@@ -34,6 +29,7 @@ CREATE TABLE Card_x_Card (
     CHECK(cid1 != cid2 AND cid1 < cid2)
 );
 
+-- Any box may contain any cards
 CREATE TABLE Boxes (
     bid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT UNIQUE NOT NULL
@@ -52,7 +48,7 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT DEFAULT '' NOT NULL, -- Use "Query #qid" if empty
     MatchText TEXT,
-    HasImage BOOL,
+    LinkedToCid INTEGER, -- if not NULL matches all cards linked to this one
     Unboxed BOOL, -- if TRUE match: Card.bid NOT IN Card_x_Box.bid
     InBoxes TEXT, -- Space-separated list of bids
     NotInBoxes TEXT,
@@ -61,9 +57,9 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     CreatedAfter TEXT,
     CreatedBefore TEXT,
     Hidden BOOL DEFAULT FALSE, -- by default not Hidden
-    OrderBy TEXT DEFAULT 'updated DESC' -- default most to least recent
+    OrderBy TEXT DEFAULT 'updated DESC', -- default most to least recent
 
-    CHECK(HasImage IS NULL OR HasImage IN (0, 1)),
+    FOREIGN KEY(LinkedToCid) REFERENCES Cards(cid),
     CHECK(Hidden IS NULL OR Hidden IN (0, 1)),
     CHECK(Unboxed IS NULL OR Unboxed IN (0, 1))
 );
@@ -73,6 +69,17 @@ CREATE TABLE Config (
     Key TEXT PRIMARY KEY NOT NULL,
     Value TEXT
 ) WITHOUT ROWID;
+
+-- ==================== VIEWS and VIRTUALS ====================
+
+CREATE VIEW CardsView AS
+    SELECT cid, Body, hidden, DATETIME(created) AS created,
+                              DATETIME(updated) AS updated
+    FROM Cards ORDER BY updated DESC;
+
+CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
+
+-- ==================== TRIGGERS ====================
 
 -- CREATE TRIGGER insert_card_x_card_trigger BEFORE INSERT ON Card_x_Card
 --     FOR EACH ROW
@@ -140,6 +147,8 @@ CREATE TRIGGER delete_query BEFORE DELETE ON Queries
 BEGIN
     SELECT RAISE(ABORT, 'can only delete user created queries');
 END;
+
+-- ==================== INSERTIONS ====================
 
 INSERT INTO Config (Key, Value) VALUES ('Created', JULIANDAY('NOW'));
 INSERT INTO Config (Key, Value) VALUES ('Updated', JULIANDAY('NOW'));
