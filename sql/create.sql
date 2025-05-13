@@ -2,12 +2,12 @@
 
 PRAGMA user_version = 1;
 
--- Markdown Body (e.g., for bold, italic, and lists), and for links
--- [Apple II](card://123) and for dates (e.g., YYYY-MM-DD).
+-- Markdown Body (e.g., for **bold**, _italic_, and lists), and for links
+-- [Apple II](card://123) and for dates (e.g., YYYY-MM-DD) and for images
+-- ![Cover Image](file:///home/mark/mags/image.png).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Body TEXT NOT NULL, -- Simple Markdown; first "line" is Card's Name
-    Image BLOB, -- SVG or PNG etc.
     hidden BOOL DEFAULT FALSE NOT NULL,
     created REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
     updated REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
@@ -16,11 +16,23 @@ CREATE TABLE Cards (
 );
 
 CREATE VIEW CardsView AS
-    SELECT cid, Body, Image, hidden, DATETIME(created) AS created,
-                                     DATETIME(updated) AS updated
+    SELECT cid, Body, hidden, DATETIME(created) AS created,
+                              DATETIME(updated) AS updated
     FROM Cards ORDER BY updated DESC;
 
 CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
+
+-- Any card may be linked to any other card
+CREATE TABLE Card_x_Card (
+    cid1 TEXT NOT NULL,
+    cid2 TEXT NOT NULL,
+
+    PRIMARY KEY (cid1, cid2),
+    FOREIGN KEY(cid1) REFERENCES Cards(cid),
+    FOREIGN KEY(cid2) REFERENCES Cards(cid),
+
+    CHECK(cid1 != cid2 AND cid1 < cid2)
+);
 
 CREATE TABLE Boxes (
     bid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -61,6 +73,15 @@ CREATE TABLE Config (
     Key TEXT PRIMARY KEY NOT NULL,
     Value TEXT
 ) WITHOUT ROWID;
+
+-- CREATE TRIGGER insert_card_x_card_trigger BEFORE INSERT ON Card_x_Card
+--     FOR EACH ROW
+-- BEGIN
+--     CASE
+--         WHEN NEW.cid1 > NEW.cid2 THEN
+--             -- TODO swap cid1 with cid2
+--     END;
+-- END;
 
 CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
     FOR EACH ROW
