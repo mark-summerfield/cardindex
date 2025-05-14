@@ -1,10 +1,10 @@
 -- Copyright © 2025 Mark Summerfield. All Rights Reserved.
 
-PRAGMA user_version = 1;
+PRAGMA USER_VERSION = 1;
 
 -- ==================== TABLES ====================
 
--- Markdown Body, e.g., for **bold**, _italic_, lists,
+-- Commonmark markdown Body, e.g., for **bold**, _italic_, lists,
 -- urls [Website](http://www.eg.com), dates (e.g., YYYY-MM-DD) and
 -- images ![Cover Image](file:///home/mark/mags/image.png).
 CREATE TABLE Cards (
@@ -71,6 +71,12 @@ CREATE TABLE Config (
 ) WITHOUT ROWID;
 
 -- ==================== VIEWS and VIRTUALS ====================
+
+-- take first 40 chars; trim leading WS; trim leading #s; trim WS
+-- TODO trim to first [.!?\n] then trim trailing WS
+CREATE VIEW CardNames AS
+    SELECT TRIM(LTRIM(LTRIM(SUBSTR(Body, 1, 40)), '#')) AS Name
+    FROM Cards ORDER BY LOWER(Name);
 
 CREATE VIEW CardsView AS
     SELECT cid, Body, hidden, DATETIME(created) AS created,

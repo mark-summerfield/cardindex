@@ -1,5 +1,4 @@
-# TODO Card Body's first line (to \n or first 60 chars) is Card's Name
-
+# TODO CardNames view: trim to first [.!?\n] then trim trailing WS
 cardindex.go
 static.go
 
@@ -47,5 +46,7 @@ st.sh
 # Box           (X)
 # Name
 # ...
+
+# NOTE Markup is CommonMark
 
 # vim: syn=yaml
