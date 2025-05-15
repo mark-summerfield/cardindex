@@ -1,4 +1,3 @@
-# TODO CardNames view: trim to first [.!?\n] then trim trailing WS
 cardindex.go
 static.go
 

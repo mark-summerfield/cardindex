@@ -17,25 +17,14 @@ CREATE TABLE Cards (
     CHECK(hidden IN (0, 1))
 );
 
--- Any card may be linked to any other card
-CREATE TABLE Card_x_Card (
-    cid1 TEXT NOT NULL,
-    cid2 TEXT NOT NULL,
-
-    PRIMARY KEY (cid1, cid2),
-    FOREIGN KEY(cid1) REFERENCES Cards(cid),
-    FOREIGN KEY(cid2) REFERENCES Cards(cid),
-
-    CHECK(cid1 < cid2)
-);
-
 -- Any box may contain any cards
+-- To link two or more cards, create a box for them and add them to it
 CREATE TABLE Boxes (
     bid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT UNIQUE NOT NULL
 );
 
-CREATE TABLE Card_x_Box (
+CREATE TABLE CardsInBox (
     cid TEXT NOT NULL,
     bid TEXT NOT NULL,
 
@@ -49,7 +38,7 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     Name TEXT DEFAULT '' NOT NULL, -- Use "Query #qid" if empty
     MatchText TEXT,
     LinkedToCid INTEGER, -- if not NULL matches all cards linked to this one
-    Unboxed BOOL, -- if TRUE match: Card.bid NOT IN Card_x_Box.bid
+    Unboxed BOOL, -- if TRUE match: Card.bid NOT IN CardsInBox.bid
     InBoxes TEXT, -- Space-separated list of bids
     NotInBoxes TEXT,
     UpdatedAfter TEXT, -- For all these NULL means don't care
@@ -72,12 +61,12 @@ CREATE TABLE Config (
 
 -- ==================== VIEWS and VIRTUALS ====================
 
-CREATE VIEW CardNames AS SELECT TRIM(LTRIM(Name, '#')) AS Name
+CREATE VIEW CardNames AS SELECT cid, TRIM(LTRIM(Name, '#')) AS Name
     FROM _CardNames;
 
 -- Truncates at first newline or after . ! ? or at 50 chars.
 CREATE VIEW _CardNames AS
-    SELECT TRIM((SUBSTR(Body, 1,
+    SELECT cid, TRIM((SUBSTR(Body, 1,
         CASE
             WHEN 0 != INSTR(Body, CHAR(10))
                 THEN MIN(50, INSTR(Body, CHAR(10)) - 1)
@@ -96,19 +85,13 @@ CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
 -- ==================== TRIGGERS ====================
 
-CREATE TRIGGER insert_card_x_card_trigger BEFORE INSERT ON Card_x_Card
-    FOR EACH ROW WHEN NEW.cid1 > NEW.cid2
-BEGIN
-    INSERT INTO Card_x_Card (cid1, cid2) VALUES (NEW.cid2, NEW.cid1);
-    SELECT RAISE(IGNORE);
-END;
-
 CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
     FOR EACH ROW
         WHEN EXISTS (SELECT 1 FROM Queries WHERE Queries.Name = '' AND
                                                  Queries.qid = NEW.qid)
 BEGIN
-    UPDATE Queries SET Name = FORMAT('Query #%d', NEW.qid)
+    -- UPDATE Queries SET Name = FORMAT('Query #%d', NEW.qid)
+    UPDATE Queries SET Name = PRINTF('Query #%d', NEW.qid) -- old syntax
     WHERE qid = NEW.qid;
 END;
 
@@ -144,7 +127,7 @@ CREATE TRIGGER delete_card_trigger_after AFTER DELETE ON Cards
     FOR EACH ROW
 BEGIN
     DELETE FROM v_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
-    DELETE FROM Card_x_Box WHERE cid = OLD.cid; -- leave any boxes
+    DELETE FROM CardsInBox WHERE cid = OLD.cid; -- leave any boxes
 END;
 
 CREATE TRIGGER delete_box BEFORE DELETE ON Boxes
