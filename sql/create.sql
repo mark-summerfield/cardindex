@@ -37,16 +37,16 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT DEFAULT '' NOT NULL, -- Use "Query #qid" if empty
     MatchText TEXT,
-    LinkedToCid INTEGER, -- if not NULL matches all cards linked to this one
-    Unboxed BOOL, -- if TRUE match: Card.bid NOT IN CardsInBox.bid
+    LinkedToCid INTEGER, -- If not NULL matches all cards linked to this one
+    Unboxed BOOL, -- If TRUE match cards that are not in CardsInBox
     InBoxes TEXT, -- Space-separated list of bids
     NotInBoxes TEXT,
     UpdatedAfter TEXT, -- For all these NULL means don't care
     UpdatedBefore TEXT,
     CreatedAfter TEXT,
     CreatedBefore TEXT,
-    Hidden BOOL DEFAULT FALSE, -- by default not Hidden
-    OrderBy TEXT DEFAULT 'updated DESC', -- default most to least recent
+    Hidden BOOL DEFAULT FALSE, -- By default not Hidden
+    OrderBy TEXT DEFAULT 'updated DESC', -- Default most to least recent
 
     FOREIGN KEY(LinkedToCid) REFERENCES Cards(cid),
     CHECK(Hidden IS NULL OR Hidden IN (0, 1)),
@@ -63,19 +63,20 @@ CREATE TABLE Config (
 
 -- Truncates at first newline or after . ! ? or at 50 chars.
 CREATE VIEW CardNames AS
-    SELECT cid, LTRIM(LTRIM(TRIM(SUBSTR(Body, 1, MIN(
-            50,
-            INSTR(Body || CHAR(10), CHAR(10)) - 1,
-            INSTR(Body || '.', '.'),
-            INSTR(Body || '!', '!'),
-            INSTR(Body || '?', '?')
-            ))), '#'))
-            AS Name FROM Cards ORDER BY LOWER(Name);
+    SELECT cid, LTRIM(LTRIM(TRIM(SUBSTR(Body, 1,
+                      MIN(
+                          50,
+                          INSTR(Body || CHAR(10), CHAR(10)) - 1,
+                          INSTR(Body || '.', '.'),
+                          INSTR(Body || '!', '!'),
+                          INSTR(Body || '?', '?')
+                      ))), '#'))
+        AS Name FROM Cards ORDER BY LOWER(Name);
 
 CREATE VIEW CardsView AS
     SELECT cid, Body, hidden, DATETIME(created) AS created,
                               DATETIME(updated) AS updated
-    FROM Cards ORDER BY updated DESC;
+        FROM Cards ORDER BY updated DESC;
 
 CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
 
@@ -86,9 +87,9 @@ CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
         WHEN EXISTS (SELECT 1 FROM Queries WHERE Queries.Name = '' AND
                                                  Queries.qid = NEW.qid)
 BEGIN
-    -- UPDATE Queries SET Name = FORMAT('Query #%d', NEW.qid)
+    -- UPDATE Queries SET Name = FORMAT('Query #%d', NEW.qid) -- new syntax
     UPDATE Queries SET Name = PRINTF('Query #%d', NEW.qid) -- old syntax
-    WHERE qid = NEW.qid;
+        WHERE qid = NEW.qid;
 END;
 
 CREATE TRIGGER update_cards_timestamp_trigger AFTER UPDATE ON Cards
@@ -123,7 +124,7 @@ CREATE TRIGGER delete_card_trigger_after AFTER DELETE ON Cards
     FOR EACH ROW
 BEGIN
     DELETE FROM v_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
-    DELETE FROM CardsInBox WHERE cid = OLD.cid; -- leave any boxes
+    DELETE FROM CardsInBox WHERE cid = OLD.cid; -- remove from any boxes
 END;
 
 CREATE TRIGGER delete_box BEFORE DELETE ON Boxes
