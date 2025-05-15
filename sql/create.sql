@@ -75,15 +75,16 @@ CREATE TABLE Config (
 CREATE VIEW CardNames AS SELECT TRIM(LTRIM(Name, '#')) AS Name
     FROM _CardNames;
 
+-- Truncates at first newline or after . ! ? or at 50 chars.
 CREATE VIEW _CardNames AS
     SELECT TRIM((SUBSTR(Body, 1,
         CASE
             WHEN 0 != INSTR(Body, CHAR(10))
-                THEN MIN(20, INSTR(Body, CHAR(10)) - 1)
-            WHEN 0 != INSTR(Body, '.') THEN MIN(20, INSTR(Body, '.'))
-            WHEN 0 != INSTR(Body, '!') THEN MIN(20, INSTR(Body, '!'))
-            WHEN 0 != INSTR(Body, '?') THEN MIN(20, INSTR(Body, '?'))
-            ELSE 20
+                THEN MIN(50, INSTR(Body, CHAR(10)) - 1)
+            WHEN 0 != INSTR(Body, '.') THEN MIN(50, INSTR(Body, '.'))
+            WHEN 0 != INSTR(Body, '!') THEN MIN(50, INSTR(Body, '!'))
+            WHEN 0 != INSTR(Body, '?') THEN MIN(50, INSTR(Body, '?'))
+            ELSE 50
         END))) AS Name FROM Cards ORDER BY LOWER(Name);
 
 CREATE VIEW CardsView AS
