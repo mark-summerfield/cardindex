@@ -9,7 +9,7 @@ PRAGMA USER_VERSION = 1;
 -- images ![Cover Image](file:///home/mark/mags/image.png).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Body TEXT NOT NULL, -- Simple Markdown; first "line" is Card's Name
+    Body TEXT NOT NULL, -- First "line" is Card's Name (see CardNames view)
     hidden BOOL DEFAULT FALSE NOT NULL,
     created REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
     updated REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
@@ -61,19 +61,16 @@ CREATE TABLE Config (
 
 -- ==================== VIEWS and VIRTUALS ====================
 
-CREATE VIEW CardNames AS SELECT cid, TRIM(LTRIM(Name, '#')) AS Name
-    FROM _CardNames;
-
 -- Truncates at first newline or after . ! ? or at 50 chars.
-CREATE VIEW _CardNames AS
-    SELECT cid, TRIM((SUBSTR(Body, 1,
-                        MIN(50,
-                            INSTR(Body || CHAR(10), CHAR(10)) - 1,
-                            INSTR(Body || '.', '.'),
-                            INSTR(Body || '!', '!'),
-                            INSTR(Body || '?', '?')
-                        ))))
-        AS Name FROM Cards ORDER BY LOWER(Name);
+CREATE VIEW CardNames AS
+    SELECT cid, LTRIM(LTRIM(TRIM(SUBSTR(Body, 1, MIN(
+            50,
+            INSTR(Body || CHAR(10), CHAR(10)) - 1,
+            INSTR(Body || '.', '.'),
+            INSTR(Body || '!', '!'),
+            INSTR(Body || '?', '?')
+            ))), '#'))
+            AS Name FROM Cards ORDER BY LOWER(Name);
 
 CREATE VIEW CardsView AS
     SELECT cid, Body, hidden, DATETIME(created) AS created,
