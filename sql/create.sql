@@ -67,14 +67,13 @@ CREATE VIEW CardNames AS SELECT cid, TRIM(LTRIM(Name, '#')) AS Name
 -- Truncates at first newline or after . ! ? or at 50 chars.
 CREATE VIEW _CardNames AS
     SELECT cid, TRIM((SUBSTR(Body, 1,
-        CASE
-            WHEN 0 != INSTR(Body, CHAR(10))
-                THEN MIN(50, INSTR(Body, CHAR(10)) - 1)
-            WHEN 0 != INSTR(Body, '.') THEN MIN(50, INSTR(Body, '.'))
-            WHEN 0 != INSTR(Body, '!') THEN MIN(50, INSTR(Body, '!'))
-            WHEN 0 != INSTR(Body, '?') THEN MIN(50, INSTR(Body, '?'))
-            ELSE 50
-        END))) AS Name FROM Cards ORDER BY LOWER(Name);
+                        MIN(50,
+                            INSTR(Body || CHAR(10), CHAR(10)) - 1,
+                            INSTR(Body || '.', '.'),
+                            INSTR(Body || '!', '!'),
+                            INSTR(Body || '?', '?')
+                        ))))
+        AS Name FROM Cards ORDER BY LOWER(Name);
 
 CREATE VIEW CardsView AS
     SELECT cid, Body, hidden, DATETIME(created) AS created,
