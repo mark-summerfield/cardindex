@@ -72,11 +72,19 @@ CREATE TABLE Config (
 
 -- ==================== VIEWS and VIRTUALS ====================
 
--- take first 40 chars; trim leading WS; trim leading #s; trim WS
--- TODO trim to first [.!?\n] then trim trailing WS
-CREATE VIEW CardNames AS
-    SELECT TRIM(LTRIM(LTRIM(SUBSTR(Body, 1, 40)), '#')) AS Name
-    FROM Cards ORDER BY LOWER(Name);
+CREATE VIEW CardNames AS SELECT TRIM(LTRIM(Name, '#')) AS Name
+    FROM _CardNames;
+
+CREATE VIEW _CardNames AS
+    SELECT TRIM((SUBSTR(Body, 1,
+        CASE
+            WHEN 0 != INSTR(Body, CHAR(10))
+                THEN MIN(20, INSTR(Body, CHAR(10)) - 1)
+            WHEN 0 != INSTR(Body, '.') THEN MIN(20, INSTR(Body, '.'))
+            WHEN 0 != INSTR(Body, '!') THEN MIN(20, INSTR(Body, '!'))
+            WHEN 0 != INSTR(Body, '?') THEN MIN(20, INSTR(Body, '?'))
+            ELSE 20
+        END))) AS Name FROM Cards ORDER BY LOWER(Name);
 
 CREATE VIEW CardsView AS
     SELECT cid, Body, hidden, DATETIME(created) AS created,
