@@ -4,12 +4,22 @@ PRAGMA USER_VERSION = 1;
 
 -- ==================== TABLES ====================
 
--- Commonmark markdown Body, e.g., for **bold**, _italic_, lists,
--- urls [A Website](http://www.eg.com), dates (e.g., YYYY-MM-DD) and
--- images ![An Image](file:///home/mark/mags/image.png).
+-- Name truncates at first newline or after . ! ? or at 50 chars.
+-- Body is plain text using Commonmark markdown,
+--      e.g., for **bold**, _italic_, lists,
+--      urls [A Website](http://www.eg.com), and
+--      images ![An Image](file:///home/mark/mags/image.png).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Body TEXT NOT NULL, -- First "line" is Card's Name (see CardNames view)
+    Name TEXT AS (LTRIM(LTRIM(TRIM((SUBSTR(Body, 1,
+                    MIN(50,
+                        INSTR(Body || CHAR(10), CHAR(10)) - 1,
+                        INSTR(Body || '.', '.'),
+                        INSTR(Body || '!', '!'),
+                        INSTR(Body || '?', '?')
+                    )
+                  ))), '#'))) VIRTUAL,
+    Body TEXT NOT NULL,
     hidden BOOL DEFAULT FALSE NOT NULL,
     created REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
     updated REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
@@ -56,31 +66,20 @@ CREATE TABLE Config (
 -- ==================== VIEWS and VIRTUALS ====================
 
 CREATE VIEW ViewCardsUnboxed AS
-    SELECT cid, Name, Body, created, updated
-        FROM viewCards
+    SELECT cid, Name, Body, DATETIME(created) AS created,
+                            DATETIME(updated) AS updated
+        FROM Cards
         WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox);
 
 CREATE VIEW ViewCardsVisible AS
-    SELECT cid, Name, Body, created, updated FROM viewCards
-        WHERE hidden = FALSE;
+    SELECT cid, Name, Body, DATETIME(created) AS created,
+                            DATETIME(updated) AS updated
+        FROM Cards WHERE hidden = FALSE;
 
 CREATE VIEW ViewCardsHidden AS
-    SELECT cid, Name, Body, created, updated FROM viewCards
-        WHERE hidden = TRUE;
-
--- Truncates at first newline or after . ! ? or at 50 chars.
-CREATE VIEW viewCards AS
-    SELECT cid, LTRIM(LTRIM(TRIM(SUBSTR(Body, 1,
-                      MIN(
-                          50,
-                          INSTR(Body || CHAR(10), CHAR(10)) - 1,
-                          INSTR(Body || '.', '.'),
-                          INSTR(Body || '!', '!'),
-                          INSTR(Body || '?', '?')
-                      ))), '#'))
-        AS Name, Body, hidden, DATETIME(created) AS created,
-                               DATETIME(updated) AS updated
-        FROM Cards;
+    SELECT cid, Name, Body, DATETIME(created) AS created,
+                            DATETIME(updated) AS updated
+        FROM Cards WHERE hidden = TRUE;
 
 CREATE VIRTUAL TABLE vt_fts_cards USING FTS5(Body, tokenize=porter);
 
