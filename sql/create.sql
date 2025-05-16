@@ -5,8 +5,8 @@ PRAGMA USER_VERSION = 1;
 -- ==================== TABLES ====================
 
 -- Commonmark markdown Body, e.g., for **bold**, _italic_, lists,
--- urls [Website](http://www.eg.com), dates (e.g., YYYY-MM-DD) and
--- images ![Cover Image](file:///home/mark/mags/image.png).
+-- urls [A Website](http://www.eg.com), dates (e.g., YYYY-MM-DD) and
+-- images ![An Image](file:///home/mark/mags/image.png).
 CREATE TABLE Cards (
     cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Body TEXT NOT NULL, -- First "line" is Card's Name (see CardNames view)
@@ -14,7 +14,7 @@ CREATE TABLE Cards (
     created REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
     updated REAL DEFAULT (JULIANDAY('NOW')) NOT NULL,
 
-    CHECK(hidden IN (0, 1))
+    CHECK(hidden IN (FALSE, TRUE))
 );
 
 -- Any box may contain any cards
@@ -33,19 +33,18 @@ CREATE TABLE CardsInBox (
     FOREIGN KEY(bid) REFERENCES Boxes(bid)
 );
 
--- if Name = '' use: COALESCE(MatchText, 'Query #' || qid)
 CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     Name TEXT DEFAULT '' NOT NULL,
     MatchText TEXT,
     Unboxed BOOL, -- If TRUE match cards that are not in CardsInBox
     InBoxes TEXT, -- Space-separated list of bids
-    NotInBoxes TEXT,
+    NotInBoxes TEXT, -- Space-separated list of bids
     Hidden BOOL DEFAULT FALSE, -- By default not Hidden
     OrderBy TEXT DEFAULT 'updated DESC', -- Default most to least recent
 
-    CHECK(Hidden IS NULL OR Hidden IN (0, 1)),
-    CHECK(Unboxed IS NULL OR Unboxed IN (0, 1))
+    CHECK(Hidden IS NULL OR Hidden IN (FALSE, TRUE)),
+    CHECK(Unboxed IS NULL OR Unboxed IN (FALSE, TRUE))
 );
 
 -- e.g., for MDI window sizes and positions
@@ -87,27 +86,17 @@ CREATE VIRTUAL TABLE vt_fts_cards USING FTS5(Body, tokenize=porter);
 
 -- ==================== TRIGGERS ====================
 
-CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
-    FOR EACH ROW
-        WHEN EXISTS (SELECT 1 FROM Queries WHERE Queries.Name = '' AND
-                                                 Queries.qid = NEW.qid)
+CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
+    FOR EACH ROW -- update FTS
 BEGIN
-    -- UPDATE Queries SET Name = FORMAT('Query #%d', NEW.qid) -- new syntax
-    UPDATE Queries SET Name = PRINTF('Query #%d', NEW.qid) -- old syntax
-        WHERE qid = NEW.qid;
+    INSERT OR REPLACE INTO vt_fts_cards (rowid, Body) VALUES
+        (NEW.cid, NEW.Body);
 END;
 
 CREATE TRIGGER update_cards_timestamp_trigger AFTER UPDATE ON Cards
     FOR EACH ROW
 BEGIN
     UPDATE Cards SET updated = (JULIANDAY('NOW')) WHERE cid = OLD.cid;
-END;
-
-CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
-    FOR EACH ROW -- update FTS
-BEGIN
-    INSERT OR REPLACE INTO vt_fts_cards (rowid, Body) VALUES
-        (NEW.cid, NEW.Body);
 END;
 
 CREATE TRIGGER update_card_body_trigger AFTER UPDATE OF Body ON Cards
@@ -119,8 +108,8 @@ END;
 
 CREATE TRIGGER delete_card_trigger_before BEFORE DELETE ON Cards
     FOR EACH ROW
-        WHEN EXISTS (SELECT 1 FROM Cards WHERE Cards.cid = OLD.cid AND
-                                               OLD.hidden = FALSE)
+        WHEN EXISTS (SELECT TRUE FROM Cards WHERE Cards.cid = OLD.cid AND
+                                                  OLD.hidden = FALSE)
 BEGIN
     SELECT RAISE(ABORT, 'can only delete hidden cards');
 END;
@@ -134,9 +123,24 @@ END;
 
 CREATE TRIGGER delete_box BEFORE DELETE ON Boxes
     FOR EACH ROW
-        WHEN EXISTS (SELECT 1 FROM Cards WHERE Cards.bid = OLD.bid)
+        WHEN EXISTS (SELECT TRUE FROM CardsInBox
+                     WHERE CardsInBox.bid = OLD.bid)
 BEGIN
     SELECT RAISE(ABORT, 'can only delete unused boxes');
+END;
+
+CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
+    FOR EACH ROW
+        WHEN EXISTS (SELECT TRUE FROM Queries
+                     WHERE Queries.Name = '' AND Queries.qid = NEW.qid)
+BEGIN -- PRINTF if old syntax for FORMAT
+    UPDATE Queries
+        SET Name =
+            CASE 
+                WHEN NEW.MatchText = '' THEN PRINTF('Query #%d', NEW.qid)
+                ELSE NEW.MatchText
+            END
+        WHERE qid = NEW.qid;
 END;
 
 CREATE TRIGGER delete_query BEFORE DELETE ON Queries
