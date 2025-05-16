@@ -33,22 +33,17 @@ CREATE TABLE CardsInBox (
     FOREIGN KEY(bid) REFERENCES Boxes(bid)
 );
 
+-- if Name = '' use: COALESCE(MatchText, 'Query #' || qid)
 CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Name TEXT DEFAULT '' NOT NULL, -- Use "Query #qid" if empty
+    Name TEXT DEFAULT '' NOT NULL,
     MatchText TEXT,
-    LinkedToCid INTEGER, -- If not NULL matches all cards linked to this one
     Unboxed BOOL, -- If TRUE match cards that are not in CardsInBox
     InBoxes TEXT, -- Space-separated list of bids
     NotInBoxes TEXT,
-    UpdatedAfter TEXT, -- For all these NULL means don't care
-    UpdatedBefore TEXT,
-    CreatedAfter TEXT,
-    CreatedBefore TEXT,
     Hidden BOOL DEFAULT FALSE, -- By default not Hidden
     OrderBy TEXT DEFAULT 'updated DESC', -- Default most to least recent
 
-    FOREIGN KEY(LinkedToCid) REFERENCES Cards(cid),
     CHECK(Hidden IS NULL OR Hidden IN (0, 1)),
     CHECK(Unboxed IS NULL OR Unboxed IN (0, 1))
 );
@@ -61,8 +56,21 @@ CREATE TABLE Config (
 
 -- ==================== VIEWS and VIRTUALS ====================
 
+CREATE VIEW ViewCardsUnboxed AS
+    SELECT cid, Name, Body, created, updated
+        FROM viewCards
+        WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox);
+
+CREATE VIEW ViewCardsVisible AS
+    SELECT cid, Name, Body, created, updated FROM viewCards
+        WHERE hidden = FALSE;
+
+CREATE VIEW ViewCardsHidden AS
+    SELECT cid, Name, Body, created, updated FROM viewCards
+        WHERE hidden = TRUE;
+
 -- Truncates at first newline or after . ! ? or at 50 chars.
-CREATE VIEW CardNames AS
+CREATE VIEW viewCards AS
     SELECT cid, LTRIM(LTRIM(TRIM(SUBSTR(Body, 1,
                       MIN(
                           50,
@@ -71,14 +79,11 @@ CREATE VIEW CardNames AS
                           INSTR(Body || '!', '!'),
                           INSTR(Body || '?', '?')
                       ))), '#'))
-        AS Name FROM Cards ORDER BY LOWER(Name);
+        AS Name, Body, hidden, DATETIME(created) AS created,
+                               DATETIME(updated) AS updated
+        FROM Cards;
 
-CREATE VIEW CardsView AS
-    SELECT cid, Body, hidden, DATETIME(created) AS created,
-                              DATETIME(updated) AS updated
-        FROM Cards ORDER BY updated DESC;
-
-CREATE VIRTUAL TABLE v_fts_cards USING FTS5(Body, tokenize=porter);
+CREATE VIRTUAL TABLE vt_fts_cards USING FTS5(Body, tokenize=porter);
 
 -- ==================== TRIGGERS ====================
 
@@ -101,14 +106,14 @@ END;
 CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
-    INSERT OR REPLACE INTO v_fts_cards (rowid, Body) VALUES
+    INSERT OR REPLACE INTO vt_fts_cards (rowid, Body) VALUES
         (NEW.cid, NEW.Body);
 END;
 
 CREATE TRIGGER update_card_body_trigger AFTER UPDATE OF Body ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
-    INSERT OR REPLACE INTO v_fts_cards (rowid, Body) VALUES
+    INSERT OR REPLACE INTO vt_fts_cards (rowid, Body) VALUES
         (NEW.cid, NEW.Body);
 END;
 
@@ -123,7 +128,7 @@ END;
 CREATE TRIGGER delete_card_trigger_after AFTER DELETE ON Cards
     FOR EACH ROW
 BEGIN
-    DELETE FROM v_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
+    DELETE FROM vt_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
     DELETE FROM CardsInBox WHERE cid = OLD.cid; -- remove from any boxes
 END;
 
@@ -148,8 +153,8 @@ INSERT INTO Config (Key, Value) VALUES ('Updated', JULIANDAY('NOW'));
 INSERT INTO Config (Key, Value) VALUES ('N', 1); -- for optimizing
 
 INSERT INTO Queries (qid, Name) VALUES
-    (0, 'All Cards'); -- Excludes hidden (hidden is FALSE by default)
+    (0, 'All Cards'); -- ViewCardsVisible
 INSERT INTO Queries (qid, Name, Unboxed) VALUES
-    (1, 'Unboxed Cards', TRUE); -- Excludes hidden
+    (1, 'Unboxed Cards', TRUE); -- ViewCardsUnboxed
 INSERT INTO Queries (qid, Name, Hidden) VALUES
-    (2, 'Hidden Cards', TRUE);
+    (2, 'Hidden Cards', TRUE); -- ViewCardsHidden
