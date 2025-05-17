@@ -48,4 +48,10 @@ st.sh
 
 # NOTE Markup is CommonMark
 
+# NOTE Could do "fields" using key=value syntax and queries like this:
+#   SELECT rowid AS cid FROM vt_fts_cards WHERE vt_fts_cards MATCH '"key="';
+# or
+#   SELECT Name, Cards.Body FROM Cards, vt_fts_cards
+#	WHERE vt_fts_cards MATCH '"key="' AND Cards.cid = vt_fts_cards.ROWID;
+
 # vim: syn=yaml
