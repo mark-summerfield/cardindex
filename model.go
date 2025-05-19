@@ -6,6 +6,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/mark-summerfield/ufile"
 	_ "modernc.org/sqlite"
@@ -17,8 +18,8 @@ type Model struct {
 
 type Counts struct {
 	Visible int
-	Hidden  int
 	Unboxed int
+	Hidden  int
 }
 
 func NewModel(filename string) (*Model, error) {
@@ -50,9 +51,7 @@ func (me *Model) Close() error {
 }
 
 func (me *Model) Counts() (*Counts, error) {
-	_, err := me.db.Exec(SQLprepare)
-	if err != nil {
-		return nil, err
-	}
+	row := me.db.QueryRow("SELECT * FROM Counts")
+	fmt.Println(row)
 	return &Counts{}, nil
 }

@@ -65,6 +65,10 @@ CREATE TABLE Config (
 
 -- ==================== VIEWS and VIRTUALS ====================
 
+CREATE VIEW Counts AS
+    SELECT Visible, Unboxed, Hidden
+        FROM CountVisibleCards, CountUnboxedCards, CountHiddenCards;
+
 CREATE VIEW CountVisibleCards AS
     SELECT COUNT(*) AS Visible FROM Cards WHERE hidden = FALSE;
 

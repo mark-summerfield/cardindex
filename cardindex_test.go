@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -15,6 +16,11 @@ func Test01(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
+	counts, err := model.Counts()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	fmt.Println(counts)
 	defer model.Close()
 }
 
@@ -23,5 +29,10 @@ func Test02(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
+	counts, err := model.Counts()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	fmt.Println(counts)
 	defer model.Close()
 }
