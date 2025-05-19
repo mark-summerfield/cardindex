@@ -3,10 +3,25 @@
 
 package main
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func Test01(t *testing.T) {
-	if false {
-		t.Errorf("unexpected")
+	filename := os.TempDir() + "/t1.cix"
+	os.Remove(filename)
+	model, err := NewModel(filename)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
 	}
+	defer model.Close()
+}
+
+func Test02(t *testing.T) {
+	model, err := NewModel("eg/pcw.cix")
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	defer model.Close()
 }

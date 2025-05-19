@@ -65,10 +65,14 @@ CREATE TABLE Config (
 
 -- ==================== VIEWS and VIRTUALS ====================
 
-CREATE VIEW ViewCardsUnboxed AS
-    SELECT cid, Name, Body, DATETIME(created) AS created,
-                            DATETIME(updated) AS updated
-        FROM Cards
+CREATE VIEW CountVisibleCards AS
+    SELECT COUNT(*) FROM Cards WHERE hidden = FALSE;
+
+CREATE VIEW CountHiddenCards AS
+    SELECT COUNT(*) FROM Cards WHERE hidden = TRUE;
+
+CREATE VIEW CountUnboxedCards AS
+    SELECT COUNT(*) FROM Cards
         WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox);
 
 CREATE VIEW ViewCardsVisible AS
@@ -80,6 +84,12 @@ CREATE VIEW ViewCardsHidden AS
     SELECT cid, Name, Body, DATETIME(created) AS created,
                             DATETIME(updated) AS updated
         FROM Cards WHERE hidden = TRUE;
+
+CREATE VIEW ViewCardsUnboxed AS
+    SELECT cid, Name, Body, DATETIME(created) AS created,
+                            DATETIME(updated) AS updated
+        FROM Cards
+        WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox);
 
 CREATE VIRTUAL TABLE vt_fts_cards USING FTS5(Body, tokenize=porter);
 
