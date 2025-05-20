@@ -7,7 +7,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"iter"
 	"time"
 
 	"github.com/mark-summerfield/ufile"
@@ -28,24 +27,20 @@ type Counts struct {
 type CardName struct {
 	cid  int
 	name string
-	err  error
 }
 
 func (me CardName) String() string {
-	if me.err != nil {
-		return fmt.Sprintf("#%d %q", me.cid, me.name)
-	}
-	return me.err.Error()
+	return fmt.Sprintf("Card#%d %q", me.cid, me.name)
 }
 
-type Card struct {
-	cid     int
-	name    string
-	body    string
-	hidden  bool
-	created time.Time
-	updated time.Time
-}
+// type Card struct {
+// 	cid     int
+// 	name    string
+// 	body    string
+// 	hidden  bool
+// 	created time.Time
+// 	updated time.Time
+// }
 
 func NewModel(filename string) (*Model, error) {
 	exists := ufile.FileExists(filename)
@@ -177,31 +172,26 @@ func (me *Model) CardDelete(cid int) error {
 	return err
 }
 
-func (me *Model) AllVisibleCardNames() iter.Seq[CardName] {
+func (me *Model) CardNamesVisible() ([]CardName, error) {
 	rows, err := me.db.Query(SQL_SELECT_VISIBLE)
 	if err != nil {
-		return func(yield func(CardName) bool) {
-			// fmt.Fprintln(os.Stderr, "DBG", err) // TODO
-			yield(CardName{0, "", err})
-		}
+		return nil, err
 	}
 	defer rows.Close()
-	return func(yield func(CardName) bool) {
-		for rows.Next() {
-			var cardname CardName
-			cardname.err = rows.Scan(&cardname.cid, &cardname.name)
-			// fmt.Fprintln(os.Stderr, "DBG", cardname) // TODO
-			if !yield(cardname) || cardname.err != nil {
-				return
-			}
+	var cardnames []CardName
+	for rows.Next() {
+		var cardname CardName
+		if err = rows.Scan(&cardname.cid, &cardname.name); err != nil {
+			return nil, err
 		}
+		cardnames = append(cardnames, cardname)
 	}
+	return cardnames, nil
 }
 
 // TODO
-// iterators:
-//		AllUnboxedCardNames() → iter.Seq…
-//		AllHiddenCardNames() → iter.Seq…
+// UnboxedCardNames() → []CardName
+// HiddenCardNames() → []CardName
 //
 // BoxAdd(string) → bid
 // BoxEdit(bid, string)
@@ -214,7 +204,6 @@ func (me *Model) AllVisibleCardNames() iter.Seq[CardName] {
 // QueryEdit(qid, query)
 // QueryDelete(qid)
 //
-// iterators:
-//		AllQueriedCardNames(query)() → iter.Seq…
+// QueriedCardNames(query)() → []CardName
 //
-//		AllBoxes() → iter.Seq…
+// Boxes() → []BoxName

@@ -4,7 +4,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -192,9 +191,12 @@ func Test04(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 	checkCounts(t, &Counts{0, 0, 0}, counts)
-	fmt.Println("expecting error")
-	for cardname := range model.AllVisibleCardNames() {
-		fmt.Println("#", cardname)
+	cardnames, err := model.CardNamesVisible()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if len(cardnames) > 0 {
+		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
 	}
 	for i, body := range []string{
 		"A Title\nThe first line.",
@@ -215,9 +217,13 @@ func Test04(t *testing.T) {
 		}
 		checkCounts(t, &Counts{i + 1, i + 1, 0}, counts)
 	}
-	fmt.Println("expecting 4")
-	for cardname := range model.AllVisibleCardNames() {
-		fmt.Println("#", cardname)
+	cardnames, err = model.CardNamesVisible()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if len(cardnames) != counts.Visible {
+		t.Errorf("expected %d cardnames; got: %d", counts.Visible,
+			len(cardnames))
 	}
 }
 
