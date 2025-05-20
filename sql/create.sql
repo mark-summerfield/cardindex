@@ -60,24 +60,26 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
 -- e.g., for MDI window sizes and positions
 CREATE TABLE Config (
     Key TEXT PRIMARY KEY NOT NULL,
-    Value TEXT
+    Value BLOB
 ) WITHOUT ROWID;
 
 -- ==================== VIEWS and VIRTUALS ====================
 
 CREATE VIEW Counts AS
     SELECT Visible, Unboxed, Hidden
-        FROM CountVisibleCards, CountUnboxedCards, CountHiddenCards;
+        FROM CountVisibleCards, CountUnboxedCards, CountHiddenCards
+        LIMIT 1;
 
 CREATE VIEW CountVisibleCards AS
-    SELECT COUNT(*) AS Visible FROM Cards WHERE hidden = FALSE;
+    SELECT COUNT(*) AS Visible FROM Cards WHERE hidden = FALSE LIMIT 1;
 
 CREATE VIEW CountHiddenCards AS
-    SELECT COUNT(*) AS Hidden FROM Cards WHERE hidden = TRUE;
+    SELECT COUNT(*) AS Hidden FROM Cards WHERE hidden = TRUE LIMIT 1;
 
 CREATE VIEW CountUnboxedCards AS
     SELECT COUNT(*) AS Unboxed FROM Cards
-        WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox);
+        WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox)
+        LIMIT 1;
 
 CREATE VIEW ViewCardsVisible AS
     SELECT cid, Name, Body, DATETIME(created) AS created,

@@ -6,14 +6,14 @@ package main
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/mark-summerfield/ufile"
 	_ "modernc.org/sqlite"
 )
 
 type Model struct {
-	db *sql.DB
+	filename string
+	db       *sql.DB
 }
 
 type Counts struct {
@@ -38,7 +38,7 @@ func NewModel(filename string) (*Model, error) {
 			return nil, errors.Join(err, db.Close())
 		}
 	}
-	return &Model{db}, nil
+	return &Model{filename, db}, nil
 }
 
 func (me *Model) Close() error {
@@ -50,8 +50,56 @@ func (me *Model) Close() error {
 	return err
 }
 
-func (me *Model) Counts() (*Counts, error) {
-	row := me.db.QueryRow("SELECT * FROM Counts")
-	fmt.Println(row)
-	return &Counts{}, nil
+func (me *Model) Version() (string, error) {
+	row := me.db.QueryRow("SELECT SQLITE_VERSION()")
+	var data string
+	if err := row.Scan(&data); err != nil {
+		return data, err
+	}
+	return data, nil
 }
+
+func (me *Model) Filename() string { return me.filename }
+
+func (me *Model) Counts() (*Counts, error) {
+	counts := &Counts{}
+	row := me.db.QueryRow("SELECT Visible, Unboxed, Hidden FROM Counts")
+	if err := row.Scan(&counts.Visible, &counts.Unboxed,
+		&counts.Hidden); err != nil {
+		return counts, err
+	}
+	return counts, nil
+}
+
+// TODO
+//
+//  1. ConfigBool(key) → bool value
+//  2. ConfigInt(key) → int value
+//  3. ConfigRaw(key) → []byte value
+//  4. ConfigStr(key) → string value
+//  5. SetConfigItem(key, []byte value)
+//
+//  6. CardAdd(string) → cid
+//  7. CardEdit(cid, string)
+//  8. CardHide(cid)
+//  9. CardUnhide(cid)
+// 10. CardDelete(cid)
+//
+// 11. BoxAdd(string) → bid
+// 12. BoxEdit(bid, string)
+// 13. BoxDelete(bid)
+//
+// 14. AddCardToBox(cid, bid)
+// 15. RemoveCardFromBox(cid, bid)
+//
+// 16. QueryAdd(query) → qid
+// 17. QueryEdit(qid, query)
+// 18. QueryDelete(qid)
+//
+// iterators:
+//		19. AllVisibleCards() → iter.Seq…
+//		20. AllUnboxedCards() → iter.Seq…
+//		21. AllHiddenCards() → iter.Seq…
+//		22. AllQueriedCards(query)() → iter.Seq…
+//
+//		23. AllBoxes() → iter.Seq…

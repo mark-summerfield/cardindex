@@ -3,7 +3,9 @@
 
 package main
 
-import _ "embed"
+import (
+	_ "embed"
+)
 
 //go:embed Version.dat
 var Version string
@@ -17,3 +19,5 @@ var SQLcreate string
 const (
 	APPNAME = "CardIndex"
 )
+
+// var E100 = errors.New("E100: failed to get counts")

@@ -5,7 +5,7 @@ static.go
 cardindex_test.go
 
 sql/prepare.sql
-sql/create.sql # TODO create VIEW that mergest all 3 counts
+sql/create.sql
 
 README.md
 
