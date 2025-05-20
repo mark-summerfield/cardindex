@@ -60,7 +60,7 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
 -- e.g., for MDI window sizes and positions
 CREATE TABLE Config (
     Key TEXT PRIMARY KEY NOT NULL,
-    Value BLOB
+    Value TEXT
 ) WITHOUT ROWID;
 
 -- ==================== VIEWS and VIRTUALS ====================

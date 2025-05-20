@@ -18,6 +18,8 @@ var SQLcreate string
 
 const (
 	APPNAME = "CardIndex"
+
+	MaxOpens = 11
 )
 
 // var E100 = errors.New("E100: failed to get counts")

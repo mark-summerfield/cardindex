@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func Test01(t *testing.T) {
@@ -33,6 +34,21 @@ func Test01(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 	checkCounts(t, &Counts{0, 0, 0}, counts)
+	when, err := model.ConfigCreated()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	year := time.Now().Year()
+	if when.Year() != year {
+		t.Errorf("invalid year expected %d; got %d", year, when.Year())
+	}
+	when, err = model.ConfigUpdated()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if when.Year() != year {
+		t.Errorf("invalid year expected %d; got %d", year, when.Year())
+	}
 }
 
 func Test02(t *testing.T) {

@@ -6,6 +6,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/mark-summerfield/ufile"
 	_ "modernc.org/sqlite"
@@ -44,7 +45,24 @@ func NewModel(filename string) (*Model, error) {
 func (me *Model) Close() error {
 	var err error
 	if me.db != nil {
-		err = me.db.Close()
+		sql := `BEGIN;
+				UPDATE Config SET Value = JULIANDAY('NOW')
+					WHERE Key = 'Updated';`
+		n := 0
+		row := me.db.QueryRow("SELECT Value FROM Config WHERE Key = N")
+		if err = row.Scan(&n); err == nil {
+			if n >= MaxOpens {
+				sql += "UPDATE Config SET Value = 0 WHERE Key = N;"
+			}
+			sql += "COMMIT;"
+			if n >= MaxOpens {
+				sql += `INSERT INTO vt_fts_cards(vt_fts_cards)
+							VALUES ('optimize');
+						VACUUM;`
+			}
+			_, err = me.db.Exec(sql)
+		}
+		err = errors.Join(err, me.db.Close())
 		me.db = nil
 	}
 	return err
@@ -71,9 +89,31 @@ func (me *Model) Counts() (*Counts, error) {
 	return counts, nil
 }
 
+func (me *Model) ConfigCreated() (time.Time, error) {
+	return me.configWhen("Created")
+}
+
+func (me *Model) ConfigUpdated() (time.Time, error) {
+	return me.configWhen("Updated")
+}
+
+func (me *Model) configWhen(key string) (time.Time, error) {
+	var when time.Time
+	var data string
+	row := me.db.QueryRow(
+		"SELECT DATETIME(Value) FROM Config WHERE Key = ?", key)
+	if err := row.Scan(&data); err != nil {
+		return when, err
+	}
+	if when, err := time.Parse(time.DateTime, data); err != nil {
+		return when, err
+	} else {
+		return when, nil
+	}
+}
+
 // TODO
 //
-//  1. ConfigBool(key) → bool value
 //  2. ConfigInt(key) → int value
 //  3. ConfigRaw(key) → []byte value
 //  4. ConfigStr(key) → string value
