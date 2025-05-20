@@ -43,6 +43,7 @@ const (
 	SQL_CARD_HIDDEN         = "SELECT hidden FROM Cards WHERE cid = ?;"
 	SQL_SET_CARD_VISIBILITY = "UPDATE Cards SET hidden = ? WHERE cid = ?;"
 	SQL_DELETE_CARD         = "DELETE FROM Cards WHERE cid = ?;"
+	SQL_SELECT_VISIBLE      = "SELECT cid, Name FROM ViewCardNamesVisible;"
 )
 
 // var E100 = errors.New("E100: failed to get counts")

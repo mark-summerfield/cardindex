@@ -81,6 +81,9 @@ CREATE VIEW CountUnboxedCards AS
         WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox)
         LIMIT 1;
 
+CREATE VIEW ViewCardNamesVisible AS
+    SELECT cid, Name FROM Cards WHERE hidden = FALSE ORDER BY LOWER(Name);
+
 CREATE VIEW ViewCardsVisible AS
     SELECT cid, Name, Body, DATETIME(created) AS created,
                             DATETIME(updated) AS updated

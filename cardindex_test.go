@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -175,6 +176,48 @@ func Test03(t *testing.T) {
 	_, err = model.CardBody(cid)
 	if err == nil {
 		t.Error("expected error")
+	}
+}
+
+func Test04(t *testing.T) {
+	filename := os.TempDir() + "/t3.cix"
+	os.Remove(filename)
+	model, err := NewModel(filename)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	defer model.Close()
+	counts, err := model.Counts()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	checkCounts(t, &Counts{0, 0, 0}, counts)
+	fmt.Println("expecting error")
+	for cardname := range model.AllVisibleCardNames() {
+		fmt.Println("#", cardname)
+	}
+	for i, body := range []string{
+		"A Title\nThe first line.",
+		"Another Title\nAnother first line.",
+		"Yet another title\nAnd another first line.",
+		"A title with no first line. Instead two sentences.",
+	} {
+		cid, err := model.CardAdd(body)
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		if cid != i+1 {
+			t.Errorf("expected cid %d; got: %d", i+1, cid)
+		}
+		counts, err = model.Counts()
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		checkCounts(t, &Counts{i + 1, i + 1, 0}, counts)
+	}
+	fmt.Println("expecting 4")
+	for cardname := range model.AllVisibleCardNames() {
+		fmt.Println("#", cardname)
 	}
 }
 

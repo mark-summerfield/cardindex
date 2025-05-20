@@ -6,6 +6,8 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"iter"
 	"time"
 
 	"github.com/mark-summerfield/ufile"
@@ -21,6 +23,28 @@ type Counts struct {
 	Visible int
 	Unboxed int
 	Hidden  int
+}
+
+type CardName struct {
+	cid  int
+	name string
+	err  error
+}
+
+func (me CardName) String() string {
+	if me.err != nil {
+		return fmt.Sprintf("#%d %q", me.cid, me.name)
+	}
+	return me.err.Error()
+}
+
+type Card struct {
+	cid     int
+	name    string
+	body    string
+	hidden  bool
+	created time.Time
+	updated time.Time
 }
 
 func NewModel(filename string) (*Model, error) {
@@ -153,11 +177,31 @@ func (me *Model) CardDelete(cid int) error {
 	return err
 }
 
+func (me *Model) AllVisibleCardNames() iter.Seq[CardName] {
+	rows, err := me.db.Query(SQL_SELECT_VISIBLE)
+	if err != nil {
+		return func(yield func(CardName) bool) {
+			// fmt.Fprintln(os.Stderr, "DBG", err) // TODO
+			yield(CardName{0, "", err})
+		}
+	}
+	defer rows.Close()
+	return func(yield func(CardName) bool) {
+		for rows.Next() {
+			var cardname CardName
+			cardname.err = rows.Scan(&cardname.cid, &cardname.name)
+			// fmt.Fprintln(os.Stderr, "DBG", cardname) // TODO
+			if !yield(cardname) || cardname.err != nil {
+				return
+			}
+		}
+	}
+}
+
 // TODO
 // iterators:
-//		AllVisibleCards() → iter.Seq…
-//		AllUnboxedCards() → iter.Seq…
-//		AllHiddenCards() → iter.Seq…
+//		AllUnboxedCardNames() → iter.Seq…
+//		AllHiddenCardNames() → iter.Seq…
 //
 // BoxAdd(string) → bid
 // BoxEdit(bid, string)
@@ -171,6 +215,6 @@ func (me *Model) CardDelete(cid int) error {
 // QueryDelete(qid)
 //
 // iterators:
-//		AllQueriedCards(query)() → iter.Seq…
+//		AllQueriedCardNames(query)() → iter.Seq…
 //
 //		AllBoxes() → iter.Seq…
