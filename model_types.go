@@ -6,8 +6,6 @@ package main
 import (
 	"fmt"
 	"time"
-
-	_ "modernc.org/sqlite"
 )
 
 type CardCounts struct{ Visible, Unboxed, Hidden int }
@@ -38,4 +36,23 @@ func (me Card) String() string { // for debugging
 	updated := me.updated.Format(time.DateTime)
 	return fmt.Sprintf("Card#%d %s • %s\n\t%q", cid, created, updated,
 		me.body)
+}
+
+type Box struct {
+	bid  int
+	name string
+}
+
+func (me Box) String() string { // for debugging
+	return fmt.Sprintf("Box#%d %q", me.bid, me.name)
+}
+
+type Query struct {
+	qid        int
+	name       string
+	matchText  string
+	inBoxes    []int
+	notInBoxes []int
+	hidden     bool
+	orderby    string
 }

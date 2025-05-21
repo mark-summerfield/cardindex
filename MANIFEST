@@ -2,7 +2,7 @@ cardindex.go
 model.go
 model_config.go
 model_cards.go
-model_boxes.go # TODO
+model_boxes.go
 model_queries.go # TODO
 model_types.go
 static.go

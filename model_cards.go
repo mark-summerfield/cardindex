@@ -3,11 +3,7 @@
 
 package main
 
-import (
-	"time"
-
-	_ "modernc.org/sqlite"
-)
+import "time"
 
 func (me *Model) CardCounts() (CardCounts, error) {
 	var counts CardCounts

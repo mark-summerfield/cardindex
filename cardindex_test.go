@@ -5,6 +5,7 @@ package main
 
 import (
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -14,14 +15,10 @@ func Test01(t *testing.T) {
 	filename := os.TempDir() + "/t1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	defer model.Close()
 	version, err := model.Version()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if !strings.HasPrefix(version, "3.") {
 		t.Errorf("expected version 3.x.y; got : %s", version)
 	}
@@ -30,22 +27,16 @@ func Test01(t *testing.T) {
 			model.Filename())
 	}
 	counts, err := model.CardCounts()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
 	when, err := model.ConfigCreated()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	year := time.Now().Year()
 	if when.Year() != year {
 		t.Errorf("invalid year expected %d; got %d", year, when.Year())
 	}
 	when, err = model.ConfigUpdated()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if when.Year() != year {
 		t.Errorf("invalid year expected %d; got %d", year, when.Year())
 	}
@@ -53,33 +44,32 @@ func Test01(t *testing.T) {
 
 func Test02(t *testing.T) {
 	model, err := NewModel("eg/pcw.cix")
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	defer model.Close()
 	counts, err := model.CardCounts()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{28, 2, 0}, &counts)
+	for i, expected := range []string{"1978", "1979", "1980"} {
+		box, err := model.Box(i + 1)
+		checkErr(t, err)
+		if box.name != expected {
+			t.Errorf("expected box %q; got: %q", expected, box.name)
+		}
+	}
 }
 
 func Test03(t *testing.T) {
 	filename := os.TempDir() + "/t3.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	defer model.Close()
 	if model.Filename() != filename {
 		t.Errorf("expected filename %q; got: %q", filename,
 			model.Filename())
 	}
 	counts, err := model.CardCounts()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
 	for i, body := range []string{
 		"A Title\nThe first line.",
@@ -88,93 +78,64 @@ func Test03(t *testing.T) {
 		"A title with no first line. Instead two sentences.",
 	} {
 		cid, err := model.CardAdd(body)
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		checkErr(t, err)
 		if cid != i+1 {
 			t.Errorf("expected cid %d; got: %d", i+1, cid)
 		}
 		counts, err = model.CardCounts()
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		checkErr(t, err)
 		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
-	if err = model.CardEdit(3,
-		"YET Another Title\nWith another first line."); err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	err = model.CardEdit(3, "YET Another Title\nWith another first line.")
+	checkErr(t, err)
 	cid := 2
 	card2a, err := model.Card(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if err = model.CardDelete(cid); err == nil {
 		t.Error("expected error (can't delete unless hidden)")
 	}
 	card2b, err := model.Card(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if card2a.body == "" || (card2a.body != card2b.body) {
 		t.Errorf("expected card; got: %s", card2b)
 	}
 	counts, err = model.CardCounts()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	for cid := range counts.Visible + counts.Hidden {
 		if cid == 0 {
 			continue
 		}
 		hidden, err := model.CardHidden(cid)
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		checkErr(t, err)
 		if hidden {
 			t.Errorf("expected card cid %d to be visible", cid)
 		}
 	}
 	err = model.CardHide(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	hidden, err := model.CardHidden(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if !hidden {
 		t.Errorf("expected card cid %d to be hidden", cid)
 	}
 	err = model.CardUnhide(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	hidden, err = model.CardHidden(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if hidden {
 		t.Errorf("expected card cid %d to be visible", cid)
 	}
 	err = model.CardHide(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	hidden, err = model.CardHidden(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if !hidden {
 		t.Errorf("expected card cid %d to be hidden", cid)
 	}
 	err = model.CardDelete(cid)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
-	_, err = model.Card(cid)
-	if err == nil {
-		t.Error("expected error")
+	checkErr(t, err)
+	if _, err = model.Card(cid); err == nil {
+		t.Errorf("expected error for deleted card cid %d", cid)
 	}
 }
 
@@ -182,19 +143,13 @@ func Test04(t *testing.T) {
 	filename := os.TempDir() + "/t3.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	defer model.Close()
 	counts, err := model.CardCounts()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
 	cardnames, err := model.CardNamesVisible()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if len(cardnames) > 0 {
 		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
 	}
@@ -205,41 +160,111 @@ func Test04(t *testing.T) {
 		"A title with no first line. Instead two sentences.",
 	} {
 		cid, err := model.CardAdd(body)
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		checkErr(t, err)
 		if cid != i+1 {
 			t.Errorf("expected cid %d; got: %d", i+1, cid)
 		}
 		counts, err = model.CardCounts()
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		checkErr(t, err)
 		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
 	cardnames, err = model.CardNamesVisible()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if len(cardnames) != counts.Visible {
 		t.Errorf("expected %d cardnames; got: %d", counts.Visible,
 			len(cardnames))
 	}
 	cardnames, err = model.CardNamesUnboxed()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if len(cardnames) != counts.Unboxed {
 		t.Errorf("expected %d cardnames; got: %d", counts.Unboxed,
 			len(cardnames))
 	}
 	cardnames, err = model.CardNamesHidden()
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	checkErr(t, err)
 	if len(cardnames) != counts.Hidden {
 		t.Errorf("expected %d cardnames; got: %d", counts.Hidden,
 			len(cardnames))
+	}
+	boxes, err := model.Boxes()
+	checkErr(t, err)
+	if len(boxes) > 0 {
+		t.Errorf("expected no boxes; got: %d", len(boxes))
+	}
+	bid1, err := model.BoxAdd("Special Box")
+	checkErr(t, err)
+	boxes, err = model.Boxes()
+	checkErr(t, err)
+	if len(boxes) != 1 {
+		t.Errorf("expected 1 box; got: %d", len(boxes))
+	}
+	bid2, err := model.BoxAdd("Ordinary Box")
+	checkErr(t, err)
+	boxes, err = model.Boxes()
+	checkErr(t, err)
+	if len(boxes) != 2 {
+		t.Errorf("expected 2 boxes; got: %d", len(boxes))
+	}
+	box, err := model.Box(bid1)
+	checkErr(t, err)
+	name := "Special Box"
+	if box.name != name {
+		t.Errorf("expected box %q; got: %q", name, box.name)
+	}
+	box, err = model.Box(bid2)
+	checkErr(t, err)
+	name = "Ordinary Box"
+	if box.name != name {
+		t.Errorf("expected box %q; got: %q", name, box.name)
+	}
+	for _, bid := range []int{bid1, bid2} {
+		in_use, err := model.BoxInUse(bid)
+		checkErr(t, err)
+		if in_use {
+			t.Errorf("expected box %d to be not in use", bid)
+		}
+	}
+	err = model.BoxDelete(bid1)
+	checkErr(t, err)
+	boxes, err = model.Boxes()
+	checkErr(t, err)
+	if len(boxes) != 1 {
+		t.Errorf("expected 1 boxes; got: %d", len(boxes))
+	}
+	cid := 3
+	err = model.BoxAddCard(cid, bid2)
+	checkErr(t, err)
+	if err = model.BoxDelete(bid2); err == nil {
+		t.Errorf("expected error deleting box %d", bid2)
+	}
+	in_use, err := model.BoxInUse(bid2)
+	checkErr(t, err)
+	if !in_use {
+		t.Errorf("expected box %d to be in use", bid2)
+	}
+	err = model.BoxRemoveCard(cid, bid2)
+	checkErr(t, err)
+	in_use, err = model.BoxInUse(bid2)
+	checkErr(t, err)
+	if in_use {
+		t.Errorf("expected box %d to not be in use", bid2)
+	}
+	err = model.BoxDelete(bid2)
+	checkErr(t, err)
+	boxes, err = model.Boxes()
+	checkErr(t, err)
+	if len(boxes) > 0 {
+		t.Errorf("expected no boxes; got: %d", len(boxes))
+	}
+}
+
+func checkErr(t *testing.T, err error) {
+	if err != nil {
+		_, _, lino, ok := runtime.Caller(1)
+		if !ok {
+			lino = 0
+		}
+		t.Errorf("unexpected error @%d: %s", lino, err)
 	}
 }
 

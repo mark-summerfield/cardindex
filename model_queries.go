@@ -3,10 +3,6 @@
 
 package main
 
-import (
-	_ "modernc.org/sqlite"
-)
-
 // TODO
 // QueryGet(qid) → query
 // QueryAdd(query) → qid

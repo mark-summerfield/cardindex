@@ -3,11 +3,7 @@
 
 package main
 
-import (
-	"time"
-
-	_ "modernc.org/sqlite"
-)
+import "time"
 
 func (me *Model) ConfigCreated() (time.Time, error) {
 	return me.configWhen(CREATED)

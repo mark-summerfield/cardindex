@@ -43,18 +43,18 @@ CREATE TABLE CardsInBox (
     FOREIGN KEY(bid) REFERENCES Boxes(bid)
 );
 
+-- User can always view "built-in" queries: visible cards, unboxed cards,
+-- and hidden cards
 CREATE TABLE Queries ( -- See default queries INSERTed below
     qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Name TEXT DEFAULT '' NOT NULL,
+    Name TEXT DEFAULT '' NOT NULL, -- See insert_queries_trigger
     MatchText TEXT,
-    Unboxed BOOL, -- If TRUE match cards that are not in CardsInBox
-    InBoxes TEXT, -- Space-separated list of bids
-    NotInBoxes TEXT, -- Space-separated list of bids
-    Hidden BOOL DEFAULT FALSE, -- By default not Hidden
+    InBoxes TEXT, -- Comma-separated list of bids
+    NotInBoxes TEXT, -- Comma-separated list of bids
+    Hidden BOOL DEFAULT FALSE NOT NULL,
     OrderBy TEXT DEFAULT 'updated DESC', -- Default most to least recent
 
-    CHECK(Hidden IS NULL OR Hidden IN (FALSE, TRUE)),
-    CHECK(Unboxed IS NULL OR Unboxed IN (FALSE, TRUE))
+    CHECK(Hidden IN (FALSE, TRUE))
 );
 
 -- e.g., for MDI window sizes and positions
@@ -169,22 +169,8 @@ BEGIN -- PRINTF if old syntax for FORMAT
         WHERE qid = NEW.qid;
 END;
 
-CREATE TRIGGER delete_query BEFORE DELETE ON Queries
-    FOR EACH ROW
-        WHEN Old.qid IN (0, 1, 2)
-BEGIN
-    SELECT RAISE(ABORT, 'can only delete user created queries');
-END;
-
 -- ==================== INSERTIONS ====================
 
 INSERT INTO Config (Key, Value) VALUES ('Created', JULIANDAY('NOW'));
 INSERT INTO Config (Key, Value) VALUES ('Updated', JULIANDAY('NOW'));
 INSERT INTO Config (Key, Value) VALUES ('N', 1); -- for optimizing
-
-INSERT INTO Queries (qid, Name) VALUES
-    (0, 'All Cards'); -- ViewCardsVisible
-INSERT INTO Queries (qid, Name, Unboxed) VALUES
-    (1, 'Unboxed Cards', TRUE); -- ViewCardsUnboxed
-INSERT INTO Queries (qid, Name, Hidden) VALUES
-    (2, 'Hidden Cards', TRUE); -- ViewCardsHidden
