@@ -7,12 +7,12 @@ import "fmt"
 
 func orderBy(by string) string {
 	switch by {
-	case BY_NAME:
+	case NAME:
 		return "ORDER BY LOWER(Name)"
-	case BY_NEW_TO_OLD:
+	case UPDATED:
 		return "ORDER BY updated DESC"
-	case BY_OLD_TO_NEW:
+	case CREATED:
 		return "ORDER BY created"
 	}
-	panic(fmt.Sprintf("invalid orderBy: %q", by))
+	panic(fmt.Sprintf("invalid order by: %q", by))
 }

@@ -17,7 +17,7 @@ func Test01(t *testing.T) {
 	model, err := NewModel(filename)
 	checkErr(t, err)
 	defer model.Close()
-	version, err := model.Version()
+	version, err := SqliteVersion()
 	checkErr(t, err)
 	if !strings.HasPrefix(version, "3.") {
 		t.Errorf("expected version 3.x.y; got : %s", version)
@@ -148,7 +148,7 @@ func Test04(t *testing.T) {
 	counts, err := model.CardCounts()
 	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
-	cardnames, err := model.CardNamesVisible(BY_NAME)
+	cardnames, err := model.CardNamesVisible(NAME)
 	checkErr(t, err)
 	if len(cardnames) > 0 {
 		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
@@ -168,19 +168,19 @@ func Test04(t *testing.T) {
 		checkErr(t, err)
 		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
-	cardnames, err = model.CardNamesVisible(BY_NEW_TO_OLD)
+	cardnames, err = model.CardNamesVisible(UPDATED)
 	checkErr(t, err)
 	if len(cardnames) != counts.Visible {
 		t.Errorf("expected %d cardnames; got: %d", counts.Visible,
 			len(cardnames))
 	}
-	cardnames, err = model.CardNamesUnboxed(BY_OLD_TO_NEW)
+	cardnames, err = model.CardNamesUnboxed(CREATED)
 	checkErr(t, err)
 	if len(cardnames) != counts.Unboxed {
 		t.Errorf("expected %d cardnames; got: %d", counts.Unboxed,
 			len(cardnames))
 	}
-	cardnames, err = model.CardNamesHidden(BY_NAME)
+	cardnames, err = model.CardNamesHidden(NAME)
 	checkErr(t, err)
 	if len(cardnames) != counts.Hidden {
 		t.Errorf("expected %d cardnames; got: %d", counts.Hidden,

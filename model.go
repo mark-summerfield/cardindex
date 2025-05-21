@@ -57,13 +57,4 @@ func (me *Model) Close() error {
 	return err
 }
 
-func (me *Model) Version() (string, error) {
-	row := me.db.QueryRow(SQL_VERSION)
-	var version string
-	if err := row.Scan(&version); err != nil {
-		return version, err
-	}
-	return version, nil
-}
-
 func (me *Model) Filename() string { return me.filename }

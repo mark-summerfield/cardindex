@@ -24,12 +24,9 @@ const (
 
 	INVALID_ID = -1
 
+	NAME    = "Name"
 	CREATED = "Created"
 	UPDATED = "Updated"
-
-	BY_NAME       = "Name"
-	BY_NEW_TO_OLD = "New to Old"
-	BY_OLD_TO_NEW = "Old to New"
 
 	SQL_BEGIN    = "BEGIN;"
 	SQL_COMMIT   = "COMMIT;"
