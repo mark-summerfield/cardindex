@@ -13,10 +13,10 @@ func (me *Model) Box(bid int) (Box, error) {
 func (me *Model) BoxAdd(name string) (int, error) {
 	reply, err := me.db.Exec(SQL_BOX_INSERT, name)
 	if err != nil {
-		return -1, err
+		return INVALID_ID, err
 	}
 	if bid, err := reply.LastInsertId(); err != nil {
-		return -1, err
+		return INVALID_ID, err
 	} else {
 		return int(bid), nil
 	}

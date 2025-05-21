@@ -15,12 +15,12 @@ func (me *Model) ConfigUpdated() (time.Time, error) {
 
 func (me *Model) configWhen(key string) (time.Time, error) {
 	var when time.Time
-	var data string
+	var text string
 	row := me.db.QueryRow(SQL_CONFIG_GET_WHEN, key)
-	if err := row.Scan(&data); err != nil {
+	if err := row.Scan(&text); err != nil {
 		return when, err
 	}
-	if when, err := time.Parse(time.DateTime, data); err != nil {
+	if when, err := time.Parse(time.DateTime, text); err != nil {
 		return when, err
 	} else {
 		return when, nil

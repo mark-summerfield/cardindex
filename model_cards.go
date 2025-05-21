@@ -3,7 +3,10 @@
 
 package main
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 func (me *Model) CardCounts() (CardCounts, error) {
 	var counts CardCounts
@@ -36,10 +39,10 @@ func (me *Model) Card(cid int) (Card, error) {
 func (me *Model) CardAdd(body string) (int, error) {
 	reply, err := me.db.Exec(SQL_CARD_INSERT, body)
 	if err != nil {
-		return -1, err
+		return INVALID_ID, err
 	}
 	if cid, err := reply.LastInsertId(); err != nil {
-		return -1, err
+		return INVALID_ID, err
 	} else {
 		return int(cid), nil
 	}
@@ -72,19 +75,21 @@ func (me *Model) CardDelete(cid int) error {
 	return err
 }
 
-func (me *Model) CardNamesVisible() ([]CardName, error) {
-	return me.cardNames(SQL_CARD_NAMES_VISIBLE)
+func (me *Model) CardNamesVisible(by string) ([]CardName, error) {
+	return me.cardNames(SQL_CARD_NAMES_VISIBLE, by)
 }
 
-func (me *Model) CardNamesUnboxed() ([]CardName, error) {
-	return me.cardNames(SQL_CARD_NAMES_UNBOXED)
+func (me *Model) CardNamesUnboxed(by string) ([]CardName, error) {
+	return me.cardNames(SQL_CARD_NAMES_UNBOXED, by)
 }
 
-func (me *Model) CardNamesHidden() ([]CardName, error) {
-	return me.cardNames(SQL_CARD_NAMES_HIDDEN)
+func (me *Model) CardNamesHidden(by string) ([]CardName, error) {
+	return me.cardNames(SQL_CARD_NAMES_HIDDEN, by)
 }
 
-func (me *Model) cardNames(sql string) ([]CardName, error) {
+func (me *Model) cardNames(sql, by string) ([]CardName, error) {
+	sql, _ = strings.CutSuffix(sql, ";")
+	sql += " " + orderBy(by) + ";"
 	rows, err := me.db.Query(sql)
 	if err != nil {
 		return nil, err

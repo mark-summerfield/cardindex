@@ -5,7 +5,12 @@ package main
 
 import (
 	"fmt"
+	"slices"
+	"strconv"
+	"strings"
 	"time"
+
+	"github.com/mark-summerfield/ufunc"
 )
 
 type CardCounts struct{ Visible, Unboxed, Hidden int }
@@ -54,5 +59,19 @@ type Query struct {
 	inBoxes    []int
 	notInBoxes []int
 	hidden     bool
-	orderby    string
+	by         string
+}
+
+func (me Query) String() string { // for debugging
+	ins := strings.Join(slices.Collect(ufunc.Map(me.inBoxes,
+		func(i int) (string, bool) {
+			return strconv.Itoa(i), true
+		})), ",")
+	notins := strings.Join(slices.Collect(ufunc.Map(me.notInBoxes,
+		func(i int) (string, bool) {
+			return strconv.Itoa(i), true
+		})), ",")
+	return fmt.Sprintf(
+		"Query#%d %q match=%q in=%s not-in=%s hidden=%t by=%s", me.qid,
+		me.name, me.matchText, ins, notins, me.hidden, me.by)
 }

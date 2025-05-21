@@ -22,8 +22,14 @@ const (
 	DRIVER    = "sqlite"
 	MAX_OPENS = 11
 
+	INVALID_ID = -1
+
 	CREATED = "Created"
 	UPDATED = "Updated"
+
+	BY_NAME       = "Name"
+	BY_NEW_TO_OLD = "New to Old"
+	BY_OLD_TO_NEW = "Old to New"
 
 	SQL_BEGIN    = "BEGIN;"
 	SQL_COMMIT   = "COMMIT;"
@@ -36,7 +42,7 @@ const (
 	SQL_CONFIG_GET_N    = "SELECT Value FROM Config WHERE Key = N;"
 	SQL_CONFIG_GET_WHEN = `SELECT DATETIME(Value) FROM Config WHERE Key = ?;`
 	SQL_CONFIG_ZERO_N   = "UPDATE Config SET Value = 0 WHERE Key = N;"
-	SQL_CARD_COUNTS     = "SELECT Visible, Unboxed, Hidden FROM Counts"
+	SQL_CARD_COUNTS     = "SELECT Visible, Unboxed, Hidden FROM Counts;"
 	SQL_CARD_GET        = `SELECT Body, hidden, DATETIME(created),
 								DATETIME(updated) FROM Cards WHERE cid = ?;`
 	SQL_CARD_INSERT        = "INSERT INTO Cards (Body) VALUES (?);"
