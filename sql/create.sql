@@ -67,22 +67,30 @@ CREATE TABLE Config (
 
 CREATE VIEW Counts AS
     SELECT Visible, Unboxed, Hidden
-        FROM CountVisibleCards, CountUnboxedCards, CountHiddenCards
+        FROM CountCardsVisible, CountCardsUnboxed, CountCardsHidden
         LIMIT 1;
 
-CREATE VIEW CountVisibleCards AS
+CREATE VIEW CountCardsVisible AS
     SELECT COUNT(*) AS Visible FROM Cards WHERE hidden = FALSE LIMIT 1;
 
-CREATE VIEW CountHiddenCards AS
+CREATE VIEW CountCardsHidden AS
     SELECT COUNT(*) AS Hidden FROM Cards WHERE hidden = TRUE LIMIT 1;
 
-CREATE VIEW CountUnboxedCards AS
+CREATE VIEW CountCardsUnboxed AS
     SELECT COUNT(*) AS Unboxed FROM Cards
         WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox)
         LIMIT 1;
 
 CREATE VIEW ViewCardNamesVisible AS
     SELECT cid, Name FROM Cards WHERE hidden = FALSE ORDER BY LOWER(Name);
+
+CREATE VIEW ViewCardNamesUnboxed AS
+    SELECT cid, Name FROM Cards
+        WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox)
+        ORDER BY LOWER(Name);
+
+CREATE VIEW ViewCardNamesHidden AS
+    SELECT cid, Name FROM Cards WHERE hidden = TRUE ORDER BY LOWER(Name);
 
 CREATE VIEW ViewCardsVisible AS
     SELECT cid, Name, Body, DATETIME(created) AS created,

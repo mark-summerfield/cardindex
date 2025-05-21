@@ -6,8 +6,6 @@ package main
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"time"
 
 	"github.com/mark-summerfield/ufile"
 	_ "modernc.org/sqlite"
@@ -17,30 +15,6 @@ type Model struct {
 	filename string
 	db       *sql.DB
 }
-
-type Counts struct {
-	Visible int
-	Unboxed int
-	Hidden  int
-}
-
-type CardName struct {
-	cid  int
-	name string
-}
-
-func (me CardName) String() string {
-	return fmt.Sprintf("Card#%d %q", me.cid, me.name)
-}
-
-// type Card struct {
-// 	cid     int
-// 	name    string
-// 	body    string
-// 	hidden  bool
-// 	created time.Time
-// 	updated time.Time
-// }
 
 func NewModel(filename string) (*Model, error) {
 	exists := ufile.FileExists(filename)
@@ -64,12 +38,12 @@ func NewModel(filename string) (*Model, error) {
 func (me *Model) Close() error {
 	var err error
 	if me.db != nil {
-		sql := SQL_BEGIN + SQL_UPDATE_CONFIG_UPDATED
+		sql := SQL_BEGIN + SQL_CONFIG_UPDATE
 		n := 0
-		row := me.db.QueryRow(SQL_GET_CONFIG_N)
+		row := me.db.QueryRow(SQL_CONFIG_GET_N)
 		if err = row.Scan(&n); err == nil {
 			if n >= MAX_OPENS {
-				sql += SQL_ZERO_CONFIG_N
+				sql += SQL_CONFIG_ZERO_N
 			}
 			sql += SQL_COMMIT
 			if n >= MAX_OPENS {
@@ -93,117 +67,3 @@ func (me *Model) Version() (string, error) {
 }
 
 func (me *Model) Filename() string { return me.filename }
-
-func (me *Model) ConfigCreated() (time.Time, error) {
-	return me.configWhen(CREATED)
-}
-
-func (me *Model) ConfigUpdated() (time.Time, error) {
-	return me.configWhen(UPDATED)
-}
-
-func (me *Model) configWhen(key string) (time.Time, error) {
-	var when time.Time
-	var data string
-	row := me.db.QueryRow(SQL_GET_WHEN, key)
-	if err := row.Scan(&data); err != nil {
-		return when, err
-	}
-	if when, err := time.Parse(time.DateTime, data); err != nil {
-		return when, err
-	} else {
-		return when, nil
-	}
-}
-
-func (me *Model) Counts() (*Counts, error) {
-	counts := &Counts{}
-	row := me.db.QueryRow(SQL_GET_COUNTS)
-	if err := row.Scan(&counts.Visible, &counts.Unboxed,
-		&counts.Hidden); err != nil {
-		return counts, err
-	}
-	return counts, nil
-}
-
-func (me *Model) CardAdd(body string) (int, error) {
-	reply, err := me.db.Exec(SQL_INSERT_CARD, body)
-	if err != nil {
-		return -1, err
-	}
-	if cid, err := reply.LastInsertId(); err != nil {
-		return -1, err
-	} else {
-		return int(cid), nil
-	}
-}
-
-func (me *Model) CardEdit(cid int, body string) error {
-	_, err := me.db.Exec(SQL_UPDATE_CARD, body, cid)
-	return err
-}
-
-func (me *Model) CardBody(cid int) (string, error) {
-	var body string
-	row := me.db.QueryRow(SQL_CARD_BODY, cid)
-	err := row.Scan(&body)
-	return body, err
-}
-
-func (me *Model) CardHidden(cid int) (bool, error) {
-	var hidden bool
-	row := me.db.QueryRow(SQL_CARD_HIDDEN, cid)
-	err := row.Scan(&hidden)
-	return hidden, err
-}
-
-func (me *Model) CardHide(cid int) error {
-	_, err := me.db.Exec(SQL_SET_CARD_VISIBILITY, true, cid)
-	return err
-}
-
-func (me *Model) CardUnhide(cid int) error {
-	_, err := me.db.Exec(SQL_SET_CARD_VISIBILITY, false, cid)
-	return err
-}
-
-func (me *Model) CardDelete(cid int) error {
-	_, err := me.db.Exec(SQL_DELETE_CARD, cid)
-	return err
-}
-
-func (me *Model) CardNamesVisible() ([]CardName, error) {
-	rows, err := me.db.Query(SQL_SELECT_VISIBLE)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var cardnames []CardName
-	for rows.Next() {
-		var cardname CardName
-		if err = rows.Scan(&cardname.cid, &cardname.name); err != nil {
-			return nil, err
-		}
-		cardnames = append(cardnames, cardname)
-	}
-	return cardnames, nil
-}
-
-// TODO
-// UnboxedCardNames() → []CardName
-// HiddenCardNames() → []CardName
-//
-// BoxAdd(string) → bid
-// BoxEdit(bid, string)
-// BoxDelete(bid)
-//
-// AddCardToBox(cid, bid)
-// RemoveCardFromBox(cid, bid)
-//
-// QueryAdd(query) → qid
-// QueryEdit(qid, query)
-// QueryDelete(qid)
-//
-// QueriedCardNames(query)() → []CardName
-//
-// Boxes() → []BoxName

@@ -30,20 +30,23 @@ const (
 	SQL_OPTIMIZE = `INSERT INTO vt_fts_cards(vt_fts_cards)
 						VALUES ('optimize');
 					VACUUM;`
-	SQL_VERSION               = "SELECT SQLITE_VERSION();"
-	SQL_UPDATE_CONFIG_UPDATED = `UPDATE Config SET Value = JULIANDAY('NOW')
-								 WHERE Key = 'Updated';`
-	SQL_GET_CONFIG_N        = "SELECT Value FROM Config WHERE Key = N;"
-	SQL_GET_WHEN            = "SELECT DATETIME(Value) FROM Config WHERE Key = ?;"
-	SQL_ZERO_CONFIG_N       = "UPDATE Config SET Value = 0 WHERE Key = N;"
-	SQL_GET_COUNTS          = "SELECT Visible, Unboxed, Hidden FROM Counts"
-	SQL_INSERT_CARD         = "INSERT INTO Cards (Body) VALUES (?);"
-	SQL_UPDATE_CARD         = "UPDATE Cards SET Body = ? WHERE cid = ?;"
-	SQL_CARD_BODY           = "SELECT Body FROM Cards WHERE cid = ?;"
-	SQL_CARD_HIDDEN         = "SELECT hidden FROM Cards WHERE cid = ?;"
-	SQL_SET_CARD_VISIBILITY = "UPDATE Cards SET hidden = ? WHERE cid = ?;"
-	SQL_DELETE_CARD         = "DELETE FROM Cards WHERE cid = ?;"
-	SQL_SELECT_VISIBLE      = "SELECT cid, Name FROM ViewCardNamesVisible;"
+	SQL_VERSION       = "SELECT SQLITE_VERSION();"
+	SQL_CONFIG_UPDATE = `UPDATE Config SET Value = JULIANDAY('NOW')
+						 WHERE Key = 'Updated';`
+	SQL_CONFIG_GET_N    = "SELECT Value FROM Config WHERE Key = N;"
+	SQL_CONFIG_GET_WHEN = `SELECT DATETIME(Value) FROM Config WHERE Key = ?;`
+	SQL_CONFIG_ZERO_N   = "UPDATE Config SET Value = 0 WHERE Key = N;"
+	SQL_CARD_COUNTS     = "SELECT Visible, Unboxed, Hidden FROM Counts"
+	SQL_CARD_GET        = `SELECT Body, hidden, DATETIME(created),
+							DATETIME(updated) FROM Cards WHERE cid = ?;`
+	SQL_CARD_INSERT        = "INSERT INTO Cards (Body) VALUES (?);"
+	SQL_CARD_UPDATE        = "UPDATE Cards SET Body = ? WHERE cid = ?;"
+	SQL_CARD_GET_HIDDEN    = "SELECT hidden FROM Cards WHERE cid = ?;"
+	SQL_CARD_VISIBILITY    = "UPDATE Cards SET hidden = ? WHERE cid = ?;"
+	SQL_CARD_DELETE        = "DELETE FROM Cards WHERE cid = ?;"
+	SQL_CARD_NAMES_VISIBLE = "SELECT cid, Name FROM ViewCardNamesVisible;"
+	SQL_CARD_NAMES_UNBOXED = "SELECT cid, Name FROM ViewCardNamesUnboxed;"
+	SQL_CARD_NAMES_HIDDEN  = "SELECT cid, Name FROM ViewCardNamesHidden;"
 )
 
 // var E100 = errors.New("E100: failed to get counts")

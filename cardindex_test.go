@@ -29,11 +29,11 @@ func Test01(t *testing.T) {
 		t.Errorf("expected filename %q; got: %q", filename,
 			model.Filename())
 	}
-	counts, err := model.Counts()
+	counts, err := model.CardCounts()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	checkCounts(t, &Counts{0, 0, 0}, counts)
+	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
 	when, err := model.ConfigCreated()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -57,11 +57,11 @@ func Test02(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 	defer model.Close()
-	counts, err := model.Counts()
+	counts, err := model.CardCounts()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	checkCounts(t, &Counts{28, 2, 0}, counts)
+	checkCardCounts(t, &CardCounts{28, 2, 0}, &counts)
 }
 
 func Test03(t *testing.T) {
@@ -76,11 +76,11 @@ func Test03(t *testing.T) {
 		t.Errorf("expected filename %q; got: %q", filename,
 			model.Filename())
 	}
-	counts, err := model.Counts()
+	counts, err := model.CardCounts()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	checkCounts(t, &Counts{0, 0, 0}, counts)
+	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
 	for i, body := range []string{
 		"A Title\nThe first line.",
 		"Another Title\nAnother first line.",
@@ -94,32 +94,32 @@ func Test03(t *testing.T) {
 		if cid != i+1 {
 			t.Errorf("expected cid %d; got: %d", i+1, cid)
 		}
-		counts, err = model.Counts()
+		counts, err = model.CardCounts()
 		if err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
-		checkCounts(t, &Counts{i + 1, i + 1, 0}, counts)
+		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
 	if err = model.CardEdit(3,
 		"YET Another Title\nWith another first line."); err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 	cid := 2
-	body2a, err := model.CardBody(cid)
+	card2a, err := model.Card(cid)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 	if err = model.CardDelete(cid); err == nil {
 		t.Error("expected error (can't delete unless hidden)")
 	}
-	body2b, err := model.CardBody(cid)
+	card2b, err := model.Card(cid)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	if body2a == "" || (body2a != body2b) {
-		t.Errorf("expected body; got: %q", body2b)
+	if card2a.body == "" || (card2a.body != card2b.body) {
+		t.Errorf("expected card; got: %s", card2b)
 	}
-	counts, err = model.Counts()
+	counts, err = model.CardCounts()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -172,7 +172,7 @@ func Test03(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	_, err = model.CardBody(cid)
+	_, err = model.Card(cid)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -186,11 +186,11 @@ func Test04(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 	defer model.Close()
-	counts, err := model.Counts()
+	counts, err := model.CardCounts()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	checkCounts(t, &Counts{0, 0, 0}, counts)
+	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
 	cardnames, err := model.CardNamesVisible()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -211,11 +211,11 @@ func Test04(t *testing.T) {
 		if cid != i+1 {
 			t.Errorf("expected cid %d; got: %d", i+1, cid)
 		}
-		counts, err = model.Counts()
+		counts, err = model.CardCounts()
 		if err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
-		checkCounts(t, &Counts{i + 1, i + 1, 0}, counts)
+		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
 	cardnames, err = model.CardNamesVisible()
 	if err != nil {
@@ -225,9 +225,25 @@ func Test04(t *testing.T) {
 		t.Errorf("expected %d cardnames; got: %d", counts.Visible,
 			len(cardnames))
 	}
+	cardnames, err = model.CardNamesUnboxed()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if len(cardnames) != counts.Unboxed {
+		t.Errorf("expected %d cardnames; got: %d", counts.Unboxed,
+			len(cardnames))
+	}
+	cardnames, err = model.CardNamesHidden()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if len(cardnames) != counts.Hidden {
+		t.Errorf("expected %d cardnames; got: %d", counts.Hidden,
+			len(cardnames))
+	}
 }
 
-func checkCounts(t *testing.T, expected, actual *Counts) {
+func checkCardCounts(t *testing.T, expected, actual *CardCounts) {
 	if expected.Visible != actual.Visible {
 		t.Errorf("expected Visible %d; got: %d", expected.Visible,
 			actual.Visible)
