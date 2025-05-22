@@ -3,26 +3,40 @@
 
 package main
 
-func orderBy(by string) string {
-	switch by {
-	case NAME, "N": // NAME="Name" (from UI); "N" (from db Query)
-		return "ORDER BY LOWER(Name)"
-	case UPDATED, "U":
-		return "ORDER BY updated DESC"
-	case CREATED, "C":
-		return "ORDER BY created"
+type Oid int
+
+func NewOid(name string) Oid {
+	switch name {
+	case NAME:
+		return OID_NAME
+	case UPDATED:
+		return OID_UPDATED
+	case CREATED:
+		return OID_CREATED
+	}
+	return OID_IGNORE
+}
+
+func (me Oid) String() string {
+	switch me {
+	case OID_NAME:
+		return NAME
+	case OID_UPDATED:
+		return UPDATED
+	case OID_CREATED:
+		return CREATED
 	}
 	return "" // unordered
 }
 
-func orderById(by string) string {
-	switch by {
-	case NAME, "N":
-		return "N"
-	case UPDATED, "U":
-		return "U"
-	case CREATED, "C":
-		return "C"
+func (me Oid) Sql() string {
+	switch me {
+	case OID_NAME:
+		return "ORDER BY LOWER(Name)"
+	case OID_UPDATED:
+		return "ORDER BY updated DESC"
+	case OID_CREATED:
+		return "ORDER BY created"
 	}
-	return "I" // ignore (unordered)
+	return "" // unordered
 }

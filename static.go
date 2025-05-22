@@ -25,8 +25,13 @@ const (
 	INVALID_ID = -1
 
 	NAME    = "Name"
-	CREATED = "Created"
 	UPDATED = "Updated"
+	CREATED = "Created"
+
+	OID_IGNORE  Oid = 0
+	OID_NAME    Oid = 1
+	OID_UPDATED Oid = 2
+	OID_CREATED Oid = 3
 
 	SQL_BEGIN    = "BEGIN;"
 	SQL_COMMIT   = "COMMIT;"
@@ -62,14 +67,14 @@ const (
 	SQL_BOX_REMOVE_CARD = `DELETE FROM CardsInBox
 								WHERE cid = ? AND bid = ?;`
 	SQL_QUERY_GET = `SELECT Name, MatchText, InBoxes, NotInBoxes, Hidden,
-							ById FROM Queries WHERE qid = ?;`
+							Oid FROM Queries WHERE qid = ?;`
 	SQL_QUERY_INSERT = `INSERT INTO Queries (Name, MatchText, InBoxes,
-					NotInBoxes, Hidden, ById) VALUES (?, ?, ?, ?, ?, ?);`
+					NotInBoxes, Hidden, Oid) VALUES (?, ?, ?, ?, ?, ?);`
 	SQL_QUERY_UPDATE = `UPDATE Queries Set Name = ?, MatchText = ?,
-					InBoxes = ?, NotInBoxes = ?, Hidden = ?, ById = ?;`
+					InBoxes = ?, NotInBoxes = ?, Hidden = ?, Oid = ?;`
 	SQL_QUERY_DELETE = "DELETE FROM Queries WHERE qid = ?;"
 	SQL_QUERIES      = `SELECT qid, Name, MatchText, InBoxes, NotInBoxes,
-							Hidden, ById FROM Queries ORDER BY LOWER(Name)`
+							Hidden, Oid FROM Queries ORDER BY LOWER(Name)`
 )
 
 // var E100 = errors.New("E100: failed to get counts")

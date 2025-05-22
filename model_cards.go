@@ -75,16 +75,16 @@ func (me *Model) CardDelete(cid int) error {
 	return err
 }
 
-func (me *Model) CardNamesVisible(by string) ([]CardName, error) {
-	return me.cardNames(SQL_CARD_NAMES_VISIBLE, by)
+func (me *Model) CardNamesVisible(oid Oid) ([]CardName, error) {
+	return me.cardNames(SQL_CARD_NAMES_VISIBLE, oid)
 }
 
-func (me *Model) CardNamesUnboxed(by string) ([]CardName, error) {
-	return me.cardNames(SQL_CARD_NAMES_UNBOXED, by)
+func (me *Model) CardNamesUnboxed(oid Oid) ([]CardName, error) {
+	return me.cardNames(SQL_CARD_NAMES_UNBOXED, oid)
 }
 
-func (me *Model) CardNamesHidden(by string) ([]CardName, error) {
-	return me.cardNames(SQL_CARD_NAMES_HIDDEN, by)
+func (me *Model) CardNamesHidden(oid Oid) ([]CardName, error) {
+	return me.cardNames(SQL_CARD_NAMES_HIDDEN, oid)
 }
 
 func (me *Model) CardNamesForQid(qid int) ([]CardName, error) {
@@ -96,14 +96,16 @@ func (me *Model) CardNamesForQid(qid int) ([]CardName, error) {
 }
 
 func (me *Model) CardNamesForQuery(query Query) ([]CardName, error) {
-	// TODO compose the SQL and by strings and call me.cardNames()
-	return nil, nil // TODO
+	sql, args := query.Sql()
+	return me.cardNames(sql, query.oid, args...)
 }
 
-func (me *Model) cardNames(sql, by string) ([]CardName, error) {
+func (me *Model) cardNames(sql string, oid Oid, args ...any) ([]CardName,
+	error,
+) {
 	sql, _ = strings.CutSuffix(sql, ";")
-	sql += " " + orderBy(by) + ";"
-	rows, err := me.db.Query(sql)
+	sql += " " + oid.Sql() + ";"
+	rows, err := me.db.Query(sql, args...)
 	if err != nil {
 		return nil, err
 	}

@@ -148,7 +148,7 @@ func Test_New2(t *testing.T) {
 	counts, err := model.CardCounts()
 	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
-	cardnames, err := model.CardNamesVisible(NAME)
+	cardnames, err := model.CardNamesVisible(OID_NAME)
 	checkErr(t, err)
 	if len(cardnames) > 0 {
 		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
@@ -168,19 +168,19 @@ func Test_New2(t *testing.T) {
 		checkErr(t, err)
 		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
-	cardnames, err = model.CardNamesVisible(UPDATED)
+	cardnames, err = model.CardNamesVisible(OID_UPDATED)
 	checkErr(t, err)
 	if len(cardnames) != counts.Visible {
 		t.Errorf("expected %d cardnames; got: %d", counts.Visible,
 			len(cardnames))
 	}
-	cardnames, err = model.CardNamesUnboxed(CREATED)
+	cardnames, err = model.CardNamesUnboxed(OID_CREATED)
 	checkErr(t, err)
 	if len(cardnames) != counts.Unboxed {
 		t.Errorf("expected %d cardnames; got: %d", counts.Unboxed,
 			len(cardnames))
 	}
-	cardnames, err = model.CardNamesHidden(NAME)
+	cardnames, err = model.CardNamesHidden(OID_NAME)
 	checkErr(t, err)
 	if len(cardnames) != counts.Hidden {
 		t.Errorf("expected %d cardnames; got: %d", counts.Hidden,
@@ -258,8 +258,8 @@ func Test_New2(t *testing.T) {
 	}
 }
 
-func Test_Query(t *testing.T) {
-	filename := os.TempDir() + "/query.cix"
+func Test_Query1(t *testing.T) {
+	filename := os.TempDir() + "/query1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
 	checkErr(t, err)
@@ -267,7 +267,7 @@ func Test_Query(t *testing.T) {
 	counts, err := model.CardCounts()
 	checkErr(t, err)
 	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
-	cardnames, err := model.CardNamesVisible(NAME)
+	cardnames, err := model.CardNamesVisible(OID_NAME)
 	checkErr(t, err)
 	if len(cardnames) > 0 {
 		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
@@ -307,34 +307,34 @@ func Test_Query(t *testing.T) {
 		t.Errorf("expected 2 boxes; got: %d", len(boxes))
 	}
 	estrings := []string{}
-	query := NewQuery("Q1", "", []int{bid2}, []int{}, false, NAME)
+	query := NewQuery("Q1", "", []int{bid2}, []int{}, false, OID_NAME)
 	qid1, err := model.QueryAdd(query)
 	checkErr(t, err)
 	query, err = model.Query(qid1)
 	checkErr(t, err)
-	expected := `Query#1 "Q1" match="" in=[2] not-in=[] hidden=false by=N`
+	expected := `Query#1 "Q1" match="" in=[2] not-in=[] hidden=false oid=1(Name)`
 	estrings = append(estrings, expected)
 	if query.String() != expected {
 		t.Errorf("expected query %q; got: %q", expected, query)
 	}
 
-	query = NewQuery("", "Red", []int{}, []int{bid1, bid2}, false, NAME)
+	query = NewQuery("", "Red", []int{}, []int{bid1, bid2}, false, OID_NAME)
 	qid2, err := model.QueryAdd(query)
 	checkErr(t, err)
 	query, err = model.Query(qid2)
 	checkErr(t, err)
-	expected = `Query#2 "Red" match="Red" in=[] not-in=[1,2] hidden=false by=N`
+	expected = `Query#2 "Red" match="Red" in=[] not-in=[1,2] hidden=false oid=1(Name)`
 	estrings = append(estrings, expected)
 	if query.String() != expected {
 		t.Errorf("expected query %q; got: %q", expected, query)
 	}
 
-	query = NewQuery("", "", []int{}, []int{}, true, UPDATED)
+	query = NewQuery("", "", []int{}, []int{}, true, OID_UPDATED)
 	qid3, err := model.QueryAdd(query)
 	checkErr(t, err)
 	query, err = model.Query(qid3)
 	checkErr(t, err)
-	expected = `Query#3 "Query #3" match="" in=[] not-in=[] hidden=true by=U`
+	expected = `Query#3 "Query #3" match="" in=[] not-in=[] hidden=true oid=2(Updated)`
 	estrings = append(estrings, expected)
 	if query.String() != expected {
 		t.Errorf("expected query %q; got: %q", expected, query)
@@ -354,6 +354,46 @@ func Test_Query(t *testing.T) {
 	}
 
 	// TODO perform & test queries
+}
+
+func Test_Query2(t *testing.T) {
+	bid1 := 5
+	bid2 := 8
+	query := NewQuery("Q1", "", []int{bid2}, []int{}, false, OID_NAME)
+	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
+		"cid IN (SELECT cid FROM CardsInBox WHERE bid IN (8)) " +
+		"ORDER BY LOWER(Name);"
+	sql, args := query.Sql()
+	if sql != expected {
+		t.Errorf("expected query %q; got: %q", expected, sql)
+	}
+	if args != nil {
+		t.Error("expected no args")
+	}
+	query = NewQuery("", "Red", []int{}, []int{bid1, bid2}, false,
+		OID_NAME)
+	expected = "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
+		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) AND " +
+		"cid NOT IN (SELECT cid FROM CardsInBox WHERE bid IN (5,8)) " +
+		"ORDER BY LOWER(Name);"
+	sql, args = query.Sql()
+	if sql != expected {
+		t.Errorf("expected query %q; got: %q", expected, sql)
+	}
+	if len(args) != 1 {
+		t.Error("expected 1 arg")
+	}
+	// TODO check arg is "Red"
+	query = NewQuery("", "", []int{}, []int{}, true, OID_UPDATED)
+	expected = "SELECT cid, Name FROM Cards WHERE hidden = TRUE " +
+		"ORDER BY updated DESC;"
+	sql, args = query.Sql()
+	if sql != expected {
+		t.Errorf("expected query %q; got: %q", expected, sql)
+	}
+	if args != nil {
+		t.Error("expected no args")
+	}
 }
 
 func checkErr(t *testing.T, err error) {

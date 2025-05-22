@@ -1,16 +1,16 @@
 cardindex.go
 model.go
 model_config.go
-model_cards.go # TODO implement CardNamesForQuery
+model_cards.go
 model_boxes.go
 model_queries.go
-model_types.go
+model_types.go # TODO implement Query.Sql
 model_orderby.go
 db.go
 misc.go
 static.go
 
-cardindex_test.go # TODO test CardNamesForQuery
+cardindex_test.go # TODO test CardNamesForQuery + "Red"
 
 sql/prepare.sql
 sql/create.sql

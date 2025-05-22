@@ -8,7 +8,7 @@ func (me *Model) Query(qid int) (Query, error) {
 	var inboxes, notinboxes string
 	row := me.db.QueryRow(SQL_QUERY_GET, qid)
 	err := row.Scan(&query.name, &query.matchText, &inboxes, &notinboxes,
-		&query.hidden, &query.by)
+		&query.hidden, &query.oid)
 	query.inBoxes = bidsForStr(inboxes)
 	query.notInBoxes = bidsForStr(notinboxes)
 	return query, err
@@ -17,7 +17,7 @@ func (me *Model) Query(qid int) (Query, error) {
 func (me *Model) QueryAdd(query Query) (int, error) {
 	reply, err := me.db.Exec(SQL_QUERY_INSERT, query.name, query.matchText,
 		strForBids(query.inBoxes), strForBids(query.notInBoxes),
-		query.hidden, orderById(query.by))
+		query.hidden, query.oid)
 	if err != nil {
 		return INVALID_ID, err
 	}
@@ -31,7 +31,7 @@ func (me *Model) QueryAdd(query Query) (int, error) {
 func (me *Model) QueryEdit(query Query) error {
 	_, err := me.db.Exec(SQL_QUERY_UPDATE, query.qid, query.name,
 		query.matchText, strForBids(query.inBoxes),
-		strForBids(query.notInBoxes), query.hidden, orderById(query.by))
+		strForBids(query.notInBoxes), query.hidden, query.oid)
 	return err
 }
 
@@ -51,7 +51,7 @@ func (me *Model) Queries() ([]Query, error) {
 		var query Query
 		var inboxes, notinboxes string
 		if err = rows.Scan(&query.qid, &query.name, &query.matchText,
-			&inboxes, &notinboxes, &query.hidden, &query.by); err != nil {
+			&inboxes, &notinboxes, &query.hidden, &query.oid); err != nil {
 			return nil, err
 		}
 		query.inBoxes = bidsForStr(inboxes)

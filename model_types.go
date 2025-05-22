@@ -54,15 +54,14 @@ type Query struct {
 	inBoxes    []int
 	notInBoxes []int
 	hidden     bool
-	by         string
+	oid        Oid
 }
 
 func NewQuery(name, matchText string, inBoxes, notInBoxes []int,
-	hidden bool, by string,
+	hidden bool, oid Oid,
 ) Query {
 	return Query{
-		INVALID_ID, name, matchText, inBoxes, notInBoxes,
-		hidden, by,
+		INVALID_ID, name, matchText, inBoxes, notInBoxes, hidden, oid,
 	}
 }
 
@@ -70,6 +69,38 @@ func (me Query) String() string { // for debugging
 	ins := strForBids(me.inBoxes)
 	notins := strForBids(me.notInBoxes)
 	return fmt.Sprintf(
-		"Query#%d %q match=%q in=[%s] not-in=[%s] hidden=%t by=%s", me.qid,
-		me.name, me.matchText, ins, notins, me.hidden, me.by)
+		"Query#%d %q match=%q in=[%s] not-in=[%s] hidden=%t oid=%d(%s)",
+		me.qid, me.name, me.matchText, ins, notins, me.hidden, me.oid,
+		me.oid)
+}
+
+func (me Query) Sql() (string, []any) {
+	args := []any{}
+	sql := "SELECT cid, Name FROM Cards WHERE"
+	if me.hidden {
+		sql += " hidden = TRUE"
+	} else {
+		sql += " hidden = FALSE"
+	}
+	if me.matchText != "" {
+		sql += " AND cid IN (SELECT ROWID FROM vt_fts_cards(?))"
+		args = append(args, me.matchText)
+	}
+	if len(me.inBoxes) > 0 {
+		boxes := strForBids(me.inBoxes)
+		sql += " AND cid IN (SELECT cid FROM CardsInBox WHERE bid IN (" +
+			boxes + "))"
+	}
+	if len(me.notInBoxes) > 0 {
+		boxes := strForBids(me.notInBoxes)
+		sql += " AND cid NOT IN (SELECT cid FROM CardsInBox WHERE bid " +
+			"IN (" + boxes + "))"
+	}
+	if me.oid != OID_IGNORE {
+		sql += " " + me.oid.Sql() + ";"
+	}
+	if len(args) > 0 {
+		return sql, args
+	}
+	return sql, nil
 }
