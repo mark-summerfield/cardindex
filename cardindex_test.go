@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-func Test01(t *testing.T) {
-	filename := os.TempDir() + "/t1.cix"
+func Test_Empty(t *testing.T) {
+	filename := os.TempDir() + "/empty.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
 	checkErr(t, err)
@@ -42,7 +42,7 @@ func Test01(t *testing.T) {
 	}
 }
 
-func Test02(t *testing.T) {
+func Test_Cix(t *testing.T) {
 	model, err := NewModel("eg/pcw.cix")
 	checkErr(t, err)
 	defer model.Close()
@@ -58,8 +58,8 @@ func Test02(t *testing.T) {
 	}
 }
 
-func Test03(t *testing.T) {
-	filename := os.TempDir() + "/t3.cix"
+func Test_New1(t *testing.T) {
+	filename := os.TempDir() + "/new1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
 	checkErr(t, err)
@@ -139,8 +139,8 @@ func Test03(t *testing.T) {
 	}
 }
 
-func Test04(t *testing.T) {
-	filename := os.TempDir() + "/t3.cix"
+func Test_New2(t *testing.T) {
+	filename := os.TempDir() + "/new2.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
 	checkErr(t, err)
@@ -256,6 +256,104 @@ func Test04(t *testing.T) {
 	if len(boxes) > 0 {
 		t.Errorf("expected no boxes; got: %d", len(boxes))
 	}
+}
+
+func Test_Query(t *testing.T) {
+	filename := os.TempDir() + "/query.cix"
+	os.Remove(filename)
+	model, err := NewModel(filename)
+	checkErr(t, err)
+	defer model.Close()
+	counts, err := model.CardCounts()
+	checkErr(t, err)
+	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
+	cardnames, err := model.CardNamesVisible(NAME)
+	checkErr(t, err)
+	if len(cardnames) > 0 {
+		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
+	}
+	for i, body := range []string{
+		"A Title\nThe first line. Red",
+		"Another Title\nAnother first line. Green",
+		"Yet another title\nAnd another first line. Blue",
+		"A title with no first line. Instead two sentences. Red",
+	} {
+		cid, err := model.CardAdd(body)
+		checkErr(t, err)
+		if cid != i+1 {
+			t.Errorf("expected cid %d; got: %d", i+1, cid)
+		}
+		counts, err = model.CardCounts()
+		checkErr(t, err)
+		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
+	}
+	boxes, err := model.Boxes()
+	checkErr(t, err)
+	if len(boxes) > 0 {
+		t.Errorf("expected no boxes; got: %d", len(boxes))
+	}
+	bid1, err := model.BoxAdd("Special Box")
+	checkErr(t, err)
+	boxes, err = model.Boxes()
+	checkErr(t, err)
+	if len(boxes) != 1 {
+		t.Errorf("expected 1 box; got: %d", len(boxes))
+	}
+	bid2, err := model.BoxAdd("Ordinary Box")
+	checkErr(t, err)
+	boxes, err = model.Boxes()
+	checkErr(t, err)
+	if len(boxes) != 2 {
+		t.Errorf("expected 2 boxes; got: %d", len(boxes))
+	}
+	estrings := []string{}
+	query := NewQuery("Q1", "", []int{bid2}, []int{}, false, NAME)
+	qid1, err := model.QueryAdd(query)
+	checkErr(t, err)
+	query, err = model.Query(qid1)
+	checkErr(t, err)
+	expected := `Query#1 "Q1" match="" in=[2] not-in=[] hidden=false by=N`
+	estrings = append(estrings, expected)
+	if query.String() != expected {
+		t.Errorf("expected query %q; got: %q", expected, query)
+	}
+
+	query = NewQuery("", "Red", []int{}, []int{bid1, bid2}, false, NAME)
+	qid2, err := model.QueryAdd(query)
+	checkErr(t, err)
+	query, err = model.Query(qid2)
+	checkErr(t, err)
+	expected = `Query#2 "Red" match="Red" in=[] not-in=[1,2] hidden=false by=N`
+	estrings = append(estrings, expected)
+	if query.String() != expected {
+		t.Errorf("expected query %q; got: %q", expected, query)
+	}
+
+	query = NewQuery("", "", []int{}, []int{}, true, UPDATED)
+	qid3, err := model.QueryAdd(query)
+	checkErr(t, err)
+	query, err = model.Query(qid3)
+	checkErr(t, err)
+	expected = `Query#3 "Query #3" match="" in=[] not-in=[] hidden=true by=U`
+	estrings = append(estrings, expected)
+	if query.String() != expected {
+		t.Errorf("expected query %q; got: %q", expected, query)
+	}
+
+	queries, err := model.Queries()
+	checkErr(t, err)
+	for _, query := range queries {
+		s := query.String()
+		for _, estring := range estrings {
+			if s[:15] == estring[:15] {
+				if s != estring {
+					t.Errorf("expected query %q; got: %q", estring, s)
+				}
+			}
+		}
+	}
+
+	// TODO perform & test queries
 }
 
 func checkErr(t *testing.T, err error) {

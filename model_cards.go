@@ -87,6 +87,19 @@ func (me *Model) CardNamesHidden(by string) ([]CardName, error) {
 	return me.cardNames(SQL_CARD_NAMES_HIDDEN, by)
 }
 
+func (me *Model) CardNamesForQid(qid int) ([]CardName, error) {
+	if query, err := me.Query(qid); err == nil {
+		return me.CardNamesForQuery(query)
+	} else {
+		return nil, err
+	}
+}
+
+func (me *Model) CardNamesForQuery(query Query) ([]CardName, error) {
+	// TODO compose the SQL and by strings and call me.cardNames()
+	return nil, nil // TODO
+}
+
 func (me *Model) cardNames(sql, by string) ([]CardName, error) {
 	sql, _ = strings.CutSuffix(sql, ";")
 	sql += " " + orderBy(by) + ";"

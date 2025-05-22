@@ -3,16 +3,26 @@
 
 package main
 
-import "fmt"
-
 func orderBy(by string) string {
 	switch by {
-	case NAME:
+	case NAME, "N": // NAME="Name" (from UI); "N" (from db Query)
 		return "ORDER BY LOWER(Name)"
-	case UPDATED:
+	case UPDATED, "U":
 		return "ORDER BY updated DESC"
-	case CREATED:
+	case CREATED, "C":
 		return "ORDER BY created"
 	}
-	panic(fmt.Sprintf("invalid order by: %q", by))
+	return "" // unordered
+}
+
+func orderById(by string) string {
+	switch by {
+	case NAME, "N":
+		return "N"
+	case UPDATED, "U":
+		return "U"
+	case CREATED, "C":
+		return "C"
+	}
+	return "I" // ignore (unordered)
 }

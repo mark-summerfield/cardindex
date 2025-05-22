@@ -61,6 +61,15 @@ const (
 	SQL_BOX_ADD_CARD    = "INSERT INTO CardsInBox (cid, bid) VALUES (?, ?);"
 	SQL_BOX_REMOVE_CARD = `DELETE FROM CardsInBox
 								WHERE cid = ? AND bid = ?;`
+	SQL_QUERY_GET = `SELECT Name, MatchText, InBoxes, NotInBoxes, Hidden,
+							ById FROM Queries WHERE qid = ?;`
+	SQL_QUERY_INSERT = `INSERT INTO Queries (Name, MatchText, InBoxes,
+					NotInBoxes, Hidden, ById) VALUES (?, ?, ?, ?, ?, ?);`
+	SQL_QUERY_UPDATE = `UPDATE Queries Set Name = ?, MatchText = ?,
+					InBoxes = ?, NotInBoxes = ?, Hidden = ?, ById = ?;`
+	SQL_QUERY_DELETE = "DELETE FROM Queries WHERE qid = ?;"
+	SQL_QUERIES      = `SELECT qid, Name, MatchText, InBoxes, NotInBoxes,
+							Hidden, ById FROM Queries ORDER BY LOWER(Name)`
 )
 
 // var E100 = errors.New("E100: failed to get counts")

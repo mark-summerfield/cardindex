@@ -52,9 +52,11 @@ CREATE TABLE Queries ( -- See default queries INSERTed below
     InBoxes TEXT, -- Comma-separated list of bids
     NotInBoxes TEXT, -- Comma-separated list of bids
     Hidden BOOL DEFAULT FALSE NOT NULL,
-    OrderBy TEXT DEFAULT 'updated DESC', -- Default most to least recent
+    ById TEXT DEFAULT 'I', -- Default ignore
 
-    CHECK(Hidden IN (FALSE, TRUE))
+    CHECK(Hidden IN (FALSE, TRUE)),
+    -- I→ignore N→Name U→Updated C→Created
+    CHECK(ById IN ('I', 'N', 'U', 'C'))
 );
 
 -- e.g., for MDI window sizes and positions
