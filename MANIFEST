@@ -8,7 +8,6 @@ model_search.go
 model_types.go
 model_orderby.go
 db.go
-misc.go
 static.go
 
 cardindex_test.go
@@ -27,15 +26,17 @@ st.sh
 # Three MDI window types:
 #
 # Search        (X)
-# ... use a vertical splitter, Query at the top List of cards below ...
+# ... use a vertical splitter, Search at the top List of cards below ...
 # ... details of search|list of matching cards if any ...
 # 0 cards match
+# [Add to Box…] # pops up dialog where user can enter new box name or
+#		# choose an existing box to add all the matched cards to
+#		# obviously disable if 0 cards match
 #
 # Name (of Card)  (X)
 # Body
 # ...
 # [Boxes          v] # boxes this card belongs to
-# [Linked Cards   v] # cards this card is linked to
 #
 # Box           (X)
 # Name
