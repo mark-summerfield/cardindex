@@ -4,8 +4,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -98,18 +96,17 @@ func (me *Model) CardNamesForSid(sid int) ([]CardName, error) {
 }
 
 func (me *Model) CardNamesForSearch(search Search) ([]CardName, error) {
-	sql, args := search.Sql(false)
-	return me.cardNames(sql, search.oid, args...)
+	query, args := search.Query(false)
+	return me.cardNames(query, search.oid, args...)
 }
 
-func (me *Model) cardNames(sql string, oid Oid, args ...any) ([]CardName,
+func (me *Model) cardNames(query string, oid Oid, args ...any) ([]CardName,
 	error,
 ) {
-	sql, _ = strings.CutSuffix(sql, ";")
-	sql += " " + oid.Sql() + ";"
-	rows, err := me.db.Query(sql, args...)
+	query, _ = strings.CutSuffix(query, ";")
+	query += " " + oid.Query() + ";"
+	rows, err := me.db.Query(query, args...)
 	if err != nil {
-		fmt.Printf("**** %T %v %t\n", err, err, errors.Is(err, sql.ErrNoRows))
 		return nil, err
 	}
 	defer rows.Close()

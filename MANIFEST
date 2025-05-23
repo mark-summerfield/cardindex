@@ -29,7 +29,7 @@ st.sh
 # ... use a vertical splitter, Search at the top List of cards below ...
 # ... details of search|list of matching cards if any ...
 # 0 cards match
-# [New] [Save] [Delete] [Add to Box…]
+# # Context Menu: New | Save | Delete | Add to Box…
 #   # Add to Box pops up dialog where user can enter new box name or 
 #   # choose an existing box to add all the matched cards to obviously
 #   # disable if 0 cards match
@@ -38,14 +38,14 @@ st.sh
 # Body
 # ...
 # [Boxes          v] # boxes this card belongs to
-# [New] [Save] [Delete] [Add to Box…] [Remove from Box…]
 # |__Created__| |__Updated__|
+# # Context Menu: New | Save | Delete | Add to Box… | Remove from Box…
 #
 # Box           (X) # list of boxes
 # Name1
 # Name2
 #  :
-# [New…] [Delete]
+# # Context Menu: New… | Delete
 
 # NOTE Markup is CommonMark
 

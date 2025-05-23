@@ -29,7 +29,7 @@ func (me Oid) String() string {
 	return "Unordered"
 }
 
-func (me Oid) Sql() string {
+func (me Oid) Query() string {
 	switch me {
 	case OID_NAME:
 		return "ORDER BY LOWER(Name)"

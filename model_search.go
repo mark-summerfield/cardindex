@@ -21,24 +21,24 @@ func (me Search) String() string { // for debugging
 		me.sid, me.searchText, me.hidden, me.oid, me.oid)
 }
 
-func (me Search) Sql(orderby bool) (string, []any) {
+func (me Search) Query(orderby bool) (string, []any) {
 	args := []any{}
-	sql := "SELECT cid, Name FROM Cards WHERE hidden = "
+	query := "SELECT cid, Name FROM Cards WHERE hidden = "
 	if me.hidden {
-		sql += "TRUE"
+		query += "TRUE"
 	} else {
-		sql += "FALSE"
+		query += "FALSE"
 	}
 	if me.searchText != "" {
-		sql += " AND cid IN (SELECT ROWID FROM vt_fts_cards(?))"
+		query += " AND cid IN (SELECT ROWID FROM vt_fts_cards(?))"
 		args = append(args, me.searchText)
 	}
 	if orderby && me.oid != OID_IGNORE {
-		sql += " " + me.oid.Sql()
+		query += " " + me.oid.Query()
 	}
-	sql += ";"
+	query += ";"
 	if len(args) > 0 {
-		return sql, args
+		return query, args
 	}
-	return sql, nil
+	return query, nil
 }

@@ -260,7 +260,7 @@ func Test_New2(t *testing.T) {
 }
 
 func Test_Search1(t *testing.T) {
-	filename := os.TempDir() + "/query1.cix"
+	filename := os.TempDir() + "/search1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
 	checkErr(t, err)
@@ -387,9 +387,9 @@ func Test_Search2(t *testing.T) {
 	search := NewSearch("", false, OID_NAME)
 	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE " +
 		"ORDER BY LOWER(Name);"
-	sql, args := search.Sql(true)
-	if sql != expected {
-		t.Errorf("expected search %q; got: %q", expected, sql)
+	query, args := search.Query(true)
+	if query != expected {
+		t.Errorf("expected search %q; got: %q", expected, query)
 	}
 	if args != nil {
 		t.Error("expected no args")
@@ -397,9 +397,9 @@ func Test_Search2(t *testing.T) {
 	search = NewSearch("Red", false, OID_NAME)
 	expected = "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
 		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) ORDER BY LOWER(Name);"
-	sql, args = search.Sql(true)
-	if sql != expected {
-		t.Errorf("expected search %q; got: %q", expected, sql)
+	query, args = search.Query(true)
+	if query != expected {
+		t.Errorf("expected search %q; got: %q", expected, query)
 	}
 	if len(args) != 1 {
 		t.Error("expected 1 arg")
@@ -413,9 +413,9 @@ func Test_Search2(t *testing.T) {
 	search = NewSearch("", true, OID_UPDATED)
 	expected = "SELECT cid, Name FROM Cards WHERE hidden = TRUE " +
 		"ORDER BY updated DESC;"
-	sql, args = search.Sql(true)
-	if sql != expected {
-		t.Errorf("expected search %q; got: %q", expected, sql)
+	query, args = search.Query(true)
+	if query != expected {
+		t.Errorf("expected search %q; got: %q", expected, query)
 	}
 	if args != nil {
 		t.Error("expected no args")
@@ -451,12 +451,12 @@ func Test_Search3(t *testing.T) {
 		checkErr(t, err)
 		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
 	}
-	search := NewSearch("cafe", false, OID_UPDATED)
+	search := NewSearch("cafe", false, OID_NAME)
 	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
-		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) ORDER BY updated DESC;"
-	sql, args := search.Sql(true)
-	if sql != expected {
-		t.Errorf("expected search %q; got: %q", expected, sql)
+		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) ORDER BY LOWER(Name);"
+	query, args := search.Query(true)
+	if query != expected {
+		t.Errorf("expected search %q; got: %q", expected, query)
 	}
 	if len(args) != 1 {
 		t.Error("expected 1 arg")
@@ -467,10 +467,27 @@ func Test_Search3(t *testing.T) {
 			t.Error("expected arg \"cafe\"")
 		}
 	}
-	if cardnames, err := model.CardNamesForSid(search.sid); err != nil {
+	if cardnames, err := model.CardNamesForSearch(search); err != nil {
 		t.Errorf("unexpected error %T %s", err, err)
 	} else if len(cardnames) > 0 {
 		t.Errorf("unexpected search result: %v", cardnames)
+	}
+	cafes := []string{"The Blue café", "The lost cafe", "The red Cafe"}
+	for _, body := range cafes {
+		_, err := model.CardAdd(body)
+		checkErr(t, err)
+	}
+	if cardnames, err := model.CardNamesForSearch(search); err != nil {
+		t.Errorf("unexpected error %T %s", err, err)
+	} else if len(cardnames) != 3 {
+		t.Errorf("expected 3 search results; got: %d", len(cardnames))
+	} else {
+		for i, cardname := range cardnames {
+			if !(i+5 == cardname.cid && cafes[i] == cardname.name) {
+				t.Errorf("expected cafe %q; got %q", cafes[i],
+					cardname.name)
+			}
+		}
 	}
 }
 

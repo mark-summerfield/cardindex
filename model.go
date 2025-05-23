@@ -38,18 +38,18 @@ func NewModel(filename string) (*Model, error) {
 func (me *Model) Close() error {
 	var err error
 	if me.db != nil {
-		sql := SQL_BEGIN + SQL_CONFIG_UPDATE
+		query := SQL_BEGIN + SQL_CONFIG_UPDATE
 		n := 0
 		row := me.db.QueryRow(SQL_CONFIG_GET_N)
 		if err = row.Scan(&n); err == nil {
 			if n >= MAX_OPENS {
-				sql += SQL_CONFIG_ZERO_N
+				query += SQL_CONFIG_ZERO_N
 			}
-			sql += SQL_COMMIT
+			query += SQL_COMMIT
 			if n >= MAX_OPENS {
-				sql += SQL_OPTIMIZE
+				query += SQL_OPTIMIZE
 			}
-			_, err = me.db.Exec(sql)
+			_, err = me.db.Exec(query)
 		}
 		err = errors.Join(err, me.db.Close())
 		me.db = nil
