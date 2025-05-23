@@ -422,6 +422,58 @@ func Test_Search2(t *testing.T) {
 	}
 }
 
+func Test_Search3(t *testing.T) {
+	filename := os.TempDir() + "/search3.cix"
+	os.Remove(filename)
+	model, err := NewModel(filename)
+	checkErr(t, err)
+	defer model.Close()
+	counts, err := model.CardCounts()
+	checkErr(t, err)
+	checkCardCounts(t, &CardCounts{0, 0, 0}, &counts)
+	cardnames, err := model.CardNamesVisible(OID_NAME)
+	checkErr(t, err)
+	if len(cardnames) > 0 {
+		t.Errorf("expected 0 cardnames; got: %d", len(cardnames))
+	}
+	for i, body := range []string{
+		"A Title\nThe first line.",
+		"Another Title\nAnother first line.",
+		"Yet another title\nAnd another first line.",
+		"A title with no first line. Instead two sentences.",
+	} {
+		cid, err := model.CardAdd(body)
+		checkErr(t, err)
+		if cid != i+1 {
+			t.Errorf("expected cid %d; got: %d", i+1, cid)
+		}
+		counts, err = model.CardCounts()
+		checkErr(t, err)
+		checkCardCounts(t, &CardCounts{i + 1, i + 1, 0}, &counts)
+	}
+	search := NewSearch("cafe", false, OID_UPDATED)
+	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
+		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) ORDER BY updated DESC;"
+	sql, args := search.Sql(true)
+	if sql != expected {
+		t.Errorf("expected search %q; got: %q", expected, sql)
+	}
+	if len(args) != 1 {
+		t.Error("expected 1 arg")
+	} else {
+		if searchText, ok := args[0].(string); !ok {
+			t.Errorf("expected 1 string; got %T %v", args[0], args[0])
+		} else if searchText != "cafe" {
+			t.Error("expected arg \"cafe\"")
+		}
+	}
+	if cardnames, err := model.CardNamesForSid(search.sid); err != nil {
+		t.Errorf("unexpected error %T %s", err, err)
+	} else if len(cardnames) > 0 {
+		t.Errorf("unexpected search result: %v", cardnames)
+	}
+}
+
 func checkErr(t *testing.T, err error) {
 	if err != nil {
 		_, _, lino, ok := runtime.Caller(1)

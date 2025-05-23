@@ -4,6 +4,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -107,6 +109,7 @@ func (me *Model) cardNames(sql string, oid Oid, args ...any) ([]CardName,
 	sql += " " + oid.Sql() + ";"
 	rows, err := me.db.Query(sql, args...)
 	if err != nil {
+		fmt.Printf("**** %T %v %t\n", err, err, errors.Is(err, sql.ErrNoRows))
 		return nil, err
 	}
 	defer rows.Close()
