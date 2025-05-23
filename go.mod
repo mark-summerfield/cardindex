@@ -40,8 +40,6 @@ require github.com/mark-summerfield/ufile v1.0.0
 
 replace github.com/mark-summerfield/ufunc => /home/mark/app/golib/ufunc
 
-require github.com/mark-summerfield/ufunc v1.0.0
-
 replace github.com/mark-summerfield/unum => /home/mark/app/golib/unum
 
 //require github.com/mark-summerfield/unum v1.0.0
@@ -63,7 +61,6 @@ require modernc.org/sqlite v1.37.0
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/mark-summerfield/unum v1.0.0 // indirect
 	github.com/mark-summerfield/utext v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect

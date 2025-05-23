@@ -6,6 +6,7 @@ package main
 import (
 	"os"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -258,7 +259,7 @@ func Test_New2(t *testing.T) {
 	}
 }
 
-func Test_Query1(t *testing.T) {
+func Test_Search1(t *testing.T) {
 	filename := os.TempDir() + "/query1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
@@ -276,7 +277,7 @@ func Test_Query1(t *testing.T) {
 		"A Title\nThe first line. Red",
 		"Another Title\nAnother first line. Green",
 		"Yet another title\nAnd another first line. Blue",
-		"A title with no first line. Instead two sentences. Red",
+		"A title with no first line. Instead two sentences. red",
 	} {
 		cid, err := model.CardAdd(body)
 		checkErr(t, err)
@@ -292,104 +293,129 @@ func Test_Query1(t *testing.T) {
 	if len(boxes) > 0 {
 		t.Errorf("expected no boxes; got: %d", len(boxes))
 	}
-	bid1, err := model.BoxAdd("Special Box")
+	_, err = model.BoxAdd("Special Box")
 	checkErr(t, err)
 	boxes, err = model.Boxes()
 	checkErr(t, err)
 	if len(boxes) != 1 {
 		t.Errorf("expected 1 box; got: %d", len(boxes))
 	}
-	bid2, err := model.BoxAdd("Ordinary Box")
+	_, err = model.BoxAdd("Ordinary Box")
 	checkErr(t, err)
 	boxes, err = model.Boxes()
 	checkErr(t, err)
 	if len(boxes) != 2 {
 		t.Errorf("expected 2 boxes; got: %d", len(boxes))
 	}
+
 	estrings := []string{}
-	query := NewQuery("Q1", "", []int{bid2}, []int{}, false, OID_NAME)
-	qid1, err := model.QueryAdd(query)
+	search := NewSearch("", false, OID_NAME)
+	sid1, err := model.SearchAdd(search)
 	checkErr(t, err)
-	query, err = model.Query(qid1)
+	search, err = model.Search(sid1)
 	checkErr(t, err)
-	expected := `Query#1 "Q1" match="" in=[2] not-in=[] hidden=false oid=1(Name)`
+	expected := `Search#1 searchText="" hidden=false oid=1(Name)`
 	estrings = append(estrings, expected)
-	if query.String() != expected {
-		t.Errorf("expected query %q; got: %q", expected, query)
+	if search.String() != expected {
+		t.Errorf("expected search %q; got: %q", expected, search)
 	}
 
-	query = NewQuery("", "Red", []int{}, []int{bid1, bid2}, false, OID_NAME)
-	qid2, err := model.QueryAdd(query)
+	search = NewSearch("Red", false, OID_NAME)
+	sid2, err := model.SearchAdd(search)
 	checkErr(t, err)
-	query, err = model.Query(qid2)
+	search, err = model.Search(sid2)
 	checkErr(t, err)
-	expected = `Query#2 "Red" match="Red" in=[] not-in=[1,2] hidden=false oid=1(Name)`
+	expected = `Search#2 searchText="Red" hidden=false oid=1(Name)`
 	estrings = append(estrings, expected)
-	if query.String() != expected {
-		t.Errorf("expected query %q; got: %q", expected, query)
+	if search.String() != expected {
+		t.Errorf("expected search %q; got: %q", expected, search)
 	}
 
-	query = NewQuery("", "", []int{}, []int{}, true, OID_UPDATED)
-	qid3, err := model.QueryAdd(query)
+	search = NewSearch("", true, OID_UPDATED)
+	sid3, err := model.SearchAdd(search)
 	checkErr(t, err)
-	query, err = model.Query(qid3)
+	search, err = model.Search(sid3)
 	checkErr(t, err)
-	expected = `Query#3 "Query #3" match="" in=[] not-in=[] hidden=true oid=2(Updated)`
+	expected = `Search#3 searchText="" hidden=true oid=2(Updated)`
 	estrings = append(estrings, expected)
-	if query.String() != expected {
-		t.Errorf("expected query %q; got: %q", expected, query)
+	if search.String() != expected {
+		t.Errorf("expected search %q; got: %q", expected, search)
 	}
 
-	queries, err := model.Queries()
+	searches, err := model.Searches()
 	checkErr(t, err)
-	for _, query := range queries {
-		s := query.String()
+	for _, search := range searches {
+		s := search.String()
+		n := 0
 		for _, estring := range estrings {
-			if s[:15] == estring[:15] {
-				if s != estring {
-					t.Errorf("expected query %q; got: %q", estring, s)
-				}
+			if s == estring {
+				n++
 			}
+		}
+		if n != 1 {
+			t.Errorf("expected search %q", s)
 		}
 	}
 
-	// TODO perform & test queries
+	expectedCardNames := [][]CardName{
+		{
+			{1, "A Title"},
+			{4, "A title with no first line."},
+			{2, "Another Title"},
+			{3, "Yet another title"},
+		},
+		{
+			{1, "A Title"},
+			{4, "A title with no first line."},
+		},
+		{},
+	}
+	for i, sid := range []int{sid1, sid2, sid3} {
+		if cardnames, err := model.CardNamesForSid(sid); err != nil {
+			t.Errorf("unexpected error %s", err)
+		} else {
+			expectednames := expectedCardNames[i]
+			if !slices.Equal(cardnames, expectednames) {
+				t.Errorf("expected search results #%d of\n%v; got:\n%v",
+					i, expectednames, cardnames)
+			}
+		}
+	}
 }
 
-func Test_Query2(t *testing.T) {
-	bid1 := 5
-	bid2 := 8
-	query := NewQuery("Q1", "", []int{bid2}, []int{}, false, OID_NAME)
-	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
-		"cid IN (SELECT cid FROM CardsInBox WHERE bid IN (8)) " +
+func Test_Search2(t *testing.T) {
+	search := NewSearch("", false, OID_NAME)
+	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE " +
 		"ORDER BY LOWER(Name);"
-	sql, args := query.Sql()
+	sql, args := search.Sql(true)
 	if sql != expected {
-		t.Errorf("expected query %q; got: %q", expected, sql)
+		t.Errorf("expected search %q; got: %q", expected, sql)
 	}
 	if args != nil {
 		t.Error("expected no args")
 	}
-	query = NewQuery("", "Red", []int{}, []int{bid1, bid2}, false,
-		OID_NAME)
+	search = NewSearch("Red", false, OID_NAME)
 	expected = "SELECT cid, Name FROM Cards WHERE hidden = FALSE AND " +
-		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) AND " +
-		"cid NOT IN (SELECT cid FROM CardsInBox WHERE bid IN (5,8)) " +
-		"ORDER BY LOWER(Name);"
-	sql, args = query.Sql()
+		"cid IN (SELECT ROWID FROM vt_fts_cards(?)) ORDER BY LOWER(Name);"
+	sql, args = search.Sql(true)
 	if sql != expected {
-		t.Errorf("expected query %q; got: %q", expected, sql)
+		t.Errorf("expected search %q; got: %q", expected, sql)
 	}
 	if len(args) != 1 {
 		t.Error("expected 1 arg")
+	} else {
+		if searchText, ok := args[0].(string); !ok {
+			t.Errorf("expected 1 string; got %T %v", args[0], args[0])
+		} else if searchText != "Red" {
+			t.Error("expected arg \"Red\"")
+		}
 	}
-	// TODO check arg is "Red"
-	query = NewQuery("", "", []int{}, []int{}, true, OID_UPDATED)
+	search = NewSearch("", true, OID_UPDATED)
 	expected = "SELECT cid, Name FROM Cards WHERE hidden = TRUE " +
 		"ORDER BY updated DESC;"
-	sql, args = query.Sql()
+	sql, args = search.Sql(true)
 	if sql != expected {
-		t.Errorf("expected query %q; got: %q", expected, sql)
+		t.Errorf("expected search %q; got: %q", expected, sql)
 	}
 	if args != nil {
 		t.Error("expected no args")

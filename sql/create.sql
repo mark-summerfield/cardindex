@@ -43,20 +43,14 @@ CREATE TABLE CardsInBox (
     FOREIGN KEY(bid) REFERENCES Boxes(bid)
 );
 
--- User can always view "built-in" queries: visible cards, unboxed cards,
--- and hidden cards
-CREATE TABLE Queries ( -- See default queries INSERTed below
-    qid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Name TEXT DEFAULT '' NOT NULL, -- See insert_queries_trigger
-    MatchText TEXT,
-    InBoxes TEXT, -- Comma-separated list of bids
-    NotInBoxes TEXT, -- Comma-separated list of bids
+CREATE TABLE Searches (
+    sid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    SearchText TEXT NOT NULL,
     Hidden BOOL DEFAULT FALSE NOT NULL,
-    Oid INTEGER DEFAULT 0, -- Default ignore
+    Oid INTEGER DEFAULT 1, -- Default Name
 
     CHECK(Hidden IN (FALSE, TRUE)),
-    -- 0→ignore 1→Name 2→Updated 3→Created
-    CHECK(Oid IN (0, 1, 2, 3))
+    CHECK(Oid IN (1, 2, 3)) -- 1→Name 2→Updated 3→Created
 );
 
 -- e.g., for MDI window sizes and positions
@@ -111,7 +105,8 @@ CREATE VIEW ViewCardsUnboxed AS
         FROM Cards
         WHERE hidden = FALSE AND cid NOT IN (SELECT cid FROM CardsInBox);
 
-CREATE VIRTUAL TABLE vt_fts_cards USING FTS5(Body, tokenize=porter);
+CREATE VIRTUAL TABLE vt_fts_cards
+    USING FTS5(Body, tokenize='porter unicode61 remove_diacritics 2');
 
 -- ==================== TRIGGERS ====================
 
@@ -156,20 +151,6 @@ CREATE TRIGGER delete_box BEFORE DELETE ON Boxes
                      WHERE CardsInBox.bid = OLD.bid)
 BEGIN
     SELECT RAISE(ABORT, 'can only delete unused boxes');
-END;
-
-CREATE TRIGGER insert_queries_trigger AFTER INSERT ON Queries
-    FOR EACH ROW
-        WHEN EXISTS (SELECT TRUE FROM Queries
-                     WHERE Queries.Name = '' AND Queries.qid = NEW.qid)
-BEGIN -- PRINTF if old syntax for FORMAT
-    UPDATE Queries
-        SET Name =
-            CASE 
-                WHEN NEW.MatchText = '' THEN PRINTF('Query #%d', NEW.qid)
-                ELSE NEW.MatchText
-            END
-        WHERE qid = NEW.qid;
 END;
 
 -- ==================== INSERTIONS ====================

@@ -87,17 +87,17 @@ func (me *Model) CardNamesHidden(oid Oid) ([]CardName, error) {
 	return me.cardNames(SQL_CARD_NAMES_HIDDEN, oid)
 }
 
-func (me *Model) CardNamesForQid(qid int) ([]CardName, error) {
-	if query, err := me.Query(qid); err == nil {
-		return me.CardNamesForQuery(query)
+func (me *Model) CardNamesForSid(sid int) ([]CardName, error) {
+	if search, err := me.Search(sid); err == nil {
+		return me.CardNamesForSearch(search)
 	} else {
 		return nil, err
 	}
 }
 
-func (me *Model) CardNamesForQuery(query Query) ([]CardName, error) {
-	sql, args := query.Sql()
-	return me.cardNames(sql, query.oid, args...)
+func (me *Model) CardNamesForSearch(search Search) ([]CardName, error) {
+	sql, args := search.Sql(false)
+	return me.cardNames(sql, search.oid, args...)
 }
 
 func (me *Model) cardNames(sql string, oid Oid, args ...any) ([]CardName,

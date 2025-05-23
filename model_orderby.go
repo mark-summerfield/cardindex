@@ -26,7 +26,7 @@ func (me Oid) String() string {
 	case OID_CREATED:
 		return CREATED
 	}
-	return "" // unordered
+	return "Unordered"
 }
 
 func (me Oid) Sql() string {
