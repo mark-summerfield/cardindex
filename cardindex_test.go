@@ -469,7 +469,7 @@ func Test_Search3(t *testing.T) {
 	}
 	if cardnames, err := model.CardNamesForSearch(search); err != nil {
 		t.Errorf("unexpected error %T %s", err, err)
-	} else if len(cardnames) > 0 {
+	} else if len(cardnames) != 0 {
 		t.Errorf("unexpected search result: %v", cardnames)
 	}
 	cafes := []string{"The Blue café", "The lost cafe", "The red Cafe"}

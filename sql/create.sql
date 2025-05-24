@@ -113,7 +113,7 @@ CREATE VIRTUAL TABLE vt_fts_cards
 CREATE TRIGGER insert_card_trigger AFTER INSERT ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
-    INSERT OR REPLACE INTO vt_fts_cards (rowid, Body) VALUES
+    INSERT OR REPLACE INTO vt_fts_cards (ROWID, Body) VALUES
         (NEW.cid, NEW.Body);
 END;
 
@@ -126,7 +126,7 @@ END;
 CREATE TRIGGER update_card_body_trigger AFTER UPDATE OF Body ON Cards
     FOR EACH ROW -- update FTS
 BEGIN
-    INSERT OR REPLACE INTO vt_fts_cards (rowid, Body) VALUES
+    INSERT OR REPLACE INTO vt_fts_cards (ROWID, Body) VALUES
         (NEW.cid, NEW.Body);
 END;
 
@@ -141,7 +141,7 @@ END;
 CREATE TRIGGER delete_card_trigger_after AFTER DELETE ON Cards
     FOR EACH ROW
 BEGIN
-    DELETE FROM vt_fts_cards WHERE rowid = OLD.cid; -- remove from FTS
+    DELETE FROM vt_fts_cards WHERE ROWID = OLD.cid; -- remove from FTS
     DELETE FROM CardsInBox WHERE cid = OLD.cid; -- remove from any boxes
 END;
 
