@@ -2,55 +2,55 @@ module github.com/mark-summerfield/cardindex
 
 go 1.24.0
 
-replace github.com/mark-summerfield/clip => /home/mark/app/golib/clip
+replace github.com/mark-summerfield/clip => ../../golib/clip
 
 //require github.com/mark-summerfield/clip v1.5.0
 
-replace github.com/mark-summerfield/diff => /home/mark/app/golib/diff
+replace github.com/mark-summerfield/diff => ../../golib/diff
 
 //require github.com/mark-summerfield/diff v1.2.0
 
-replace github.com/mark-summerfield/ini => /home/mark/app/golib/ini
+replace github.com/mark-summerfield/ini => ../../golib/ini
 
-replace github.com/mark-summerfield/set => /home/mark/app/golib/set
+replace github.com/mark-summerfield/set => ../../golib/set
 
 //require github.com/mark-summerfield/set v1.0.0
 
-replace github.com/mark-summerfield/sortedmap => /home/mark/app/golib/sortedmap
+replace github.com/mark-summerfield/sortedmap => ../../golib/sortedmap
 
 //require github.com/mark-summerfield/sortedmap v1.0.0
 
-replace github.com/mark-summerfield/sortedset => /home/mark/app/golib/sortedset
+replace github.com/mark-summerfield/sortedset => ../../golib/sortedset
 
 //require github.com/mark-summerfield/sortedset v1.0.0
 
-replace github.com/mark-summerfield/sortedslice => /home/mark/app/golib/sortedslice
+replace github.com/mark-summerfield/sortedslice => ../../golib/sortedslice
 
 //require github.com/mark-summerfield/sortedslice v1.0.0
 
-replace github.com/mark-summerfield/tkx => /home/mark/app/golib/tkx
+replace github.com/mark-summerfield/tkx => ../../golib/tkx
 
 //require github.com/mark-summerfield/tkx v1.0.0
 
-replace github.com/mark-summerfield/ufile => /home/mark/app/golib/ufile
+replace github.com/mark-summerfield/ufile => ../../golib/ufile
 
 require github.com/mark-summerfield/ufile v1.0.0
 
-replace github.com/mark-summerfield/ufunc => /home/mark/app/golib/ufunc
+replace github.com/mark-summerfield/ufunc => ../../golib/ufunc
 
-replace github.com/mark-summerfield/unum => /home/mark/app/golib/unum
+replace github.com/mark-summerfield/unum => ../../golib/unum
 
 //require github.com/mark-summerfield/unum v1.0.0
 
-replace github.com/mark-summerfield/uterm => /home/mark/app/golib/uterm
+replace github.com/mark-summerfield/uterm => ../../golib/uterm
 
 //require github.com/mark-summerfield/uterm v1.0.0
 
-replace github.com/mark-summerfield/utext => /home/mark/app/golib/utext
+replace github.com/mark-summerfield/utext => ../../golib/utext
 
 //require github.com/mark-summerfield/utext v1.0.0
 
-replace github.com/mark-summerfield/uutil => /home/mark/app/golib/uutil
+replace github.com/mark-summerfield/uutil => ../../golib/uutil
 
 //require github.com/mark-summerfield/uutil v1.0.0
 

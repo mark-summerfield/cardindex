@@ -1,5 +1,7 @@
 cardindex.go
 app.go
+mainwindow.go
+actions.go
 gui.go
 config.go
 model.go
@@ -23,7 +25,6 @@ sql/create.sql
 README.md
 
 build.sh
-buildwin.sh
 st.sh
 
 # TODO config load/save last .cix file
