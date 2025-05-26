@@ -9,10 +9,10 @@ import (
 	qt "github.com/mappu/miqt/qt6"
 )
 
-func getIcon(name string) *qt.QIcon {
-	name = "images/" + name
-	if data, err := ICONS.ReadFile(name); err != nil {
-		log.Printf("failed to read icon %q: %v\n", name, err)
+func getIcon(filename string) *qt.QIcon {
+	filename = "images/" + filename
+	if data, err := ICONS.ReadFile(filename); err != nil {
+		log.Printf("failed to read icon %q: %v\n", filename, err)
 		return qt.NewQIcon()
 	} else {
 		image := qt.QImage_FromDataWithData(data)
