@@ -23,29 +23,111 @@ build.sh
 buildwin.sh
 st.sh
 
-# Three MDI window types:
+# TODO Menus
 #
-# Search        (X)
-# ... use a vertical splitter, Search at the top List of cards below ...
-# ... details of search|list of matching cards if any ...
-# 0 cards match
-# # Context Menu: New | Save | Delete | Add to Box…
-#   # Add to Box pops up dialog where user can enter new box name or 
-#   # choose an existing box to add all the matched cards to obviously
-#   # disable if 0 cards match
+# &File
+#   &New… ^N
+#   &Open… ^O
+#   Open &Recent → 1. | 2. | … | 9.
+#   &Save ^S
+#   Save &As…
+#   &Export… # All | Box (choice) | Search (choice) | Card (choice)
+#            # HTML | CommonMark | PDF
+#            # One card per page | One box per page | Continuous
+#   &Configure…
+#   &Quit
 #
+# &Edit
+#   &Copy ^C
+#   C&ut ^X
+#   &Paste ^V
+#   &Find… ^F # In: All | Box (choice) | Search (choice) | Card (choice)
+#   Find &Again F3
+#   &Replace…
+#
+# &Cards
+#   &New F7
+#   &Add to Box…
+#   &Remove from Box…
+#   &Export… # HTML | CommonMark | PDF
+#   &Unhide
+#   &Hide
+#   &Delete
+#
+# &Boxes
+#   &New F8
+#   &Add Cards from Search…
+#   &Add Cards from Box…
+#   &Delete
+#
+# &Searches
+#   &New F9
+#   &Delete
+#
+# &View
+#   &Visible Cards
+#   &Unboxed Cards
+#   &Hidden Cards
+#   &Card… # choice of cards
+#   &Box… # choice of boxes
+#   &Search… # choice of searches
+#
+# &Windows
+#   &Next Ctrl+Tab
+#   &Previous Ctrl+Shift+Tab
+#   &Cascade
+#   &Tile
+#   &Windows → 1. | 2. | … | 9. | A. | … | Z.
+#   &Close Ctrl+W
+#
+# &Help
+#   &Help F1
+#   &About
+#
+# TODO More shortcuts
+
+# TODO 4 MDI window types (each with its own unique type-specific icon):
+
 # Name (of Card)  (X)
 # Body
 # ...
-# [Boxes          v] # boxes this card belongs to
+# [Boxes          v] # non-editable list of boxes this card belongs to
 # |__Created__| |__Updated__|
-# # Context Menu: New | Save | Delete | Add to Box… | Remove from Box…
-#
-# Box           (X) # list of boxes
-# Name1
-# Name2
-#  :
-# # Context Menu: New… | Delete
+# # Context Menu: New | Save | Add to Box… | Remove from Box… | Unhide |
+#                 Hide | Delete
+
+# SearchText        (X)
+# Match [SearchText                      ]
+# In (*) Visible cards ( ) Hidden cards
+# Order by [   Name v] # Updated | Created
+# ... use a vertical splitter, Search at the top List of cards below ...
+# Card Name1
+# Card Name2
+#     :
+# 0 cards match
+# # Context Menu: New | Save | Add Cards to Box… | Delete
+#   # Add to Box pops up dialog where user can enter new box name or 
+#   # choose an existing box to add all the matched cards to obviously
+#   # disable if 0 cards match
+
+# Boxes           (X) # list of boxes
+# Box Name1
+# Box Name2
+#    :
+# # Context Menu: New… | Add Cards from Search… | Add Cards from Box… |
+#		  Delete 
+
+# Name (of View)        (X)
+# Order by [   Name v] # Updated | Created
+# ... use a vertical splitter, Search at the top List of cards below ...
+# Card Name1
+# Card Name2
+#     :
+# 0 cards match
+# # Context Menu: New | Save | Add Cards to Box… | Delete
+# # Views are: Visible Cards | Unboxed Cards | Hidden Cards
+
+# TODO Help text (HTML with pandoc or asciidoctor or PDF with lout?)
 
 # NOTE Markup is CommonMark
 
