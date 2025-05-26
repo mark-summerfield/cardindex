@@ -1,6 +1,6 @@
 cardindex.go
 app.go
-mainwindow.go
+mainwindow.go # TODO
 actions.go
 gui.go
 config.go
