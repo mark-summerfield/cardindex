@@ -5,10 +5,15 @@ package main
 
 import (
 	_ "embed"
+
+	qt "github.com/mappu/miqt/qt6"
 )
 
 //go:embed Version.dat
 var Version string
+
+//go:embed images/cardindex.svg
+var Icon []byte
 
 //go:embed sql/prepare.sql
 var SQL_PREPARE string
@@ -16,8 +21,14 @@ var SQL_PREPARE string
 //go:embed sql/create.sql
 var SQL_CREATE string
 
+var (
+	OPT_CURSOR_BLINK = qt.NewQAnyStringView3("cursorblink")
+	DEF_CURSOR_BLINK = qt.NewQVariant8(true)
+)
+
 const (
-	APPNAME = "CardIndex"
+	APPNAME      = "CardIndex"
+	ORGANIZATION = "MNS"
 
 	DRIVER    = "sqlite"
 	MAX_OPENS = 11

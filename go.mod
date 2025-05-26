@@ -12,8 +12,6 @@ replace github.com/mark-summerfield/diff => /home/mark/app/golib/diff
 
 replace github.com/mark-summerfield/ini => /home/mark/app/golib/ini
 
-//require github.com/mark-summerfield/ini v1.0.0
-
 replace github.com/mark-summerfield/set => /home/mark/app/golib/set
 
 //require github.com/mark-summerfield/set v1.0.0
@@ -56,7 +54,10 @@ replace github.com/mark-summerfield/uutil => /home/mark/app/golib/uutil
 
 //require github.com/mark-summerfield/uutil v1.0.0
 
-require modernc.org/sqlite v1.37.0
+require (
+	github.com/mappu/miqt v0.10.0
+	modernc.org/sqlite v1.37.1
+)
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -67,7 +68,7 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	modernc.org/libc v1.65.7 // indirect
+	modernc.org/libc v1.65.8 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )

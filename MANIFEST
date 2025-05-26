@@ -1,4 +1,5 @@
 cardindex.go
+app.go
 model.go
 model_config.go
 model_cards.go
@@ -12,12 +13,12 @@ static.go
 
 cardindex_test.go
 
+go.mod
+
 sql/prepare.sql
 sql/create.sql
 
 README.md
-
-go.mod
 
 build.sh
 buildwin.sh
@@ -34,7 +35,7 @@ st.sh
 #   &Export… # All | Box (choice) | Search (choice) | Card (choice)
 #            # HTML | CommonMark | PDF
 #            # One card per page | One box per page | Continuous
-#   &Configure…
+#   &Configure… # [ ] Cursor Blink (see main() in cardindex.go)
 #   &Quit
 #
 # &Edit
@@ -82,7 +83,7 @@ st.sh
 #
 # &Help
 #   &Help F1
-#   &About
+#   &About # VERSION & miQt version & Qt version & SqliteVersion()
 #
 # TODO More shortcuts
 
