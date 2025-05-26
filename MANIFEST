@@ -1,5 +1,7 @@
 cardindex.go
 app.go
+gui.go
+config.go
 model.go
 model_config.go
 model_cards.go
@@ -24,6 +26,9 @@ build.sh
 buildwin.sh
 st.sh
 
+# TODO config load/save last .cix file
+# TODO config +-- Show ==+ [X] File Toolbar [X] Edit Toolbar …
+
 # TODO Menus
 #
 # &File
@@ -35,7 +40,7 @@ st.sh
 #   &Export… # All | Box (choice) | Search (choice) | Card (choice)
 #            # HTML | CommonMark | PDF
 #            # One card per page | One box per page | Continuous
-#   &Configure… # [ ] Cursor Blink (see main() in cardindex.go)
+#   &Configure… # [ ] Cursor Blink (set config.CursorBlink directly)
 #   &Quit
 #
 # &Edit

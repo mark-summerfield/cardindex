@@ -3,17 +3,13 @@
 
 package main
 
-import (
-	_ "embed"
-
-	qt "github.com/mappu/miqt/qt6"
-)
+import "embed"
 
 //go:embed Version.dat
 var Version string
 
-//go:embed images/cardindex.svg
-var Icon []byte
+//go:embed images/*.svg
+var ICONS embed.FS
 
 //go:embed sql/prepare.sql
 var SQL_PREPARE string
@@ -21,14 +17,22 @@ var SQL_PREPARE string
 //go:embed sql/create.sql
 var SQL_CREATE string
 
-var (
-	OPT_CURSOR_BLINK = qt.NewQAnyStringView3("cursorblink")
-	DEF_CURSOR_BLINK = qt.NewQVariant8(true)
-)
-
 const (
-	APPNAME      = "CardIndex"
-	ORGANIZATION = "MNS"
+	APPNAME = "CardIndex"
+	DOMAIN  = "MNS"
+
+	CONFIG_WINDOW          = "Window"
+	CONFIG_WINDOW_STATE    = "State"
+	CONFIG_WINDOW_GEOMETRY = "Geometry"
+	CONFIG_CURSOR_BLINK    = "CursorBlink"
+	DEFAULT_CURSOR_BLINK   = true
+
+	SVG_ICON         = "cardindex.svg"
+	SVG_FILE_NEW     = "document-new.svg"
+	SVG_FILE_OPEN    = "document-open.svg"
+	SVG_FILE_SAVE    = "document-save.svg"
+	SVG_FILE_SAVE_AS = "document-save-as.svg"
+	SVG_FILE_QUIT    = "shutdown.svg"
 
 	DRIVER    = "sqlite"
 	MAX_OPENS = 11

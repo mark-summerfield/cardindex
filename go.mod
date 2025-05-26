@@ -56,12 +56,15 @@ replace github.com/mark-summerfield/uutil => /home/mark/app/golib/uutil
 
 require (
 	github.com/mappu/miqt v0.10.0
+	github.com/mark-summerfield/ini v0.0.0-00010101000000-000000000000
 	modernc.org/sqlite v1.37.1
 )
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/mark-summerfield/sortedmap v1.0.0 // indirect
+	github.com/mark-summerfield/unum v1.0.0 // indirect
 	github.com/mark-summerfield/utext v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect

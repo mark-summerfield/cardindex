@@ -23,6 +23,7 @@ func main() {
 	}
 
 	qt.NewQApplication(os.Args)
+	qt.QCoreApplication_SetApplicationName(APPNAME)
 	app := NewApp()
 	app.Show()
 	qt.QApplication_Exec()
