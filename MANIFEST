@@ -150,4 +150,9 @@ st.sh
 #   SELECT Name, Cards.Body FROM Cards, vt_fts_cards
 #	WHERE vt_fts_cards MATCH '"key="' AND Cards.cid = vt_fts_cards.ROWID;
 
+# NOTE consider TUI version e.g., using
+# https://pkg.go.dev/github.com/rivo/tview &
+# (example: https://github.com/BekBrace/inv-tui-go & 
+# https://dev.to/bekbrace/build-tui-application-with-go-tview-l18)
+
 # vim: syn=yaml
