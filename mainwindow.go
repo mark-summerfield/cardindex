@@ -30,6 +30,13 @@ func (me *App) MakeActions() {
 		"&Configure…")
 	me.fileQuitAction = qt.NewQAction3(getIcon(SVG_FILE_QUIT), "&Quit")
 	me.fileQuitAction.SetShortcutsWithShortcuts(qt.QKeySequence__Quit)
+	me.editCopyAction = qt.NewQAction3(getIcon(SVG_EDIT_COPY), "&Copy")
+	me.editCopyAction.SetShortcutsWithShortcuts(qt.QKeySequence__Copy)
+	me.editCutAction = qt.NewQAction3(getIcon(SVG_EDIT_CUT), "C&ut")
+	me.editCutAction.SetShortcutsWithShortcuts(qt.QKeySequence__Cut)
+	me.editPasteAction = qt.NewQAction3(getIcon(SVG_EDIT_PASTE), "&Paste")
+	me.editPasteAction.SetShortcutsWithShortcuts(qt.QKeySequence__Paste)
+
 	// TODO
 }
 
@@ -45,6 +52,10 @@ func (me *App) MakeMainMenu() {
 	me.fileMenu.AddAction(me.fileConfigureAction)
 	me.fileMenu.AddSeparator()
 	me.fileMenu.AddAction(me.fileQuitAction)
+	me.editMenu = menubar.AddMenuWithTitle("&Edit")
+	me.editMenu.AddAction(me.editCopyAction)
+	me.editMenu.AddAction(me.editCutAction)
+	me.editMenu.AddAction(me.editPasteAction)
 	// TODO
 }
 
@@ -55,6 +66,12 @@ func (me *App) MakeToolbars() {
 	fileToolbar.AddAction(me.fileNewAction)
 	fileToolbar.AddAction(me.fileOpenAction)
 	fileToolbar.AddAction(me.fileSaveAction)
+	const EDIT = "Edit"
+	editToolbar := me.window.AddToolBarWithTitle(EDIT)
+	editToolbar.SetObjectName(*qt.NewQAnyStringView3(EDIT))
+	editToolbar.AddAction(me.editCopyAction)
+	editToolbar.AddAction(me.editCutAction)
+	editToolbar.AddAction(me.editPasteAction)
 	// TODO
 }
 

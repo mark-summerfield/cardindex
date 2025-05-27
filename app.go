@@ -24,6 +24,10 @@ type App struct {
 	fileExportAction    *qt.QAction
 	fileConfigureAction *qt.QAction
 	fileQuitAction      *qt.QAction
+	editMenu            *qt.QMenu
+	editCopyAction      *qt.QAction
+	editCutAction       *qt.QAction
+	editPasteAction     *qt.QAction
 }
 
 func NewApp() *App {

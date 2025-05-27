@@ -35,6 +35,9 @@ const (
 	SVG_FILE_EXPORT    = "export.svg"
 	SVG_FILE_CONFIGURE = "document-properties.svg"
 	SVG_FILE_QUIT      = "shutdown.svg"
+	SVG_EDIT_COPY      = "edit-copy.svg"
+	SVG_EDIT_CUT       = "edit-cut.svg"
+	SVG_EDIT_PASTE     = "edit-paste.svg"
 
 	TIMEOUT_LONG = 10000
 
