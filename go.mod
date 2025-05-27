@@ -16,7 +16,7 @@ require github.com/mark-summerfield/ufile v1.0.0
 
 require github.com/mark-summerfield/ini v0.0.0-20250527070610-7f9f0b3b7610
 
-//require github.com/mark-summerfield/unum latest
+require github.com/mark-summerfield/unum v1.0.0
 
 //require github.com/mark-summerfield/uterm latest
 
@@ -33,7 +33,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mark-summerfield/sortedmap v1.0.0 // indirect
-	github.com/mark-summerfield/unum v1.0.0 // indirect
 	github.com/mark-summerfield/utext v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect

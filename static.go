@@ -27,12 +27,16 @@ const (
 	CONFIG_CURSOR_BLINK    = "CursorBlink"
 	DEFAULT_CURSOR_BLINK   = true
 
-	SVG_ICON         = "cardindex.svg"
-	SVG_FILE_NEW     = "document-new.svg"
-	SVG_FILE_OPEN    = "document-open.svg"
-	SVG_FILE_SAVE    = "document-save.svg"
-	SVG_FILE_SAVE_AS = "document-save-as.svg"
-	SVG_FILE_QUIT    = "shutdown.svg"
+	SVG_ICON           = "cardindex.svg"
+	SVG_FILE_NEW       = "document-new.svg"
+	SVG_FILE_OPEN      = "document-open.svg"
+	SVG_FILE_SAVE      = "document-save.svg"
+	SVG_FILE_SAVE_AS   = "document-save-as.svg"
+	SVG_FILE_EXPORT    = "export.svg"
+	SVG_FILE_CONFIGURE = "document-properties.svg"
+	SVG_FILE_QUIT      = "shutdown.svg"
+
+	TIMEOUT_LONG = 10000
 
 	DRIVER    = "sqlite"
 	MAX_OPENS = 11

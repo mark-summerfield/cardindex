@@ -12,7 +12,6 @@ func (me *App) MakeMainWindow() {
 	me.MakeMainMenu()
 	me.MakeToolbars()
 	me.MakeWidgets()
-	me.MakeLayout()
 	me.MakeConnections()
 }
 
@@ -25,6 +24,10 @@ func (me *App) MakeActions() {
 	me.fileSaveAction.SetShortcutsWithShortcuts(qt.QKeySequence__Save)
 	me.fileSaveAsAction = qt.NewQAction3(getIcon(SVG_FILE_SAVE_AS),
 		"Save &As…")
+	me.fileExportAction = qt.NewQAction3(getIcon(SVG_FILE_EXPORT),
+		"&Export…")
+	me.fileConfigureAction = qt.NewQAction3(getIcon(SVG_FILE_CONFIGURE),
+		"&Configure…")
 	me.fileQuitAction = qt.NewQAction3(getIcon(SVG_FILE_QUIT), "&Quit")
 	me.fileQuitAction.SetShortcutsWithShortcuts(qt.QKeySequence__Quit)
 	// TODO
@@ -37,6 +40,9 @@ func (me *App) MakeMainMenu() {
 	me.fileMenu.AddAction(me.fileOpenAction)
 	me.fileMenu.AddAction(me.fileSaveAction)
 	me.fileMenu.AddAction(me.fileSaveAsAction)
+	me.fileMenu.AddAction(me.fileExportAction)
+	me.fileMenu.AddSeparator()
+	me.fileMenu.AddAction(me.fileConfigureAction)
 	me.fileMenu.AddSeparator()
 	me.fileMenu.AddAction(me.fileQuitAction)
 	// TODO
@@ -53,17 +59,19 @@ func (me *App) MakeToolbars() {
 }
 
 func (me *App) MakeWidgets() {
-	// TODO
+	me.mdiArea = qt.NewQMdiArea2()
+	me.MakeStatusBar()
+	me.window.SetCentralWidget(me.mdiArea.QWidget)
 }
 
-func (me *App) MakeLayout() {
-	// TODO
-	// widget := qt.NewQWidget(me.window.QWidget)
-	// box := qt.NewQHBoxLayout(widget)
-	// box.AddWidget(me.helloButton.QWidget)
-	// box.AddWidget(me.aboutButton.QWidget)
-	// box.AddWidget(me.quitButton.QWidget)
-	// me.window.SetCentralWidget(widget)
+func (me *App) MakeStatusBar() {
+	me.statusIndicator = qt.NewQLabel3("0 Cards • 0 Unboxed")
+	me.statusIndicator.SetFrameShadow(qt.QFrame__Sunken)
+	me.statusIndicator.SetFrameShape(qt.QFrame__StyledPanel)
+	statusbar := me.window.StatusBar()
+	statusbar.SetSizeGripEnabled(false)
+	statusbar.AddPermanentWidget(me.statusIndicator.QWidget)
+	me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
 }
 
 func (me *App) MakeConnections() {

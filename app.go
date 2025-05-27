@@ -11,15 +11,19 @@ import (
 )
 
 type App struct {
-	config           *Config
-	model            *Model
-	window           *qt.QMainWindow
-	fileMenu         *qt.QMenu
-	fileNewAction    *qt.QAction
-	fileOpenAction   *qt.QAction
-	fileSaveAction   *qt.QAction
-	fileSaveAsAction *qt.QAction
-	fileQuitAction   *qt.QAction
+	config              *Config
+	model               *Model
+	window              *qt.QMainWindow
+	mdiArea             *qt.QMdiArea
+	statusIndicator     *qt.QLabel
+	fileMenu            *qt.QMenu
+	fileNewAction       *qt.QAction
+	fileOpenAction      *qt.QAction
+	fileSaveAction      *qt.QAction
+	fileSaveAsAction    *qt.QAction
+	fileExportAction    *qt.QAction
+	fileConfigureAction *qt.QAction
+	fileQuitAction      *qt.QAction
 }
 
 func NewApp() *App {

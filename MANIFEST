@@ -28,7 +28,11 @@ build.sh
 st.sh
 
 # TODO config load/save last .cix file
-# TODO config +-- Show ==+ [X] File Toolbar [X] Edit Toolbar …
+# TODO &Configure dialog:
+#	+-- Show ---------------------------------+
+#	| [X] File Toolbar [X] Edit Toolbar …     |
+#	+-----------------------------------------+
+#	[X] Cursor Blink # set config.CursorBlink directly)
 
 # TODO Menus
 #
@@ -41,16 +45,13 @@ st.sh
 #   &Export… # All | Box (choice) | Search (choice) | Card (choice)
 #            # HTML | CommonMark | PDF
 #            # One card per page | One box per page | Continuous
-#   &Configure… # [ ] Cursor Blink (set config.CursorBlink directly)
+#   &Configure…
 #   &Quit
 #
 # &Edit
 #   &Copy ^C
 #   C&ut ^X
 #   &Paste ^V
-#   &Find… ^F # In: All | Box (choice) | Search (choice) | Card (choice)
-#   Find &Again F3
-#   &Replace…
 #
 # &Cards
 #   &New F7
@@ -91,7 +92,7 @@ st.sh
 #   &Help F1
 #   &About # VERSION & miQt version & Qt version & SqliteVersion()
 #
-# TODO More shortcuts
+# TODO More shortcuts?
 
 # TODO 4 MDI window types (each with its own unique type-specific icon):
 
@@ -136,6 +137,11 @@ st.sh
 
 # TODO Help text (HTML with pandoc or asciidoctor or PDF with lout?)
 
+# NOTE Possible addition: 
+#   &Edit
+#     &Find… ^F # In: All | Box (choice) | Search (choice) | Card (choice)
+#     Find &Again F3
+#     &Replace…
 # NOTE Markup is CommonMark
 
 # NOTE Could do "fields" using key=value syntax and searches like this:
