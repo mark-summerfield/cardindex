@@ -93,7 +93,16 @@ func (me *App) MakeStatusBar() {
 
 func (me *App) MakeConnections() {
 	// TODO
+	me.fileNewAction.OnTriggered(func() { me.fileNew() })
+	me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
+	me.fileSaveAction.OnTriggered(func() { me.fileSave() })
+	me.fileSaveAsAction.OnTriggered(func() { me.fileSaveAs() })
+	me.fileExportAction.OnTriggered(func() { me.fileExport() })
+	me.fileConfigureAction.OnTriggered(func() { me.fileConfigure() })
 	me.fileQuitAction.OnTriggered(func() { me.window.Close() })
+	me.editCopyAction.OnTriggered(func() { me.editCopy() })
+	me.editCutAction.OnTriggered(func() { me.editCut() })
+	me.editPasteAction.OnTriggered(func() { me.editPaste() })
 	me.window.OnCloseEvent(func(super func(event *qt.QCloseEvent),
 		event *qt.QCloseEvent,
 	) {

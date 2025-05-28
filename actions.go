@@ -19,7 +19,3 @@ func (me *App) StatusIndicatorUpdate(cards, unboxed int) {
 	me.statusIndicator.SetText(fmt.Sprintf("%s Cards • %s Unboxed",
 		unum.Commas(cards), unum.Commas(unboxed)))
 }
-
-func (me *App) LoadModel() {
-	fmt.Println("LoadModel") // TODO
-}

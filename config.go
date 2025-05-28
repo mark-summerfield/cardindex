@@ -18,6 +18,8 @@ type Config struct {
 	CursorBlink    bool
 	WindowGeometry []byte
 	WindowState    []byte
+	MostRecentFile string
+	// TODO recent files
 }
 
 func NewConfig(filename string) *Config {
@@ -46,6 +48,8 @@ func NewConfigFrom(filename string) *Config {
 				config.WindowState = state
 			}
 		}
+		config.MostRecentFile = cfg.Str(ini.UNNAMED,
+			CONFIG_MOST_RECENT_FILE, "")
 	}
 	return config
 }
@@ -66,6 +70,7 @@ func (me *Config) SaveTo(filename string) error {
 		base64.StdEncoding.EncodeToString(me.WindowGeometry))
 	cfg.SetStr(CONFIG_WINDOW, CONFIG_WINDOW_STATE,
 		base64.StdEncoding.EncodeToString(me.WindowState))
+	cfg.SetStr(ini.UNNAMED, CONFIG_MOST_RECENT_FILE, me.MostRecentFile)
 	return cfg.SaveFile(me.Filename)
 }
 

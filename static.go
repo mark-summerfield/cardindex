@@ -21,11 +21,12 @@ const (
 	APPNAME = "CardIndex"
 	DOMAIN  = "MNS"
 
-	CONFIG_WINDOW          = "Window"
-	CONFIG_WINDOW_STATE    = "State"
-	CONFIG_WINDOW_GEOMETRY = "Geometry"
-	CONFIG_CURSOR_BLINK    = "CursorBlink"
-	DEFAULT_CURSOR_BLINK   = true
+	CONFIG_WINDOW           = "Window"
+	CONFIG_WINDOW_STATE     = "State"
+	CONFIG_WINDOW_GEOMETRY  = "Geometry"
+	CONFIG_CURSOR_BLINK     = "CursorBlink"
+	DEFAULT_CURSOR_BLINK    = true
+	CONFIG_MOST_RECENT_FILE = "MostRecentFile"
 
 	SVG_ICON           = "cardindex.svg"
 	SVG_FILE_NEW       = "document-new.svg"

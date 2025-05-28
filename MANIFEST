@@ -2,6 +2,8 @@ cardindex.go
 app.go
 mainwindow.go # TODO
 actions.go
+fileactions.go
+editactions.go
 gui.go
 config.go
 model.go
@@ -28,32 +30,11 @@ build.sh
 st.sh
 
 # TODO config load/save last .cix file
-# TODO &Configure dialog:
-#	+-- Show ---------------------------------+
-#	| [X] File Toolbar [X] Edit Toolbar …     |
-#	+-----------------------------------------+
-#	[X] Cursor Blink # set config.CursorBlink directly)
+# TODO config recentfiles + file menu recent files handling
 
 # TODO Menus
 #
-# &File
-#   &New… ^N
-#   &Open… ^O
-#   Open &Recent → 1. | 2. | … | 9.
-#   &Save ^S
-#   Save &As…
-#   &Export… # All | Box (choice) | Search (choice) | Card (choice)
-#            # HTML | CommonMark | PDF
-#            # One card per page | One box per page | Continuous
-#   &Configure…
-#   &Quit
-#
-# &Edit
-#   &Copy ^C
-#   C&ut ^X
-#   &Paste ^V
-#
-# &Cards
+# &Card
 #   &New F7
 #   &Add to Box…
 #   &Remove from Box…
@@ -62,13 +43,13 @@ st.sh
 #   &Hide
 #   &Delete
 #
-# &Boxes
+# &Box
 #   &New F8
 #   &Add Cards from Search…
 #   &Add Cards from Box…
 #   &Delete
 #
-# &Searches
+# &Search
 #   &New F9
 #   &Delete
 #
@@ -80,7 +61,7 @@ st.sh
 #   &Box… # choice of boxes
 #   &Search… # choice of searches
 #
-# &Windows
+# &Window
 #   &Next Ctrl+Tab
 #   &Previous Ctrl+Shift+Tab
 #   &Cascade

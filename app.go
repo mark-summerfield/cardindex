@@ -11,23 +11,31 @@ import (
 )
 
 type App struct {
-	config              *Config
-	model               *Model
-	window              *qt.QMainWindow
-	mdiArea             *qt.QMdiArea
-	statusIndicator     *qt.QLabel
-	fileMenu            *qt.QMenu
-	fileNewAction       *qt.QAction
-	fileOpenAction      *qt.QAction
-	fileSaveAction      *qt.QAction
-	fileSaveAsAction    *qt.QAction
-	fileExportAction    *qt.QAction
-	fileConfigureAction *qt.QAction
-	fileQuitAction      *qt.QAction
-	editMenu            *qt.QMenu
-	editCopyAction      *qt.QAction
-	editCutAction       *qt.QAction
-	editPasteAction     *qt.QAction
+	config                  *Config
+	model                   *Model
+	window                  *qt.QMainWindow
+	mdiArea                 *qt.QMdiArea
+	statusIndicator         *qt.QLabel
+	fileMenu                *qt.QMenu
+	fileNewAction           *qt.QAction
+	fileOpenAction          *qt.QAction
+	fileSaveAction          *qt.QAction
+	fileSaveAsAction        *qt.QAction
+	fileExportAction        *qt.QAction
+	fileConfigureAction     *qt.QAction
+	fileQuitAction          *qt.QAction
+	editMenu                *qt.QMenu
+	editCopyAction          *qt.QAction
+	editCutAction           *qt.QAction
+	editPasteAction         *qt.QAction
+	cardMenu                *qt.QMenu
+	cardNewAction           *qt.QAction
+	cardAddToBoxAction      *qt.QAction
+	cardRemoveFromBoxAction *qt.QAction
+	cardExportAction        *qt.QAction
+	cardUnhideAction        *qt.QAction
+	cardHideAction          *qt.QAction
+	cardDeleteAction        *qt.QAction
 }
 
 func NewApp() *App {
@@ -36,9 +44,6 @@ func NewApp() *App {
 	app.window.SetWindowIcon(getIcon(SVG_ICON))
 	app.LoadSettings()
 	app.MakeMainWindow()
-	if app.model != nil {
-		app.LoadModel()
-	}
 	return &app
 }
 
@@ -56,11 +61,17 @@ func (me *App) LoadSettings() {
 	}
 	me.window.RestoreGeometry(me.config.WindowGeometry)
 	me.window.RestoreState(me.config.WindowState)
+	if me.config.MostRecentFile != "" {
+		me.loadModel(me.config.MostRecentFile)
+	}
 }
 
 func (me *App) SaveSettings() {
 	me.config.WindowGeometry = me.window.SaveGeometry()
 	me.config.WindowState = me.window.SaveState()
+	if me.model != nil {
+		me.config.MostRecentFile = me.model.filename
+	}
 	if err := me.config.Save(); err != nil {
 		log.Printf("failed to save config in %q: %v\n", me.config.Filename,
 			err)
