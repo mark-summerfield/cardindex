@@ -7,12 +7,13 @@ import (
 	"log"
 
 	qt "github.com/mappu/miqt/qt6"
+	"github.com/mark-summerfield/cardindex/model"
 	"github.com/mark-summerfield/ufile"
 )
 
 type App struct {
 	config              *Config
-	model               *Model
+	model               *model.Model
 	window              *qt.QMainWindow
 	mdiArea             *qt.QMdiArea
 	statusIndicator     *qt.QLabel
@@ -92,7 +93,7 @@ func (me *App) SaveSettings() {
 	me.config.WindowGeometry = me.window.SaveGeometry()
 	me.config.WindowState = me.window.SaveState()
 	if me.model != nil {
-		me.config.MostRecentFile = me.model.filename
+		me.config.MostRecentFile = me.model.Filename()
 	}
 	if err := me.config.Save(); err != nil {
 		log.Printf("failed to save config in %q: %v\n", me.config.Filename,

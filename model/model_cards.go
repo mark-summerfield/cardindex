@@ -1,7 +1,7 @@
 // Copyright © 2025 Mark Summerfield. All rights reserved.
 // License: GPL-3
 
-package main
+package model
 
 import (
 	"strings"

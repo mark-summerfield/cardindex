@@ -1,7 +1,7 @@
 // Copyright © 2025 Mark Summerfield. All rights reserved.
 // License: GPL-3
 
-package main
+package model
 
 func (me *Model) Box(bid int) (Box, error) {
 	box := Box{bid: bid}
