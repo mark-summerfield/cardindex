@@ -1,7 +1,7 @@
 // Copyright © 2025 Mark Summerfield. All rights reserved.
 // License: GPL-3
 
-package main
+package model
 
 import (
 	"os"
@@ -44,7 +44,7 @@ func Test_Empty(t *testing.T) {
 }
 
 func Test_Cix(t *testing.T) {
-	model, err := NewModel("eg/pcw.cix")
+	model, err := NewModel("../eg/pcw.cix")
 	checkErr(t, err)
 	defer model.Close()
 	counts, err := model.CardCounts()

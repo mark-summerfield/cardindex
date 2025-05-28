@@ -12,19 +12,20 @@ cardactions.go # TODO
 # TODO helpactions.go
 gui.go
 config.go # TODO MostRecentFile & RecentFiles
-model/model.go
-model/model_config.go
-model/model_cards.go
-model/model_boxes.go
-model/model_searches.go
-model/model_search.go
-model/model_types.go
-model/model_orderby.go
-model/static.go
-model/db.go
 static.go
 
-cardindex_test.go
+model/model.go
+model/config.go
+model/cards.go
+model/boxes.go
+model/searches.go
+model/search.go
+model/types.go
+model/orderby.go
+model/db.go
+model/static.go
+
+model/model_test.go
 
 go.mod
 
