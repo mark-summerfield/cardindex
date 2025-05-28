@@ -57,8 +57,9 @@ type App struct {
 	// TODO actions
 	windowMenu *qt.QMenu
 	// TODO actions
-	helpMenu *qt.QMenu
-	// TODO actions
+	helpMenu        *qt.QMenu
+	helpHelpAction  *qt.QAction
+	helpAboutAction *qt.QAction
 }
 
 func NewApp() *App {

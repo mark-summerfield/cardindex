@@ -21,6 +21,7 @@ func (me *App) MakeActions() {
 	me.makeCardActions()
 	me.makeBoxActions()
 	// TODO Search View Window Help
+	me.makeHelpActions()
 }
 
 func (me *App) makeFileActions() {
@@ -104,6 +105,15 @@ func (me *App) makeBoxActions() {
 	me.boxDeleteAction.SetToolTip("Permanently delete the current box")
 }
 
+func (me *App) makeHelpActions() {
+	me.helpHelpAction = qt.NewQAction3(getIcon(SVG_HELP_HELP), "&Help")
+	me.helpHelpAction.SetToolTip("Show help")
+	me.helpHelpAction.SetShortcutsWithShortcuts(
+		qt.QKeySequence__HelpContents)
+	me.helpAboutAction = qt.NewQAction3(getIcon(SVG_HELP_ABOUT), "&About")
+	me.helpAboutAction.SetToolTip("Show about box")
+}
+
 func (me *App) MakeMainMenu() {
 	menubar := me.window.MenuBar()
 	me.fileMenu = menubar.AddMenuWithTitle("&File")
@@ -169,8 +179,8 @@ func (me *App) MakeMainMenu() {
 	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
 	// TODO   &Close Ctrl+W
 	me.helpMenu = menubar.AddMenuWithTitle("&Help")
-	// TODO  &Help F1
-	// TODO  &About # VERSION & miQt version & Qt version & SqliteVersion()
+	me.helpMenu.AddAction(me.helpHelpAction)
+	me.helpMenu.AddAction(me.helpAboutAction)
 }
 
 func (me *App) MakeToolbars() {
@@ -198,6 +208,13 @@ func (me *App) MakeToolbars() {
 	cardToolbar.AddSeparator()
 	cardToolbar.AddAction(me.cardUnhideAction)
 	cardToolbar.AddAction(me.cardHideAction)
+	const BOX = "Box"
+	boxToolbar := me.window.AddToolBarWithTitle(BOX)
+	boxToolbar.SetObjectName(*qt.NewQAnyStringView3(BOX))
+	boxToolbar.AddAction(me.boxNewAction)
+	boxToolbar.AddSeparator()
+	boxToolbar.AddAction(me.boxAddFromSearchAction)
+	boxToolbar.AddAction(me.boxAddFromBoxAction)
 	// TODO
 }
 
@@ -237,6 +254,13 @@ func (me *App) MakeConnections() {
 	me.cardUnhideAction.OnTriggered(func() { me.cardUnhide() })
 	me.cardHideAction.OnTriggered(func() { me.cardHide() })
 	me.cardDeleteAction.OnTriggered(func() { me.cardDelete() })
+	me.boxNewAction.OnTriggered(func() { me.boxNew() })
+	me.boxAddFromSearchAction.OnTriggered(func() { me.boxAddFromSearch() })
+	me.boxAddFromBoxAction.OnTriggered(func() { me.boxAddFromBox() })
+	me.boxDeleteAction.OnTriggered(func() { me.boxDelete() })
+	// TODO
+	me.helpHelpAction.OnTriggered(func() { me.helpHelp() })
+	me.helpAboutAction.OnTriggered(func() { me.helpAbout() })
 	me.window.OnCloseEvent(func(super func(event *qt.QCloseEvent),
 		event *qt.QCloseEvent,
 	) {

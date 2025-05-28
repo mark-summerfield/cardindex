@@ -5,11 +5,11 @@ actions.go
 fileactions.go # TODO
 editactions.go # TODO
 cardactions.go # TODO
-# TODO boxactions.go
+boxactions.go
 # TODO searchactions.go
 # TODO viewactions.go
 # TODO windowactions.go
-# TODO helpactions.go
+helpactions.go
 gui.go
 config.go # TODO MostRecentFile & RecentFiles
 static.go
@@ -36,6 +36,7 @@ README.md
 
 build.sh
 st.sh
+test.sh
 
 # TODO config load/save last .cix file
 # TODO config recentfiles + file menu recent files handling

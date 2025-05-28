@@ -15,6 +15,8 @@ const (
 	APPNAME = "CardIndex"
 	DOMAIN  = "MNS"
 
+	TIMEOUT_LONG = 10000
+
 	CONFIG_WINDOW           = "Window"
 	CONFIG_WINDOW_STATE     = "State"
 	CONFIG_WINDOW_GEOMETRY  = "Geometry"
@@ -44,8 +46,8 @@ const (
 	SVG_BOX_ADD_FROM_SEARCH  = "box-add-from-search.svg"
 	SVG_BOX_ADD_FROM_BOX     = "box-add-from-box.svg"
 	SVG_BOX_DELETE           = "box-delete.svg"
-
-	TIMEOUT_LONG = 10000
+	SVG_HELP_HELP            = "help.svg"
+	SVG_HELP_ABOUT           = "about.svg"
 )
 
 // var E100 = errors.New("E100: failed to get counts")
