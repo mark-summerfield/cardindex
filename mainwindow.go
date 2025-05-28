@@ -116,6 +116,17 @@ func (me *App) makeHelpActions() {
 
 func (me *App) MakeMainMenu() {
 	menubar := me.window.MenuBar()
+	me.makeMainFileMenu(menubar)
+	me.makeMainEditMenu(menubar)
+	me.makeMainCardMenu(menubar)
+	me.makeMainBoxMenu(menubar)
+	me.makeMainSearchMenu(menubar)
+	me.makeMainViewMenu(menubar)
+	me.makeMainWindowMenu(menubar)
+	me.makeMainHelpMenu(menubar)
+}
+
+func (me *App) makeMainFileMenu(menubar *qt.QMenuBar) {
 	me.fileMenu = menubar.AddMenuWithTitle("&File")
 	me.fileMenu.AddAction(me.fileNewAction)
 	me.fileMenu.AddAction(me.fileOpenAction)
@@ -126,6 +137,9 @@ func (me *App) MakeMainMenu() {
 	me.fileMenu.AddAction(me.fileConfigureAction)
 	me.fileMenu.AddSeparator()
 	me.fileMenu.AddAction(me.fileQuitAction)
+}
+
+func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
 	me.editMenu = menubar.AddMenuWithTitle("&Edit")
 	// TODO &Undo
 	// TODO &Redo
@@ -141,7 +155,9 @@ func (me *App) MakeMainMenu() {
 	// TODO Insert &Web Link…
 	// TODO Insert &File Link…
 	// TODO Insert &Symbol…
+}
 
+func (me *App) makeMainCardMenu(menubar *qt.QMenuBar) {
 	me.cardMenu = menubar.AddMenuWithTitle("&Card")
 	me.cardMenu.AddAction(me.cardNewAction)
 	me.cardMenu.AddSeparator()
@@ -154,6 +170,9 @@ func (me *App) MakeMainMenu() {
 	me.cardMenu.AddAction(me.cardHideAction)
 	me.cardMenu.AddSeparator()
 	me.cardMenu.AddAction(me.cardDeleteAction)
+}
+
+func (me *App) makeMainBoxMenu(menubar *qt.QMenuBar) {
 	me.boxMenu = menubar.AddMenuWithTitle("&Box")
 	me.boxMenu.AddAction(me.boxNewAction)
 	me.boxMenu.AddSeparator()
@@ -161,9 +180,15 @@ func (me *App) MakeMainMenu() {
 	me.boxMenu.AddAction(me.boxAddFromBoxAction)
 	me.boxMenu.AddSeparator()
 	me.boxMenu.AddAction(me.boxDeleteAction)
+}
+
+func (me *App) makeMainSearchMenu(menubar *qt.QMenuBar) {
 	me.searchMenu = menubar.AddMenuWithTitle("&Search")
 	// TODO   &New F9
 	// TODO   &Delete
+}
+
+func (me *App) makeMainViewMenu(menubar *qt.QMenuBar) {
 	me.viewMenu = menubar.AddMenuWithTitle("&View")
 	// TODO   &Visible Cards
 	// TODO   &Unboxed Cards
@@ -171,6 +196,9 @@ func (me *App) MakeMainMenu() {
 	// TODO   &Card… # choice of cards
 	// TODO   &Box… # choice of boxes
 	// TODO   &Search… # choice of searches
+}
+
+func (me *App) makeMainWindowMenu(menubar *qt.QMenuBar) {
 	me.windowMenu = menubar.AddMenuWithTitle("&Window")
 	// TODO   &Next Ctrl+Tab
 	// TODO   &Previous Ctrl+Shift+Tab
@@ -178,6 +206,9 @@ func (me *App) MakeMainMenu() {
 	// TODO   &Tile
 	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
 	// TODO   &Close Ctrl+W
+}
+
+func (me *App) makeMainHelpMenu(menubar *qt.QMenuBar) {
 	me.helpMenu = menubar.AddMenuWithTitle("&Help")
 	me.helpMenu.AddAction(me.helpHelpAction)
 	me.helpMenu.AddAction(me.helpAboutAction)
