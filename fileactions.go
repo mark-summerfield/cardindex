@@ -36,7 +36,7 @@ func (me *App) fileSaveAs() {
 func (me *App) fileExport() {
 	//   Dialog
 	//		All | Box (choice) | Search (choice) | Card (choice)
-	//		HTML | CommonMark | PDF
+	//		HTML | CommonMark | ODF | PDF
 	//      One card per page | One box per page | Continuous
 	fmt.Println("fileExport") // TODO
 }

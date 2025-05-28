@@ -31,7 +31,7 @@
      borderopacity="1.0"
      inkscape:current-layer="layer1"
      inkscape:cx="154.93535"
-     inkscape:cy="79.228306"
+     inkscape:cy="79.619557"
      inkscape:window-width="932"
      inkscape:pageopacity="0.0"
      inkscape:document-units="px"
@@ -43,7 +43,7 @@
      inkscape:groupmode="layer"
      transform="translate(-20.06201,-408.56534)"><rect
        id="rect12728"
-       style="fill:#eef4d7;stroke:#89a02c;stroke-width:2.5;stroke-dasharray:none"
+       style="fill:#eef4d7;stroke:#008000;stroke-width:2.5;stroke-dasharray:none"
        height="179.71001"
        width="263.47842"
        y="468.71033"
@@ -108,7 +108,7 @@
        y="433.80792"
        id="text295"><tspan
          sodipodi:role="line"
-         id="tspan293"></tspan></text></g><metadata
+         id="tspan293" /></text></g><metadata
      id="metadata64"><rdf:RDF><cc:Work><dc:format>image/svg+xml</dc:format><dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><cc:license
            rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" /><dc:publisher><cc:Agent

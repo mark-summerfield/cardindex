@@ -2,10 +2,11 @@ cardindex.go
 app.go
 mainwindow.go # TODO
 actions.go
-fileactions.go
-editactions.go
+fileactions.go # TODO
+editactions.go # TODO
+cardactions.go # TODO
 gui.go
-config.go
+config.go # TODO MostRecentFile & RecentFiles
 model.go
 model_config.go
 model_cards.go
@@ -33,15 +34,6 @@ st.sh
 # TODO config recentfiles + file menu recent files handling
 
 # TODO Menus
-#
-# &Card
-#   &New F7
-#   &Add to Box…
-#   &Remove from Box…
-#   &Export… # HTML | CommonMark | PDF
-#   &Unhide
-#   &Hide
-#   &Delete
 #
 # &Box
 #   &New F8
