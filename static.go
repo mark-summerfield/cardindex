@@ -46,6 +46,10 @@ const (
 	SVG_CARD_UNHIDE          = "card-unhide.svg"
 	SVG_CARD_HIDE            = "card-hide.svg"
 	SVG_CARD_DELETE          = "card-delete.svg"
+	SVG_BOX_NEW              = "box-new.svg"
+	SVG_BOX_ADD_FROM_SEARCH  = "box-add-from-search.svg"
+	SVG_BOX_ADD_FROM_BOX     = "box-add-from-box.svg"
+	SVG_BOX_DELETE           = "box-delete.svg"
 
 	TIMEOUT_LONG = 10000
 

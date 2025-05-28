@@ -11,23 +11,32 @@ import (
 )
 
 type App struct {
-	config                  *Config
-	model                   *Model
-	window                  *qt.QMainWindow
-	mdiArea                 *qt.QMdiArea
-	statusIndicator         *qt.QLabel
-	fileMenu                *qt.QMenu
-	fileNewAction           *qt.QAction
-	fileOpenAction          *qt.QAction
-	fileSaveAction          *qt.QAction
-	fileSaveAsAction        *qt.QAction
-	fileExportAction        *qt.QAction
-	fileConfigureAction     *qt.QAction
-	fileQuitAction          *qt.QAction
-	editMenu                *qt.QMenu
-	editCopyAction          *qt.QAction
-	editCutAction           *qt.QAction
-	editPasteAction         *qt.QAction
+	config              *Config
+	model               *Model
+	window              *qt.QMainWindow
+	mdiArea             *qt.QMdiArea
+	statusIndicator     *qt.QLabel
+	fileMenu            *qt.QMenu
+	fileNewAction       *qt.QAction
+	fileOpenAction      *qt.QAction
+	fileSaveAction      *qt.QAction
+	fileSaveAsAction    *qt.QAction
+	fileExportAction    *qt.QAction
+	fileConfigureAction *qt.QAction
+	fileQuitAction      *qt.QAction
+	editMenu            *qt.QMenu
+	// TODO &Undo	editUndoAction
+	// TODO &Redo	editRedoAction
+	editCopyAction  *qt.QAction
+	editCutAction   *qt.QAction
+	editPasteAction *qt.QAction
+	// TODO &Bold			editBoldAction
+	// TODO &Italic			editItalicAction
+	// TODO &Monospace		editMonospaceAction
+	// TODO &Bullet List	editBulletListAction
+	// TODO &Numbered List	editNumberedListAction
+	// TODO &Clear List		editClearListAction
+	// TODO Insert &Symbol	editInsertSymbolAction
 	cardMenu                *qt.QMenu
 	cardNewAction           *qt.QAction
 	cardAddToBoxAction      *qt.QAction
@@ -36,6 +45,19 @@ type App struct {
 	cardUnhideAction        *qt.QAction
 	cardHideAction          *qt.QAction
 	cardDeleteAction        *qt.QAction
+	boxMenu                 *qt.QMenu
+	boxNewAction            *qt.QAction
+	boxAddFromSearchAction  *qt.QAction
+	boxAddFromBoxAction     *qt.QAction
+	boxDeleteAction         *qt.QAction
+	searchMenu              *qt.QMenu
+	// TODO actions
+	viewMenu *qt.QMenu
+	// TODO actions
+	windowMenu *qt.QMenu
+	// TODO actions
+	helpMenu *qt.QMenu
+	// TODO actions
 }
 
 func NewApp() *App {

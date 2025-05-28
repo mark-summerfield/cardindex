@@ -5,6 +5,11 @@ actions.go
 fileactions.go # TODO
 editactions.go # TODO
 cardactions.go # TODO
+# TODO boxactions.go
+# TODO searchactions.go
+# TODO viewactions.go
+# TODO windowactions.go
+# TODO helpactions.go
 gui.go
 config.go # TODO MostRecentFile & RecentFiles
 model.go
@@ -32,39 +37,7 @@ st.sh
 
 # TODO config load/save last .cix file
 # TODO config recentfiles + file menu recent files handling
-
-# TODO Menus
-#
-# &Box
-#   &New F8
-#   &Add Cards from Search…
-#   &Add Cards from Box…
-#   &Delete
-#
-# &Search
-#   &New F9
-#   &Delete
-#
-# &View
-#   &Visible Cards
-#   &Unboxed Cards
-#   &Hidden Cards
-#   &Card… # choice of cards
-#   &Box… # choice of boxes
-#   &Search… # choice of searches
-#
-# &Window
-#   &Next Ctrl+Tab
-#   &Previous Ctrl+Shift+Tab
-#   &Cascade
-#   &Tile
-#   &Windows → 1. | 2. | … | 9. | A. | … | Z.
-#   &Close Ctrl+W
-#
-# &Help
-#   &Help F1
-#   &About # VERSION & miQt version & Qt version & SqliteVersion()
-#
+# TODO complete Search, View, Window, Help, Edit menus
 # TODO More shortcuts?
 
 # TODO 4 MDI window types (each with its own unique type-specific icon):

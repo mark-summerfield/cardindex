@@ -17,8 +17,10 @@ func (me *App) MakeMainWindow() {
 
 func (me *App) MakeActions() {
 	me.makeFileActions()
-	me.makeEditActions()
+	me.makeEditActions() // TODO complete
 	me.makeCardActions()
+	me.makeBoxActions()
+	// TODO Search View Window Help
 }
 
 func (me *App) makeFileActions() {
@@ -84,7 +86,22 @@ func (me *App) makeCardActions() {
 		"&Delete…")
 	me.cardDeleteAction.SetToolTip(
 		"Permanently delete the current card: it is safer to Hide cards")
-	// TODO
+}
+
+func (me *App) makeBoxActions() {
+	me.boxNewAction = qt.NewQAction3(getIcon(SVG_BOX_NEW), "&New…")
+	me.boxNewAction.SetToolTip("Create a new box")
+	me.boxNewAction.SetShortcut(qt.NewQKeySequence3(int(qt.Key_F8)))
+	me.boxAddFromSearchAction = qt.NewQAction3(
+		getIcon(SVG_BOX_ADD_FROM_SEARCH), "Add Cards from &Search…")
+	me.boxAddFromSearchAction.SetToolTip(
+		"Add cards from the specified search to the current box")
+	me.boxAddFromBoxAction = qt.NewQAction3(
+		getIcon(SVG_BOX_ADD_FROM_BOX), "Add Cards from &Box…")
+	me.boxAddFromBoxAction.SetToolTip(
+		"Add cards from the specified box to the current box")
+	me.boxDeleteAction = qt.NewQAction3(getIcon(SVG_BOX_DELETE), "&Delete…")
+	me.boxDeleteAction.SetToolTip("Permanently delete the current box")
 }
 
 func (me *App) MakeMainMenu() {
@@ -100,9 +117,19 @@ func (me *App) MakeMainMenu() {
 	me.fileMenu.AddSeparator()
 	me.fileMenu.AddAction(me.fileQuitAction)
 	me.editMenu = menubar.AddMenuWithTitle("&Edit")
+	// TODO &Undo
+	// TODO &Redo
 	me.editMenu.AddAction(me.editCopyAction)
 	me.editMenu.AddAction(me.editCutAction)
 	me.editMenu.AddAction(me.editPasteAction)
+	// TODO &Bold
+	// TODO &Italic
+	// TODO &Monospace
+	// TODO &Bullet List
+	// TODO &Numbered List
+	// TODO &Clear List
+	// TODO Insert &Symbol…
+
 	me.cardMenu = menubar.AddMenuWithTitle("&Card")
 	me.cardMenu.AddAction(me.cardNewAction)
 	me.cardMenu.AddSeparator()
@@ -115,7 +142,33 @@ func (me *App) MakeMainMenu() {
 	me.cardMenu.AddAction(me.cardHideAction)
 	me.cardMenu.AddSeparator()
 	me.cardMenu.AddAction(me.cardDeleteAction)
-	// TODO
+	me.boxMenu = menubar.AddMenuWithTitle("&Box")
+	me.boxMenu.AddAction(me.boxNewAction)
+	me.boxMenu.AddSeparator()
+	me.boxMenu.AddAction(me.boxAddFromSearchAction)
+	me.boxMenu.AddAction(me.boxAddFromBoxAction)
+	me.boxMenu.AddSeparator()
+	me.boxMenu.AddAction(me.boxDeleteAction)
+	me.searchMenu = menubar.AddMenuWithTitle("&Search")
+	// TODO   &New F9
+	// TODO   &Delete
+	me.viewMenu = menubar.AddMenuWithTitle("&View")
+	// TODO   &Visible Cards
+	// TODO   &Unboxed Cards
+	// TODO   &Hidden Cards
+	// TODO   &Card… # choice of cards
+	// TODO   &Box… # choice of boxes
+	// TODO   &Search… # choice of searches
+	me.windowMenu = menubar.AddMenuWithTitle("&Window")
+	// TODO   &Next Ctrl+Tab
+	// TODO   &Previous Ctrl+Shift+Tab
+	// TODO   &Cascade
+	// TODO   &Tile
+	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
+	// TODO   &Close Ctrl+W
+	me.helpMenu = menubar.AddMenuWithTitle("&Help")
+	// TODO  &Help F1
+	// TODO  &About # VERSION & miQt version & Qt version & SqliteVersion()
 }
 
 func (me *App) MakeToolbars() {
@@ -143,8 +196,6 @@ func (me *App) MakeToolbars() {
 	cardToolbar.AddSeparator()
 	cardToolbar.AddAction(me.cardUnhideAction)
 	cardToolbar.AddAction(me.cardHideAction)
-	cardToolbar.AddSeparator()
-	cardToolbar.AddAction(me.cardDeleteAction)
 	// TODO
 }
 
