@@ -48,6 +48,8 @@ const (
 	SVG_BOX_DELETE           = "box-delete.svg"
 	SVG_HELP_HELP            = "help.svg"
 	SVG_HELP_ABOUT           = "about.svg"
+	SVG_SEARCH_NEW           = "search-new.svg"
+	SVG_SEARCH_DELETE        = "search-delete.svg"
 )
 
 // var E100 = errors.New("E100: failed to get counts")

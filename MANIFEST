@@ -1,12 +1,12 @@
 cardindex.go
-app.go
+app.go # TODO
 mainwindow.go # TODO
 actions.go
 fileactions.go # TODO
 editactions.go # TODO
 cardactions.go # TODO
 boxactions.go
-# TODO searchactions.go
+searchactions.go
 # TODO viewactions.go
 # TODO windowactions.go
 helpactions.go

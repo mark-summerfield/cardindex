@@ -20,7 +20,9 @@ func (me *App) MakeActions() {
 	me.makeEditActions() // TODO complete
 	me.makeCardActions()
 	me.makeBoxActions()
-	// TODO Search View Window Help
+	me.makeSearchActions()
+	// TODO View
+	// TODO Window
 	me.makeHelpActions()
 }
 
@@ -105,6 +107,16 @@ func (me *App) makeBoxActions() {
 	me.boxDeleteAction.SetToolTip("Permanently delete the current box")
 }
 
+func (me *App) makeSearchActions() {
+	me.searchNewAction = qt.NewQAction3(getIcon(SVG_SEARCH_NEW), "&New")
+	me.searchNewAction.SetToolTip("Create a new search")
+	me.searchNewAction.SetShortcut(qt.NewQKeySequence3(int(qt.Key_F9)))
+	me.searchDeleteAction = qt.NewQAction3(getIcon(SVG_SEARCH_DELETE),
+		"&Delete…")
+	me.searchDeleteAction.SetToolTip(
+		"Permanently delete the current search")
+}
+
 func (me *App) makeHelpActions() {
 	me.helpHelpAction = qt.NewQAction3(getIcon(SVG_HELP_HELP), "&Help")
 	me.helpHelpAction.SetToolTip("Show help")
@@ -184,8 +196,10 @@ func (me *App) makeMainBoxMenu(menubar *qt.QMenuBar) {
 
 func (me *App) makeMainSearchMenu(menubar *qt.QMenuBar) {
 	me.searchMenu = menubar.AddMenuWithTitle("&Search")
-	// TODO   &New F9
-	// TODO   &Delete
+	me.searchMenu.AddAction(me.searchNewAction)
+	me.searchMenu.AddSeparator()
+	me.searchMenu.AddSeparator()
+	me.searchMenu.AddAction(me.searchDeleteAction)
 }
 
 func (me *App) makeMainViewMenu(menubar *qt.QMenuBar) {
@@ -246,6 +260,10 @@ func (me *App) MakeToolbars() {
 	boxToolbar.AddSeparator()
 	boxToolbar.AddAction(me.boxAddFromSearchAction)
 	boxToolbar.AddAction(me.boxAddFromBoxAction)
+	const SEARCH = "Search"
+	searchToolbar := me.window.AddToolBarWithTitle(SEARCH)
+	searchToolbar.SetObjectName(*qt.NewQAnyStringView3(SEARCH))
+	searchToolbar.AddAction(me.searchNewAction)
 	// TODO
 }
 
@@ -266,7 +284,6 @@ func (me *App) MakeStatusBar() {
 }
 
 func (me *App) MakeConnections() {
-	// TODO
 	me.fileNewAction.OnTriggered(func() { me.fileNew() })
 	me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
 	me.fileSaveAction.OnTriggered(func() { me.fileSave() })
@@ -289,6 +306,8 @@ func (me *App) MakeConnections() {
 	me.boxAddFromSearchAction.OnTriggered(func() { me.boxAddFromSearch() })
 	me.boxAddFromBoxAction.OnTriggered(func() { me.boxAddFromBox() })
 	me.boxDeleteAction.OnTriggered(func() { me.boxDelete() })
+	me.searchNewAction.OnTriggered(func() { me.searchNew() })
+	me.searchDeleteAction.OnTriggered(func() { me.searchDelete() })
 	// TODO
 	me.helpHelpAction.OnTriggered(func() { me.helpHelp() })
 	me.helpAboutAction.OnTriggered(func() { me.helpAbout() })

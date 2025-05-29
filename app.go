@@ -52,8 +52,9 @@ type App struct {
 	boxAddFromBoxAction     *qt.QAction
 	boxDeleteAction         *qt.QAction
 	searchMenu              *qt.QMenu
-	// TODO actions
-	viewMenu *qt.QMenu
+	searchNewAction         *qt.QAction
+	searchDeleteAction      *qt.QAction
+	viewMenu                *qt.QMenu
 	// TODO actions
 	windowMenu *qt.QMenu
 	// TODO actions
