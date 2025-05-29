@@ -29,6 +29,7 @@ const (
 
 	SQL_BEGIN    = "BEGIN;"
 	SQL_COMMIT   = "COMMIT;"
+	SQL_ROLLBACK = "ROLLBACK;"
 	SQL_OPTIMIZE = `INSERT INTO vt_fts_cards(vt_fts_cards)
 						VALUES ('optimize');
 					VACUUM;`

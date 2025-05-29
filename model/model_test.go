@@ -233,7 +233,7 @@ func Test_New2(t *testing.T) {
 		t.Errorf("expected 1 boxes; got: %d", len(boxes))
 	}
 	cid := 3
-	err = model.BoxAddCard(cid, bid2)
+	err = model.BoxAddCards(bid2, cid)
 	checkErr(t, err)
 	if err = model.BoxDelete(bid2); err == nil {
 		t.Errorf("expected error deleting box %d", bid2)
@@ -243,7 +243,7 @@ func Test_New2(t *testing.T) {
 	if !in_use {
 		t.Errorf("expected box %d to be in use", bid2)
 	}
-	err = model.BoxRemoveCard(cid, bid2)
+	err = model.BoxRemoveCard(bid2, cid)
 	checkErr(t, err)
 	in_use, err = model.BoxInUse(bid2)
 	checkErr(t, err)

@@ -40,12 +40,24 @@ func (me *Model) BoxDelete(bid int) error {
 	return err
 }
 
-func (me *Model) BoxAddCard(cid, bid int) error {
-	_, err := me.db.Exec(SQL_BOX_ADD_CARD, cid, bid)
+func (me *Model) BoxAddCards(bid int, cids ...int) error {
+	var err error
+	if _, err = me.db.Exec(SQL_BEGIN); err == nil {
+		for _, cid := range cids {
+			if _, err = me.db.Exec(SQL_BOX_ADD_CARD, cid, bid); err != nil {
+				break
+			}
+		}
+		if err == nil {
+			_, err = me.db.Exec(SQL_COMMIT)
+		} else {
+			_, err = me.db.Exec(SQL_ROLLBACK)
+		}
+	}
 	return err
 }
 
-func (me *Model) BoxRemoveCard(cid, bid int) error {
+func (me *Model) BoxRemoveCard(bid, cid int) error {
 	_, err := me.db.Exec(SQL_BOX_REMOVE_CARD, cid, bid)
 	return err
 }
