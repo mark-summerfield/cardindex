@@ -5,6 +5,8 @@ package main
 
 import (
 	"log"
+	"runtime/debug"
+	"strings"
 
 	qt "github.com/mappu/miqt/qt6"
 )
@@ -19,4 +21,16 @@ func getIcon(filename string) *qt.QIcon {
 		pixmap := qt.QPixmap_FromImage(image)
 		return qt.NewQIcon2(pixmap)
 	}
+}
+
+func MiqtVersion() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, dependency := range info.Deps {
+			if strings.Contains(dependency.Path, "miqt") {
+				version, _ := strings.CutPrefix(dependency.Version, "v")
+				return version
+			}
+		}
+	}
+	return ""
 }

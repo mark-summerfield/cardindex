@@ -15,6 +15,11 @@ import (
 	"github.com/mark-summerfield/cardindex/model"
 )
 
+var (
+	distro      string
+	lsb_release bool
+)
+
 func (me *App) helpHelp() {
 	fmt.Println("helpHelp") // TODO
 }
@@ -31,10 +36,13 @@ func aboutHtml() string {
 	} else {
 		year = fmt.Sprintf("2025-%d", y-2000)
 	}
-	distro := ""
-	if out, err := exec.Command("lsb_release",
-		"-ds").Output(); err == nil {
-		distro = strings.TrimSpace(string(out))
+	if !lsb_release {
+		if raw, err := exec.Command("lsb_release",
+			"-ds").Output(); err == nil {
+			distro = fmt.Sprintf("<font color=#222>%s</font><br>",
+				strings.TrimSpace(string(raw)))
+		}
+		lsb_release = true
 	}
 	var utsname syscall.Utsname
 	_ = syscall.Uname(&utsname)
@@ -42,7 +50,7 @@ func aboutHtml() string {
 	cpu := int8ToStr(utsname.Machine[:])
 	release := int8ToStr(utsname.Release[:])
 	sqlite_version, _ := model.SqliteVersion()
-	// TODO use qVersion() for Qt
+	qt_version := qt.QLibraryInfo_Version().ToString()
 	return fmt.Sprintf(
 		`<h3 align=center><font color=navy>%s v%s</font></h3>
 <p align=center><font color=navy>A software implementation<br>of a
@@ -57,10 +65,12 @@ All rights reserved.<br>
 License: GPLv3.
 </p>
 <p align=center><font color=#222>%s (%s/%s)</font><br>
-<font color=#222>Qt 6 • SQLite %s</font><br>
-<font color=#222>%s</font><br>
+<font color=#222>miQt %s • Qt %s</font><br>
+<font color=#222>SQLite %s</font><br>
+%s
 <font color=#222>%s-%s/%s</font><br>
 </p>`,
 		APPNAME, Version, year, runtime.Version(), runtime.GOOS,
-		runtime.GOARCH, sqlite_version, distro, sysname, release, cpu)
+		runtime.GOARCH, MiqtVersion(), qt_version, sqlite_version, distro,
+		sysname, release, cpu)
 }
