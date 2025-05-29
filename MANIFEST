@@ -11,6 +11,7 @@ boxactions.go
 # TODO windowactions.go
 helpactions.go
 gui.go
+misc.go
 config.go # TODO MostRecentFile & RecentFiles
 static.go
 
