@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	qt "github.com/mappu/miqt/qt6"
+	"github.com/mappu/miqt/qt"
 )
 
 func (me *App) fileMenuUpdate() {
@@ -25,21 +25,21 @@ func (me *App) fileMenuUpdate() {
 			action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
 			action.SetToolTip("Open " + filename)
 			action.OnTriggered(func() { me.fileOpenRecent(filename) })
-			me.fileMenu.AddAction(action)
+			me.fileMenu.QWidget.AddAction(action)
 		}
 	}
 }
 
 func (me *App) addFileActions() {
-	me.fileMenu.AddAction(me.fileNewAction)
-	me.fileMenu.AddAction(me.fileOpenAction)
-	me.fileMenu.AddAction(me.fileSaveAction)
-	me.fileMenu.AddAction(me.fileSaveAsAction)
-	me.fileMenu.AddAction(me.fileExportAction)
+	me.fileMenu.QWidget.AddAction(me.fileNewAction)
+	me.fileMenu.QWidget.AddAction(me.fileOpenAction)
+	me.fileMenu.QWidget.AddAction(me.fileSaveAction)
+	me.fileMenu.QWidget.AddAction(me.fileSaveAsAction)
+	me.fileMenu.QWidget.AddAction(me.fileExportAction)
 	me.fileMenu.AddSeparator()
-	me.fileMenu.AddAction(me.fileConfigureAction)
+	me.fileMenu.QWidget.AddAction(me.fileConfigureAction)
 	me.fileMenu.AddSeparator()
-	me.fileMenu.AddAction(me.fileQuitAction)
+	me.fileMenu.QWidget.AddAction(me.fileQuitAction)
 }
 
 func (me *App) makeFileConnections() {

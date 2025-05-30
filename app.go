@@ -6,7 +6,7 @@ package main
 import (
 	"log"
 
-	qt "github.com/mappu/miqt/qt6"
+	"github.com/mappu/miqt/qt"
 	"github.com/mark-summerfield/cardindex/model"
 	"github.com/mark-summerfield/ufile"
 )

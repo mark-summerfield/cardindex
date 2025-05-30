@@ -8,7 +8,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	qt "github.com/mappu/miqt/qt6"
+	"github.com/mappu/miqt/qt"
 )
 
 func getIcon(filename string) *qt.QIcon {

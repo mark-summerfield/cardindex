@@ -4,7 +4,7 @@
 package main
 
 import (
-	qt "github.com/mappu/miqt/qt6"
+	"github.com/mappu/miqt/qt"
 )
 
 func (me *App) MakeMainWindow() {
@@ -160,9 +160,9 @@ func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
 	me.editMenu = menubar.AddMenuWithTitle("&Edit")
 	// TODO &Undo
 	// TODO &Redo
-	me.editMenu.AddAction(me.editCopyAction)
-	me.editMenu.AddAction(me.editCutAction)
-	me.editMenu.AddAction(me.editPasteAction)
+	me.editMenu.QWidget.AddAction(me.editCopyAction)
+	me.editMenu.QWidget.AddAction(me.editCutAction)
+	me.editMenu.QWidget.AddAction(me.editPasteAction)
 	// TODO &Bold
 	// TODO &Italic
 	// TODO &Monospace
@@ -176,39 +176,39 @@ func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
 
 func (me *App) makeMainCardMenu(menubar *qt.QMenuBar) {
 	me.cardMenu = menubar.AddMenuWithTitle("&Card")
-	me.cardMenu.AddAction(me.cardNewAction)
-	me.cardMenu.AddAction(me.cardViewVisibleAction)
-	me.cardMenu.AddAction(me.cardViewUnboxedAction)
-	me.cardMenu.AddAction(me.cardViewHiddenAction)
+	me.cardMenu.QWidget.AddAction(me.cardNewAction)
+	me.cardMenu.QWidget.AddAction(me.cardViewVisibleAction)
+	me.cardMenu.QWidget.AddAction(me.cardViewUnboxedAction)
+	me.cardMenu.QWidget.AddAction(me.cardViewHiddenAction)
 	me.cardMenu.AddSeparator()
-	me.cardMenu.AddAction(me.cardAddToBoxAction)
-	me.cardMenu.AddAction(me.cardRemoveFromBoxAction)
+	me.cardMenu.QWidget.AddAction(me.cardAddToBoxAction)
+	me.cardMenu.QWidget.AddAction(me.cardRemoveFromBoxAction)
 	me.cardMenu.AddSeparator()
-	me.cardMenu.AddAction(me.cardExportAction)
+	me.cardMenu.QWidget.AddAction(me.cardExportAction)
 	me.cardMenu.AddSeparator()
-	me.cardMenu.AddAction(me.cardUnhideAction)
-	me.cardMenu.AddAction(me.cardHideAction)
+	me.cardMenu.QWidget.AddAction(me.cardUnhideAction)
+	me.cardMenu.QWidget.AddAction(me.cardHideAction)
 	me.cardMenu.AddSeparator()
-	me.cardMenu.AddAction(me.cardDeleteAction)
+	me.cardMenu.QWidget.AddAction(me.cardDeleteAction)
 }
 
 func (me *App) makeMainBoxMenu(menubar *qt.QMenuBar) {
 	me.boxMenu = menubar.AddMenuWithTitle("&Box")
-	me.boxMenu.AddAction(me.boxNewAction)
-	me.boxMenu.AddAction(me.boxViewAction)
+	me.boxMenu.QWidget.AddAction(me.boxNewAction)
+	me.boxMenu.QWidget.AddAction(me.boxViewAction)
 	me.boxMenu.AddSeparator()
-	me.boxMenu.AddAction(me.boxAddFromSearchAction)
-	me.boxMenu.AddAction(me.boxAddFromBoxAction)
+	me.boxMenu.QWidget.AddAction(me.boxAddFromSearchAction)
+	me.boxMenu.QWidget.AddAction(me.boxAddFromBoxAction)
 	me.boxMenu.AddSeparator()
-	me.boxMenu.AddAction(me.boxDeleteAction)
+	me.boxMenu.QWidget.AddAction(me.boxDeleteAction)
 }
 
 func (me *App) makeMainSearchMenu(menubar *qt.QMenuBar) {
 	me.searchMenu = menubar.AddMenuWithTitle("&Search")
-	me.searchMenu.AddAction(me.searchNewAction)
-	me.searchMenu.AddAction(me.searchViewAction)
+	me.searchMenu.QWidget.AddAction(me.searchNewAction)
+	me.searchMenu.QWidget.AddAction(me.searchViewAction)
 	me.searchMenu.AddSeparator()
-	me.searchMenu.AddAction(me.searchDeleteAction)
+	me.searchMenu.QWidget.AddAction(me.searchDeleteAction)
 }
 
 func (me *App) makeMainWindowMenu(menubar *qt.QMenuBar) {
@@ -223,49 +223,49 @@ func (me *App) makeMainWindowMenu(menubar *qt.QMenuBar) {
 
 func (me *App) makeMainHelpMenu(menubar *qt.QMenuBar) {
 	me.helpMenu = menubar.AddMenuWithTitle("&Help")
-	me.helpMenu.AddAction(me.helpHelpAction)
-	me.helpMenu.AddAction(me.helpAboutAction)
+	me.helpMenu.QWidget.AddAction(me.helpHelpAction)
+	me.helpMenu.QWidget.AddAction(me.helpAboutAction)
 }
 
 func (me *App) MakeToolbars() {
 	const FILE = "File"
 	fileToolbar := me.window.AddToolBarWithTitle(FILE)
-	fileToolbar.SetObjectName(*qt.NewQAnyStringView3(FILE))
-	fileToolbar.AddAction(me.fileNewAction)
-	fileToolbar.AddAction(me.fileOpenAction)
-	fileToolbar.AddAction(me.fileSaveAction)
+	fileToolbar.SetObjectName(FILE)
+	fileToolbar.QWidget.AddAction(me.fileNewAction)
+	fileToolbar.QWidget.AddAction(me.fileOpenAction)
+	fileToolbar.QWidget.AddAction(me.fileSaveAction)
 	const EDIT = "Edit"
 	editToolbar := me.window.AddToolBarWithTitle(EDIT)
-	editToolbar.SetObjectName(*qt.NewQAnyStringView3(EDIT))
-	editToolbar.AddAction(me.editCopyAction)
-	editToolbar.AddAction(me.editCutAction)
-	editToolbar.AddAction(me.editPasteAction)
+	editToolbar.SetObjectName(EDIT)
+	editToolbar.QWidget.AddAction(me.editCopyAction)
+	editToolbar.QWidget.AddAction(me.editCutAction)
+	editToolbar.QWidget.AddAction(me.editPasteAction)
 	const CARD = "Card"
 	cardToolbar := me.window.AddToolBarWithTitle(CARD)
-	cardToolbar.SetObjectName(*qt.NewQAnyStringView3(CARD))
-	cardToolbar.AddAction(me.cardNewAction)
-	cardToolbar.AddAction(me.cardViewVisibleAction)
+	cardToolbar.SetObjectName(CARD)
+	cardToolbar.QWidget.AddAction(me.cardNewAction)
+	cardToolbar.QWidget.AddAction(me.cardViewVisibleAction)
 	cardToolbar.AddSeparator()
-	cardToolbar.AddAction(me.cardAddToBoxAction)
-	cardToolbar.AddAction(me.cardRemoveFromBoxAction)
+	cardToolbar.QWidget.AddAction(me.cardAddToBoxAction)
+	cardToolbar.QWidget.AddAction(me.cardRemoveFromBoxAction)
 	cardToolbar.AddSeparator()
-	cardToolbar.AddAction(me.cardExportAction)
+	cardToolbar.QWidget.AddAction(me.cardExportAction)
 	cardToolbar.AddSeparator()
-	cardToolbar.AddAction(me.cardUnhideAction)
-	cardToolbar.AddAction(me.cardHideAction)
+	cardToolbar.QWidget.AddAction(me.cardUnhideAction)
+	cardToolbar.QWidget.AddAction(me.cardHideAction)
 	const BOX = "Box"
 	boxToolbar := me.window.AddToolBarWithTitle(BOX)
-	boxToolbar.SetObjectName(*qt.NewQAnyStringView3(BOX))
-	boxToolbar.AddAction(me.boxNewAction)
-	boxToolbar.AddAction(me.boxViewAction)
+	boxToolbar.SetObjectName(BOX)
+	boxToolbar.QWidget.AddAction(me.boxNewAction)
+	boxToolbar.QWidget.AddAction(me.boxViewAction)
 	boxToolbar.AddSeparator()
-	boxToolbar.AddAction(me.boxAddFromSearchAction)
-	boxToolbar.AddAction(me.boxAddFromBoxAction)
+	boxToolbar.QWidget.AddAction(me.boxAddFromSearchAction)
+	boxToolbar.QWidget.AddAction(me.boxAddFromBoxAction)
 	const SEARCH = "Search"
 	searchToolbar := me.window.AddToolBarWithTitle(SEARCH)
-	searchToolbar.SetObjectName(*qt.NewQAnyStringView3(SEARCH))
-	searchToolbar.AddAction(me.searchNewAction)
-	searchToolbar.AddAction(me.searchViewAction)
+	searchToolbar.SetObjectName(SEARCH)
+	searchToolbar.QWidget.AddAction(me.searchNewAction)
+	searchToolbar.QWidget.AddAction(me.searchViewAction)
 	// TODO
 }
 

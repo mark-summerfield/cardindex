@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	qt "github.com/mappu/miqt/qt6"
+	"github.com/mappu/miqt/qt"
 	"github.com/mark-summerfield/cardindex/model"
 )
 
@@ -60,7 +60,7 @@ card index system.</font></p>
 href="https://github.com/mark-summerfield/cardindex">https://github.com/mark-summerfield/cardindex</a>
 </p>
 <p align=center>
-<font color=green>Copyright © %s Mark Summerfield.<br>
+<font color=green>Copyright © %s<br>Mark Summerfield.<br>
 All rights reserved.<br>
 License: GPLv3.
 </p>
