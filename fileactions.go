@@ -5,18 +5,67 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
+
+	qt "github.com/mappu/miqt/qt6"
 )
+
+func (me *App) fileMenuUpdate() {
+	me.fileMenu.Clear()
+	me.addFileActions()
+	me.makeFileConnections()
+	if files := me.config.RecentFiles.Files(); len(files) > 0 {
+		me.fileMenu.AddSeparator()
+		var action *qt.QAction
+		for i, filename := range files {
+			text := filepath.Base(filename)
+			if i < 9 {
+				text = fmt.Sprintf("&%d %s", i+1, text)
+			}
+			action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
+			action.SetToolTip("Open " + filename)
+			action.OnTriggered(func() { me.fileOpenRecent(filename) })
+			me.fileMenu.AddAction(action)
+		}
+	}
+}
+
+func (me *App) addFileActions() {
+	me.fileMenu.AddAction(me.fileNewAction)
+	me.fileMenu.AddAction(me.fileOpenAction)
+	me.fileMenu.AddAction(me.fileSaveAction)
+	me.fileMenu.AddAction(me.fileSaveAsAction)
+	me.fileMenu.AddAction(me.fileExportAction)
+	me.fileMenu.AddSeparator()
+	me.fileMenu.AddAction(me.fileConfigureAction)
+	me.fileMenu.AddSeparator()
+	me.fileMenu.AddAction(me.fileQuitAction)
+}
+
+func (me *App) makeFileConnections() {
+	me.fileNewAction.OnTriggered(func() { me.fileNew() })
+	me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
+	me.fileSaveAction.OnTriggered(func() { me.fileSave() })
+	me.fileSaveAsAction.OnTriggered(func() { me.fileSaveAs() })
+	me.fileExportAction.OnTriggered(func() { me.fileExport() })
+	me.fileConfigureAction.OnTriggered(func() { me.fileConfigure() })
+	me.fileQuitAction.OnTriggered(func() { me.window.Close() })
+}
 
 func (me *App) fileNew() {
 	//   Builtin Dialog: choose nonexistent filename
-	// loadModel(filename)
+	// me.loadModel(filename)
 	fmt.Println("fileNew") // TODO
 }
 
 func (me *App) fileOpen() {
 	//   Builtin Dialog: choose existing filename
-	// loadModel(filename)
+	// me.loadModel(filename)
 	fmt.Println("fileOpen") // TODO
+}
+
+func (me *App) fileOpenRecent(filename string) {
+	me.loadModel(filename)
 }
 
 func (me *App) fileSave() {
@@ -30,7 +79,7 @@ func (me *App) fileSaveAs() {
 	//	- copy .cix to new name
 	//	- close model
 	//	- open model using new name:
-	// loadModel(filename)
+	// me.loadModel(filename)
 	fmt.Println("fileSaveAs") // TODO
 }
 

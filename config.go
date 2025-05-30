@@ -12,6 +12,7 @@ import (
 
 	"github.com/mark-summerfield/ini"
 	"github.com/mark-summerfield/ufile"
+	"github.com/mark-summerfield/unum"
 )
 
 type Config struct {
@@ -51,8 +52,10 @@ func NewConfigFrom(filename string) *Config {
 		}
 		config.MostRecentFile = cfg.Str(ini.UNNAMED,
 			CONFIG_MOST_RECENT_FILE, "")
-		config.RecentFiles = NewRecentFiles(cfg.Int(ini.UNNAMED,
-			CONFIG_RECENT_FILES, DEFAULT_MAX_RECENT_FILES))
+		maximum := unum.Clamp(0, cfg.Int(ini.UNNAMED,
+			CONFIG_RECENT_FILES, DEFAULT_MAX_RECENT_FILES),
+			DEFAULT_MAX_RECENT_FILES)
+		config.RecentFiles = NewRecentFiles(maximum)
 		for i := range config.RecentFiles.maximum {
 			filename := cfg.Str(CONFIG_RECENT_FILES,
 				CONFIG_RECENT_FILE+strconv.Itoa(i+1), "")
@@ -77,12 +80,14 @@ func (me *Config) SaveTo(filename string) error {
 	}
 	cfg := ini.NewIni()
 	cfg.SetBool(ini.UNNAMED, CONFIG_CURSOR_BLINK, me.CursorBlink)
+	cfg.SetComment(ini.UNNAMED, CONFIG_CURSOR_BLINK, "true or false")
 	cfg.SetStr(CONFIG_WINDOW, CONFIG_WINDOW_GEOMETRY,
 		base64.StdEncoding.EncodeToString(me.WindowGeometry))
 	cfg.SetStr(CONFIG_WINDOW, CONFIG_WINDOW_STATE,
 		base64.StdEncoding.EncodeToString(me.WindowState))
 	cfg.SetStr(ini.UNNAMED, CONFIG_MOST_RECENT_FILE, me.MostRecentFile)
 	cfg.SetInt(ini.UNNAMED, CONFIG_MAX_RECENT_FILES, me.RecentFiles.maximum)
+	cfg.SetComment(ini.UNNAMED, CONFIG_MAX_RECENT_FILES, "0-9")
 	for i, filename := range me.RecentFiles.Files() {
 		cfg.SetStr(CONFIG_RECENT_FILES,
 			CONFIG_RECENT_FILE+strconv.Itoa(i+1), filename)

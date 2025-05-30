@@ -40,6 +40,9 @@ type App struct {
 	// TODO Insert &Symbol	editInsertSymbolAction
 	cardMenu                *qt.QMenu
 	cardNewAction           *qt.QAction
+	cardViewVisibleAction   *qt.QAction
+	cardViewUnboxedAction   *qt.QAction
+	cardViewHiddenAction    *qt.QAction
 	cardAddToBoxAction      *qt.QAction
 	cardRemoveFromBoxAction *qt.QAction
 	cardExportAction        *qt.QAction
@@ -48,15 +51,15 @@ type App struct {
 	cardDeleteAction        *qt.QAction
 	boxMenu                 *qt.QMenu
 	boxNewAction            *qt.QAction
+	boxViewAction           *qt.QAction
 	boxAddFromSearchAction  *qt.QAction
 	boxAddFromBoxAction     *qt.QAction
 	boxDeleteAction         *qt.QAction
 	searchMenu              *qt.QMenu
 	searchNewAction         *qt.QAction
+	searchViewAction        *qt.QAction
 	searchDeleteAction      *qt.QAction
-	viewMenu                *qt.QMenu
-	// TODO actions
-	windowMenu *qt.QMenu
+	windowMenu              *qt.QMenu
 	// TODO actions
 	helpMenu        *qt.QMenu
 	helpHelpAction  *qt.QAction

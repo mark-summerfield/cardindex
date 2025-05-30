@@ -21,7 +21,6 @@ func (me *App) MakeActions() {
 	me.makeCardActions()
 	me.makeBoxActions()
 	me.makeSearchActions()
-	// TODO View
 	// TODO Window
 	me.makeHelpActions()
 }
@@ -70,6 +69,15 @@ func (me *App) makeCardActions() {
 	me.cardNewAction = qt.NewQAction3(getIcon(SVG_CARD_NEW), "&New")
 	me.cardNewAction.SetToolTip("Create a new card")
 	me.cardNewAction.SetShortcut(qt.NewQKeySequence3(int(qt.Key_F7)))
+	me.cardViewVisibleAction = qt.NewQAction3(getIcon(SVG_VIEW_VISIBLE),
+		"&View Visible Cards")
+	me.cardViewVisibleAction.SetToolTip("View all visible cards")
+	me.cardViewUnboxedAction = qt.NewQAction3(getIcon(SVG_VIEW_UNBOXED),
+		"View Unboxed &Cards")
+	me.cardViewUnboxedAction.SetToolTip("View all unboxed cards")
+	me.cardViewHiddenAction = qt.NewQAction3(getIcon(SVG_VIEW_HIDDEN),
+		"V&iew Hidden Cards")
+	me.cardViewHiddenAction.SetToolTip("View all hidden cards")
 	me.cardAddToBoxAction = qt.NewQAction3(getIcon(SVG_CARD_ADD_TO_BOX),
 		"&Add to Box…")
 	me.cardAddToBoxAction.SetToolTip("Add the current card to a box")
@@ -95,6 +103,9 @@ func (me *App) makeBoxActions() {
 	me.boxNewAction = qt.NewQAction3(getIcon(SVG_BOX_NEW), "&New…")
 	me.boxNewAction.SetToolTip("Create a new box")
 	me.boxNewAction.SetShortcut(qt.NewQKeySequence3(int(qt.Key_F8)))
+	me.boxViewAction = qt.NewQAction3(getIcon(SVG_VIEW_BOXES),
+		"&View Boxes")
+	me.boxViewAction.SetToolTip("View all boxes")
 	me.boxAddFromSearchAction = qt.NewQAction3(
 		getIcon(SVG_BOX_ADD_FROM_SEARCH), "Add Cards from &Search…")
 	me.boxAddFromSearchAction.SetToolTip(
@@ -111,6 +122,9 @@ func (me *App) makeSearchActions() {
 	me.searchNewAction = qt.NewQAction3(getIcon(SVG_SEARCH_NEW), "&New")
 	me.searchNewAction.SetToolTip("Create a new search")
 	me.searchNewAction.SetShortcut(qt.NewQKeySequence3(int(qt.Key_F9)))
+	me.searchViewAction = qt.NewQAction3(getIcon(SVG_VIEW_SEARCHES),
+		"&View Searches")
+	me.searchViewAction.SetToolTip("View all searches")
 	me.searchDeleteAction = qt.NewQAction3(getIcon(SVG_SEARCH_DELETE),
 		"&Delete…")
 	me.searchDeleteAction.SetToolTip(
@@ -133,22 +147,13 @@ func (me *App) MakeMainMenu() {
 	me.makeMainCardMenu(menubar)
 	me.makeMainBoxMenu(menubar)
 	me.makeMainSearchMenu(menubar)
-	me.makeMainViewMenu(menubar)
 	me.makeMainWindowMenu(menubar)
 	me.makeMainHelpMenu(menubar)
 }
 
 func (me *App) makeMainFileMenu(menubar *qt.QMenuBar) {
 	me.fileMenu = menubar.AddMenuWithTitle("&File")
-	me.fileMenu.AddAction(me.fileNewAction)
-	me.fileMenu.AddAction(me.fileOpenAction)
-	me.fileMenu.AddAction(me.fileSaveAction)
-	me.fileMenu.AddAction(me.fileSaveAsAction)
-	me.fileMenu.AddAction(me.fileExportAction)
-	me.fileMenu.AddSeparator()
-	me.fileMenu.AddAction(me.fileConfigureAction)
-	me.fileMenu.AddSeparator()
-	me.fileMenu.AddAction(me.fileQuitAction)
+	me.fileMenuUpdate()
 }
 
 func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
@@ -172,6 +177,9 @@ func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
 func (me *App) makeMainCardMenu(menubar *qt.QMenuBar) {
 	me.cardMenu = menubar.AddMenuWithTitle("&Card")
 	me.cardMenu.AddAction(me.cardNewAction)
+	me.cardMenu.AddAction(me.cardViewVisibleAction)
+	me.cardMenu.AddAction(me.cardViewUnboxedAction)
+	me.cardMenu.AddAction(me.cardViewHiddenAction)
 	me.cardMenu.AddSeparator()
 	me.cardMenu.AddAction(me.cardAddToBoxAction)
 	me.cardMenu.AddAction(me.cardRemoveFromBoxAction)
@@ -187,6 +195,7 @@ func (me *App) makeMainCardMenu(menubar *qt.QMenuBar) {
 func (me *App) makeMainBoxMenu(menubar *qt.QMenuBar) {
 	me.boxMenu = menubar.AddMenuWithTitle("&Box")
 	me.boxMenu.AddAction(me.boxNewAction)
+	me.boxMenu.AddAction(me.boxViewAction)
 	me.boxMenu.AddSeparator()
 	me.boxMenu.AddAction(me.boxAddFromSearchAction)
 	me.boxMenu.AddAction(me.boxAddFromBoxAction)
@@ -197,19 +206,9 @@ func (me *App) makeMainBoxMenu(menubar *qt.QMenuBar) {
 func (me *App) makeMainSearchMenu(menubar *qt.QMenuBar) {
 	me.searchMenu = menubar.AddMenuWithTitle("&Search")
 	me.searchMenu.AddAction(me.searchNewAction)
-	me.searchMenu.AddSeparator()
+	me.searchMenu.AddAction(me.searchViewAction)
 	me.searchMenu.AddSeparator()
 	me.searchMenu.AddAction(me.searchDeleteAction)
-}
-
-func (me *App) makeMainViewMenu(menubar *qt.QMenuBar) {
-	me.viewMenu = menubar.AddMenuWithTitle("&View")
-	// TODO   &Visible Cards
-	// TODO   &Unboxed Cards
-	// TODO   &Hidden Cards
-	// TODO   &Card… # choice of cards
-	// TODO   &Box… # choice of boxes
-	// TODO   &Search… # choice of searches
 }
 
 func (me *App) makeMainWindowMenu(menubar *qt.QMenuBar) {
@@ -245,6 +244,7 @@ func (me *App) MakeToolbars() {
 	cardToolbar := me.window.AddToolBarWithTitle(CARD)
 	cardToolbar.SetObjectName(*qt.NewQAnyStringView3(CARD))
 	cardToolbar.AddAction(me.cardNewAction)
+	cardToolbar.AddAction(me.cardViewVisibleAction)
 	cardToolbar.AddSeparator()
 	cardToolbar.AddAction(me.cardAddToBoxAction)
 	cardToolbar.AddAction(me.cardRemoveFromBoxAction)
@@ -257,6 +257,7 @@ func (me *App) MakeToolbars() {
 	boxToolbar := me.window.AddToolBarWithTitle(BOX)
 	boxToolbar.SetObjectName(*qt.NewQAnyStringView3(BOX))
 	boxToolbar.AddAction(me.boxNewAction)
+	boxToolbar.AddAction(me.boxViewAction)
 	boxToolbar.AddSeparator()
 	boxToolbar.AddAction(me.boxAddFromSearchAction)
 	boxToolbar.AddAction(me.boxAddFromBoxAction)
@@ -264,6 +265,7 @@ func (me *App) MakeToolbars() {
 	searchToolbar := me.window.AddToolBarWithTitle(SEARCH)
 	searchToolbar.SetObjectName(*qt.NewQAnyStringView3(SEARCH))
 	searchToolbar.AddAction(me.searchNewAction)
+	searchToolbar.AddAction(me.searchViewAction)
 	// TODO
 }
 
@@ -284,13 +286,6 @@ func (me *App) MakeStatusBar() {
 }
 
 func (me *App) MakeConnections() {
-	me.fileNewAction.OnTriggered(func() { me.fileNew() })
-	me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
-	me.fileSaveAction.OnTriggered(func() { me.fileSave() })
-	me.fileSaveAsAction.OnTriggered(func() { me.fileSaveAs() })
-	me.fileExportAction.OnTriggered(func() { me.fileExport() })
-	me.fileConfigureAction.OnTriggered(func() { me.fileConfigure() })
-	me.fileQuitAction.OnTriggered(func() { me.window.Close() })
 	me.editCopyAction.OnTriggered(func() { me.editCopy() })
 	me.editCutAction.OnTriggered(func() { me.editCut() })
 	me.editPasteAction.OnTriggered(func() { me.editPaste() })
