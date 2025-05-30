@@ -11,6 +11,18 @@ func (me *App) cardNew() {
 	fmt.Println("cardNew") // TODO
 }
 
+func (me *App) cardViewVisible() {
+	fmt.Println("cardViewVisible") // TODO
+}
+
+func (me *App) cardViewUnboxed() {
+	fmt.Println("cardViewUnboxed") // TODO
+}
+
+func (me *App) cardViewHidden() {
+	fmt.Println("cardViewHidden") // TODO
+}
+
 func (me *App) cardAddToBox() {
 	fmt.Println("cardAddToBox") // TODO
 }

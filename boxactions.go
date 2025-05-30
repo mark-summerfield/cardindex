@@ -11,6 +11,10 @@ func (me *App) boxNew() {
 	fmt.Println("boxNew") // TODO
 }
 
+func (me *App) boxView() {
+	fmt.Println("boxView") // TODO
+}
+
 func (me *App) boxAddFromSearch() {
 	fmt.Println("boxAddFromSearch") // TODO
 }

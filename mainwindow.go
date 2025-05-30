@@ -290,6 +290,9 @@ func (me *App) MakeConnections() {
 	me.editCutAction.OnTriggered(func() { me.editCut() })
 	me.editPasteAction.OnTriggered(func() { me.editPaste() })
 	me.cardNewAction.OnTriggered(func() { me.cardNew() })
+	me.cardViewVisibleAction.OnTriggered(func() { me.cardViewVisible() })
+	me.cardViewUnboxedAction.OnTriggered(func() { me.cardViewUnboxed() })
+	me.cardViewHiddenAction.OnTriggered(func() { me.cardViewHidden() })
 	me.cardAddToBoxAction.OnTriggered(func() { me.cardAddToBox() })
 	me.cardRemoveFromBoxAction.OnTriggered(
 		func() { me.cardRemoveFromBox() })
@@ -298,10 +301,12 @@ func (me *App) MakeConnections() {
 	me.cardHideAction.OnTriggered(func() { me.cardHide() })
 	me.cardDeleteAction.OnTriggered(func() { me.cardDelete() })
 	me.boxNewAction.OnTriggered(func() { me.boxNew() })
+	me.boxViewAction.OnTriggered(func() { me.boxView() })
 	me.boxAddFromSearchAction.OnTriggered(func() { me.boxAddFromSearch() })
 	me.boxAddFromBoxAction.OnTriggered(func() { me.boxAddFromBox() })
 	me.boxDeleteAction.OnTriggered(func() { me.boxDelete() })
 	me.searchNewAction.OnTriggered(func() { me.searchNew() })
+	me.searchViewAction.OnTriggered(func() { me.searchView() })
 	me.searchDeleteAction.OnTriggered(func() { me.searchDelete() })
 	// TODO
 	me.helpHelpAction.OnTriggered(func() { me.helpHelp() })

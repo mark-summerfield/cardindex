@@ -11,6 +11,10 @@ func (me *App) searchNew() {
 	fmt.Println("searchNew") // TODO
 }
 
+func (me *App) searchView() {
+	fmt.Println("searchView") // TODO
+}
+
 func (me *App) searchDelete() {
 	fmt.Println("searchDelete") // TODO
 }

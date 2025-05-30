@@ -1,4 +1,4 @@
 cd model
-go test -v .
+go test $1 .
 cd -
-go test -v .
+go test $1 .
