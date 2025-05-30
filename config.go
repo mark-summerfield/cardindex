@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/mark-summerfield/ini"
 	"github.com/mark-summerfield/ufile"
@@ -19,7 +20,7 @@ type Config struct {
 	WindowGeometry []byte
 	WindowState    []byte
 	MostRecentFile string
-	// TODO recent files
+	RecentFiles    RecentFiles
 }
 
 func NewConfig(filename string) *Config {
@@ -50,6 +51,16 @@ func NewConfigFrom(filename string) *Config {
 		}
 		config.MostRecentFile = cfg.Str(ini.UNNAMED,
 			CONFIG_MOST_RECENT_FILE, "")
+		config.RecentFiles = NewRecentFiles(cfg.Int(ini.UNNAMED,
+			CONFIG_RECENT_FILES, DEFAULT_MAX_RECENT_FILES))
+		for i := range config.RecentFiles.maximum {
+			filename := cfg.Str(CONFIG_RECENT_FILES,
+				CONFIG_RECENT_FILE+strconv.Itoa(i+1), "")
+			if filename != "" {
+				config.RecentFiles.Add(filename)
+			}
+		}
+
 	}
 	return config
 }
@@ -71,6 +82,11 @@ func (me *Config) SaveTo(filename string) error {
 	cfg.SetStr(CONFIG_WINDOW, CONFIG_WINDOW_STATE,
 		base64.StdEncoding.EncodeToString(me.WindowState))
 	cfg.SetStr(ini.UNNAMED, CONFIG_MOST_RECENT_FILE, me.MostRecentFile)
+	cfg.SetInt(ini.UNNAMED, CONFIG_MAX_RECENT_FILES, me.RecentFiles.maximum)
+	for i, filename := range me.RecentFiles.Files() {
+		cfg.SetStr(CONFIG_RECENT_FILES,
+			CONFIG_RECENT_FILE+strconv.Itoa(i+1), filename)
+	}
 	return cfg.SaveFile(me.Filename)
 }
 

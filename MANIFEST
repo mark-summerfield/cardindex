@@ -10,9 +10,11 @@ searchactions.go
 # TODO viewactions.go
 # TODO windowactions.go
 helpactions.go
+recentfiles.go
+recentfiles_test.go
 gui.go
 misc.go
-config.go # TODO MostRecentFile & RecentFiles
+config.go
 static.go
 
 model/model.go
@@ -40,9 +42,8 @@ st.sh
 test.sh
 
 # TODO config load/save last .cix file
-# TODO config recentfiles + file menu recent files handling
-# TODO complete Search, View, Window, Help, Edit menus
-# TODO More shortcuts?
+# TODO file menu recent files handling
+# TODO complete View, Window, Help, Edit menus
 
 # TODO 4 MDI window types (each with its own unique type-specific icon):
 

@@ -29,7 +29,8 @@ func (me *App) fileSaveAs() {
 	//	- save unsaved changes
 	//	- copy .cix to new name
 	//	- close model
-	//	- open model using new name
+	//	- open model using new name:
+	// loadModel(filename)
 	fmt.Println("fileSaveAs") // TODO
 }
 
@@ -57,4 +58,7 @@ func (me *App) loadModel(filename string) {
 	// - update window title to filename — APPNAME
 	// - create & size & position MDI windows as per new model's UI config
 	fmt.Println("loadModel", filename) // TODO
+	if filename != "" {
+		me.config.RecentFiles.Add(filename)
+	}
 }

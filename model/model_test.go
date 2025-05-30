@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func Test_Empty(t *testing.T) {
+func Test_Model_Empty(t *testing.T) {
 	filename := os.TempDir() + "/empty.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
@@ -43,13 +43,13 @@ func Test_Empty(t *testing.T) {
 	}
 }
 
-func Test_Cix(t *testing.T) {
+func Test_Model_Cix(t *testing.T) {
 	model, err := NewModel("../eg/pcw.cix")
 	checkErr(t, err)
 	defer model.Close()
 	counts, err := model.CardCounts()
 	checkErr(t, err)
-	checkCardCounts(t, &CardCounts{28, 2, 0}, &counts)
+	checkCardCounts(t, &CardCounts{29, 2, 0}, &counts)
 	for i, expected := range []string{"1978", "1979", "1980"} {
 		box, err := model.Box(i + 1)
 		checkErr(t, err)
@@ -59,7 +59,7 @@ func Test_Cix(t *testing.T) {
 	}
 }
 
-func Test_New1(t *testing.T) {
+func Test_Model_New1(t *testing.T) {
 	filename := os.TempDir() + "/new1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
@@ -140,7 +140,7 @@ func Test_New1(t *testing.T) {
 	}
 }
 
-func Test_New2(t *testing.T) {
+func Test_Model_New2(t *testing.T) {
 	filename := os.TempDir() + "/new2.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
@@ -259,7 +259,7 @@ func Test_New2(t *testing.T) {
 	}
 }
 
-func Test_Search1(t *testing.T) {
+func Test_Model_Search1(t *testing.T) {
 	filename := os.TempDir() + "/search1.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
@@ -383,7 +383,7 @@ func Test_Search1(t *testing.T) {
 	}
 }
 
-func Test_Search2(t *testing.T) {
+func Test_Model_Search2(t *testing.T) {
 	search := NewSearch("", false, OID_NAME)
 	expected := "SELECT cid, Name FROM Cards WHERE hidden = FALSE " +
 		"ORDER BY LOWER(Name);"
@@ -422,7 +422,7 @@ func Test_Search2(t *testing.T) {
 	}
 }
 
-func Test_Search3(t *testing.T) {
+func Test_Model_Search3(t *testing.T) {
 	filename := os.TempDir() + "/search3.cix"
 	os.Remove(filename)
 	model, err := NewModel(filename)
