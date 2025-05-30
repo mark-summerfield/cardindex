@@ -23,7 +23,7 @@ func getIcon(filename string) *qt.QIcon {
 	}
 }
 
-func MiqtVersion() string {
+func miqtVersion() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, dependency := range info.Deps {
 			if strings.Contains(dependency.Path, "miqt") {

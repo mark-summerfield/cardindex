@@ -71,6 +71,6 @@ License: GPLv3.
 <font color=#222>%s-%s/%s</font><br>
 </p>`,
 		APPNAME, Version, year, runtime.Version(), runtime.GOOS,
-		runtime.GOARCH, MiqtVersion(), qt_version, sqlite_version, distro,
+		runtime.GOARCH, miqtVersion(), qt_version, sqlite_version, distro,
 		sysname, release, cpu)
 }

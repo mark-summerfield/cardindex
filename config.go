@@ -56,9 +56,10 @@ func NewConfigFrom(filename string) *Config {
 			CONFIG_RECENT_FILES, DEFAULT_MAX_RECENT_FILES),
 			DEFAULT_MAX_RECENT_FILES)
 		config.RecentFiles = NewRecentFiles(maximum)
-		for i := range config.RecentFiles.maximum {
+		// .Add() adds newest first so we must add in reverse order
+		for i := config.RecentFiles.maximum; i > 0; i-- {
 			filename := cfg.Str(CONFIG_RECENT_FILES,
-				CONFIG_RECENT_FILE+strconv.Itoa(i+1), "")
+				CONFIG_RECENT_FILE+strconv.Itoa(i), "")
 			if filename != "" {
 				config.RecentFiles.Add(filename)
 			}

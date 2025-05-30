@@ -63,6 +63,7 @@ func (me *App) makeEditActions() {
 	me.editPasteAction.SetToolTip(
 		"Paste the clipboard text at the cursor position")
 	me.editPasteAction.SetShortcutsWithShortcuts(qt.QKeySequence__Paste)
+	// TODO
 }
 
 func (me *App) makeCardActions() {
@@ -289,6 +290,7 @@ func (me *App) MakeConnections() {
 	me.editCopyAction.OnTriggered(func() { me.editCopy() })
 	me.editCutAction.OnTriggered(func() { me.editCut() })
 	me.editPasteAction.OnTriggered(func() { me.editPaste() })
+	// TODO
 	me.cardNewAction.OnTriggered(func() { me.cardNew() })
 	me.cardViewVisibleAction.OnTriggered(func() { me.cardViewVisible() })
 	me.cardViewUnboxedAction.OnTriggered(func() { me.cardViewUnboxed() })

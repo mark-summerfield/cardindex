@@ -3,6 +3,8 @@
 
 package model
 
+import "context"
+
 func (me *Model) Box(bid int) (Box, error) {
 	box := Box{bid: bid}
 	row := me.db.QueryRow(SQL_BOX_GET, bid)
@@ -42,16 +44,16 @@ func (me *Model) BoxDelete(bid int) error {
 
 func (me *Model) BoxAddCards(bid int, cids ...int) error {
 	var err error
-	if _, err = me.db.Exec(SQL_BEGIN); err == nil {
+	if tx, err := me.db.BeginTx(context.Background(), nil); err == nil {
 		for _, cid := range cids {
-			if _, err = me.db.Exec(SQL_BOX_ADD_CARD, cid, bid); err != nil {
+			if _, err = tx.Exec(SQL_BOX_ADD_CARD, cid, bid); err != nil {
 				break
 			}
 		}
 		if err == nil {
-			_, err = me.db.Exec(SQL_COMMIT)
+			err = tx.Commit()
 		} else {
-			_, err = me.db.Exec(SQL_ROLLBACK)
+			err = tx.Rollback()
 		}
 	}
 	return err

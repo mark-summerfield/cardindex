@@ -20,13 +20,13 @@ func NewRecentFiles(maximum int) RecentFiles {
 func (me *RecentFiles) Add(filename string) {
 	filename = ufile.AbsPath(filename)
 	if len(me.filenames) > 0 && me.filenames[0] == filename {
-		return // found but no need to add
+		return // found as first nothing to do
 	}
 	if i := slices.Index(me.filenames,
 		filename); i != -1 { // remove if present
 		me.filenames = append(me.filenames[:i], me.filenames[i+1:]...)
 	}
-	me.filenames = append([]string{filename}, me.filenames...)
+	me.filenames = append([]string{filename}, me.filenames...) // put first
 	if len(me.filenames) > me.maximum {
 		me.filenames = me.filenames[:me.maximum]
 	}
