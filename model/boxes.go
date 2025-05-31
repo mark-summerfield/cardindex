@@ -3,7 +3,10 @@
 
 package model
 
-import "context"
+import (
+	"context"
+	"errors"
+)
 
 func (me *Model) Box(bid int) (Box, error) {
 	box := Box{bid: bid}
@@ -43,7 +46,6 @@ func (me *Model) BoxDelete(bid int) error {
 }
 
 func (me *Model) BoxAddCards(bid int, cids ...int) error {
-	var err error
 	if tx, err := me.db.BeginTx(context.Background(), nil); err == nil {
 		for _, cid := range cids {
 			if _, err = tx.Exec(SQL_BOX_ADD_CARD, cid, bid); err != nil {
@@ -51,12 +53,13 @@ func (me *Model) BoxAddCards(bid int, cids ...int) error {
 			}
 		}
 		if err == nil {
-			err = tx.Commit()
+			return tx.Commit()
 		} else {
-			err = tx.Rollback()
+			return errors.Join(err, tx.Rollback())
 		}
+	} else {
+		return err
 	}
-	return err
 }
 
 func (me *Model) BoxRemoveCard(bid, cid int) error {

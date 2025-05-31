@@ -12,10 +12,8 @@ var SQL_PREPARE string
 var SQL_CREATE string
 
 const (
-	DRIVER = "sqlite"
-
-	MAX_OPENS = 11
-
+	DRIVER     = "sqlite"
+	MAX_OPENS  = 11
 	INVALID_ID = -1
 
 	NAME    = "Name"
