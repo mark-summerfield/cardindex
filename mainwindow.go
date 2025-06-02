@@ -62,7 +62,7 @@ func (me *App) makeEditActions() {
 	me.editCopyAction = qt.NewQAction3(getIcon(SVG_EDIT_COPY), "&Copy")
 	me.editCopyAction.SetToolTip("Copy the selected text to the clipboard")
 	me.editCopyAction.SetShortcutsWithShortcuts(qt.QKeySequence__Copy)
-	me.editCutAction = qt.NewQAction3(getIcon(SVG_EDIT_CUT), "C&ut")
+	me.editCutAction = qt.NewQAction3(getIcon(SVG_EDIT_CUT), "Cu&t")
 	me.editCutAction.SetToolTip("Cut the selected text to the clipboard")
 	me.editCutAction.SetShortcutsWithShortcuts(qt.QKeySequence__Cut)
 	me.editPasteAction = qt.NewQAction3(getIcon(SVG_EDIT_PASTE), "&Paste")
@@ -84,7 +84,7 @@ func (me *App) makeEditActions() {
 		"Bulleted &List")
 	me.editBulletListAction.SetToolTip("Start bullet list")
 	me.editNumberedListAction = qt.NewQAction3(
-		getIcon(SVG_EDIT_NUMBERED_LIST), "Numbered &List")
+		getIcon(SVG_EDIT_NUMBERED_LIST), "&Numbered List")
 	me.editNumberedListAction.SetToolTip("Start numbered list")
 	me.editEndListAction = qt.NewQAction3(getIcon(SVG_EDIT_END_LIST),
 		"&End List")
@@ -96,7 +96,7 @@ func (me *App) makeEditActions() {
 		getIcon(SVG_EDIT_INSERT_FILE_LINK), "Insert &File link…")
 	me.editInsertFileLinkAction.SetToolTip("Insert file link (filename)")
 	me.editInsertSymbolAction = qt.NewQAction3(
-		getIcon(SVG_EDIT_INSERT_SYMBOL), "&Insert Symbol…")
+		getIcon(SVG_EDIT_INSERT_SYMBOL), "Insert &Symbol…")
 	me.editInsertSymbolAction.SetToolTip("Insert symbol")
 }
 
