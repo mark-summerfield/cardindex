@@ -44,6 +44,8 @@ func (me *Model) Close() error {
 		if err = row.Scan(&n); err == nil {
 			if n >= MAX_OPENS {
 				query += SQL_CONFIG_ZERO_N
+			} else {
+				query += SQL_CONFIG_INC_N
 			}
 			query += SQL_COMMIT
 			if n >= MAX_OPENS {

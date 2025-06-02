@@ -38,8 +38,10 @@ const (
 	SQL_CONFIG_GET_WHEN = `SELECT DATETIME(Value)
 								FROM Config WHERE Key = ?;`
 	SQL_CONFIG_ZERO_N = "UPDATE Config SET Value = 0 WHERE Key = 'N';"
-	SQL_CARD_COUNTS   = "SELECT Visible, Unboxed, Hidden FROM Counts;"
-	SQL_CARD_GET      = `SELECT Body, hidden, DATETIME(created),
+	SQL_CONFIG_INC_N  = `UPDATE Config SET Value = Value + 1
+						WHERE Key = 'N';`
+	SQL_CARD_COUNTS = "SELECT Visible, Unboxed, Hidden FROM Counts;"
+	SQL_CARD_GET    = `SELECT Body, hidden, DATETIME(created),
 								DATETIME(updated) FROM Cards WHERE cid = ?;`
 	SQL_CARD_INSERT        = "INSERT INTO Cards (Body) VALUES (?);"
 	SQL_CARD_UPDATE        = "UPDATE Cards SET Body = ? WHERE cid = ?;"
