@@ -12,62 +12,64 @@ import (
 )
 
 type App struct {
-	config              *Config
-	model               *model.Model
-	window              *qt.QMainWindow
-	mdiArea             *qt.QMdiArea
-	statusIndicator     *qt.QLabel
-	fileMenu            *qt.QMenu
-	fileNewAction       *qt.QAction
-	fileOpenAction      *qt.QAction
-	fileSaveAction      *qt.QAction
-	fileSaveAsAction    *qt.QAction
-	fileExportAction    *qt.QAction
-	fileConfigureAction *qt.QAction
-	fileQuitAction      *qt.QAction
-	editMenu            *qt.QMenu
-	// TODO &Undo	editUndoAction
-	// TODO &Redo	editRedoAction
-	editCopyAction  *qt.QAction
-	editCutAction   *qt.QAction
-	editPasteAction *qt.QAction
-	// TODO &Bold			editBoldAction
-	// TODO &Italic			editItalicAction
-	// TODO &Monospace		editMonospaceAction
-	// TODO &Bullet List	editBulletListAction
-	// TODO &Numbered List	editNumberedListAction
-	// TODO &End List		editEndListAction
-	// TODO Insert &Symbol…	editInsertSymbolAction
-	cardMenu                *qt.QMenu
-	cardNewAction           *qt.QAction
-	cardViewVisibleAction   *qt.QAction
-	cardViewUnboxedAction   *qt.QAction
-	cardViewHiddenAction    *qt.QAction
-	cardAddToBoxAction      *qt.QAction
-	cardRemoveFromBoxAction *qt.QAction
-	cardExportAction        *qt.QAction
-	cardUnhideAction        *qt.QAction
-	cardHideAction          *qt.QAction
-	cardDeleteAction        *qt.QAction
-	boxMenu                 *qt.QMenu
-	boxNewAction            *qt.QAction
-	boxViewAction           *qt.QAction
-	boxAddFromSearchAction  *qt.QAction
-	boxAddFromBoxAction     *qt.QAction
-	boxDeleteAction         *qt.QAction
-	searchMenu              *qt.QMenu
-	searchNewAction         *qt.QAction
-	searchViewAction        *qt.QAction
-	searchDeleteAction      *qt.QAction
-	windowMenu              *qt.QMenu
-	windowNextAction        *qt.QAction
-	windowPrevAction        *qt.QAction
-	windowCascadeAction     *qt.QAction
-	windowTileAction        *qt.QAction
-	windowCloseAction       *qt.QAction
-	helpMenu                *qt.QMenu
-	helpHelpAction          *qt.QAction
-	helpAboutAction         *qt.QAction
+	config                   *Config
+	model                    *model.Model
+	window                   *qt.QMainWindow
+	mdiArea                  *qt.QMdiArea
+	statusIndicator          *qt.QLabel
+	fileMenu                 *qt.QMenu
+	fileNewAction            *qt.QAction
+	fileOpenAction           *qt.QAction
+	fileSaveAction           *qt.QAction
+	fileSaveAsAction         *qt.QAction
+	fileExportAction         *qt.QAction
+	fileConfigureAction      *qt.QAction
+	fileQuitAction           *qt.QAction
+	editMenu                 *qt.QMenu
+	editUndoAction           *qt.QAction
+	editRedoAction           *qt.QAction
+	editCopyAction           *qt.QAction
+	editCutAction            *qt.QAction
+	editPasteAction          *qt.QAction
+	editBoldAction           *qt.QAction
+	editItalicAction         *qt.QAction
+	editMonospaceAction      *qt.QAction
+	editBulletListAction     *qt.QAction
+	editNumberedListAction   *qt.QAction
+	editEndListAction        *qt.QAction
+	editInsertWebLinkAction  *qt.QAction
+	editInsertFileLinkAction *qt.QAction
+	editInsertSymbolAction   *qt.QAction
+	cardMenu                 *qt.QMenu
+	cardNewAction            *qt.QAction
+	cardViewVisibleAction    *qt.QAction
+	cardViewUnboxedAction    *qt.QAction
+	cardViewHiddenAction     *qt.QAction
+	cardAddToBoxAction       *qt.QAction
+	cardRemoveFromBoxAction  *qt.QAction
+	cardExportAction         *qt.QAction
+	cardUnhideAction         *qt.QAction
+	cardHideAction           *qt.QAction
+	cardDeleteAction         *qt.QAction
+	boxMenu                  *qt.QMenu
+	boxNewAction             *qt.QAction
+	boxViewAction            *qt.QAction
+	boxAddFromSearchAction   *qt.QAction
+	boxAddFromBoxAction      *qt.QAction
+	boxDeleteAction          *qt.QAction
+	searchMenu               *qt.QMenu
+	searchNewAction          *qt.QAction
+	searchViewAction         *qt.QAction
+	searchDeleteAction       *qt.QAction
+	windowMenu               *qt.QMenu
+	windowNextAction         *qt.QAction
+	windowPrevAction         *qt.QAction
+	windowCascadeAction      *qt.QAction
+	windowTileAction         *qt.QAction
+	windowCloseAction        *qt.QAction
+	helpMenu                 *qt.QMenu
+	helpHelpAction           *qt.QAction
+	helpAboutAction          *qt.QAction
 }
 
 func NewApp() *App {

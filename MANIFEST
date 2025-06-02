@@ -1,7 +1,6 @@
 cardindex.go
-app.go # TODO
-mainwindow.go # TODO
-actions.go
+app.go
+mainwindow.go
 fileactions.go # TODO
 editactions.go # TODO
 cardactions.go # TODO
@@ -10,6 +9,7 @@ searchactions.go # TODO
 windowactions.go # TODO test windows menu's child windows
 helpactions.go # TODO Help→Help
 recentfiles.go
+status.go
 gui.go
 misc.go
 config.go

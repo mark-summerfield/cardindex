@@ -23,6 +23,7 @@ func getIcon(filename string) *qt.QIcon {
 	}
 }
 
+// TODO replace with QtVersion() when available
 func miqtVersion() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, dependency := range info.Deps {

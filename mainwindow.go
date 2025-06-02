@@ -53,6 +53,12 @@ func (me *App) makeFileActions() {
 }
 
 func (me *App) makeEditActions() {
+	me.editUndoAction = qt.NewQAction3(getIcon(SVG_EDIT_UNDO), "&Undo")
+	me.editUndoAction.SetToolTip("Undo the last card text editing action")
+	me.editUndoAction.SetShortcutsWithShortcuts(qt.QKeySequence__Undo)
+	me.editRedoAction = qt.NewQAction3(getIcon(SVG_EDIT_REDO), "&Redo")
+	me.editRedoAction.SetToolTip("Redo the last card text editing action")
+	me.editRedoAction.SetShortcutsWithShortcuts(qt.QKeySequence__Redo)
 	me.editCopyAction = qt.NewQAction3(getIcon(SVG_EDIT_COPY), "&Copy")
 	me.editCopyAction.SetToolTip("Copy the selected text to the clipboard")
 	me.editCopyAction.SetShortcutsWithShortcuts(qt.QKeySequence__Copy)
@@ -63,7 +69,35 @@ func (me *App) makeEditActions() {
 	me.editPasteAction.SetToolTip(
 		"Paste the clipboard text at the cursor position")
 	me.editPasteAction.SetShortcutsWithShortcuts(qt.QKeySequence__Paste)
-	// TODO
+	me.editBoldAction = qt.NewQAction3(getIcon(SVG_EDIT_BOLD), "&Bold")
+	me.editBoldAction.SetToolTip("Toggle bold text")
+	me.editBoldAction.SetShortcutsWithShortcuts(qt.QKeySequence__Bold)
+	me.editItalicAction = qt.NewQAction3(getIcon(SVG_EDIT_ITALIC),
+		"&Italic")
+	me.editItalicAction.SetToolTip("Toggle italic text")
+	me.editItalicAction.SetShortcutsWithShortcuts(qt.QKeySequence__Italic)
+	me.editMonospaceAction = qt.NewQAction3(
+		getIcon(SVG_EDIT_MONOSPACE), "&Monospace")
+	me.editMonospaceAction.SetToolTip("Toggle monospace text")
+	me.editMonospaceAction.SetShortcut(qt.NewQKeySequence2("Ctrl+M"))
+	me.editBulletListAction = qt.NewQAction3(getIcon(SVG_EDIT_BULLET_LIST),
+		"Bulleted &List")
+	me.editBulletListAction.SetToolTip("Start bullet list")
+	me.editNumberedListAction = qt.NewQAction3(
+		getIcon(SVG_EDIT_NUMBERED_LIST), "Numbered &List")
+	me.editNumberedListAction.SetToolTip("Start numbered list")
+	me.editEndListAction = qt.NewQAction3(getIcon(SVG_EDIT_END_LIST),
+		"&End List")
+	me.editEndListAction.SetToolTip("End list")
+	me.editInsertWebLinkAction = qt.NewQAction3(
+		getIcon(SVG_EDIT_INSERT_WEB_LINK), "Insert &Web link…")
+	me.editInsertWebLinkAction.SetToolTip("Insert web link (URL)")
+	me.editInsertFileLinkAction = qt.NewQAction3(
+		getIcon(SVG_EDIT_INSERT_FILE_LINK), "Insert &File link…")
+	me.editInsertFileLinkAction.SetToolTip("Insert file link (filename)")
+	me.editInsertSymbolAction = qt.NewQAction3(
+		getIcon(SVG_EDIT_INSERT_SYMBOL), "&Insert Symbol…")
+	me.editInsertSymbolAction.SetToolTip("Insert symbol")
 }
 
 func (me *App) makeCardActions() {
@@ -181,20 +215,24 @@ func (me *App) makeMainFileMenu(menubar *qt.QMenuBar) {
 
 func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
 	me.editMenu = menubar.AddMenuWithTitle("&Edit")
-	// TODO &Undo
-	// TODO &Redo
+	me.editMenu.QWidget.AddAction(me.editUndoAction)
+	me.editMenu.QWidget.AddAction(me.editRedoAction)
+	me.editMenu.AddSeparator()
 	me.editMenu.QWidget.AddAction(me.editCopyAction)
 	me.editMenu.QWidget.AddAction(me.editCutAction)
 	me.editMenu.QWidget.AddAction(me.editPasteAction)
-	// TODO &Bold
-	// TODO &Italic
-	// TODO &Monospace
-	// TODO &Bullet List
-	// TODO &Numbered List
-	// TODO &Clear List
-	// TODO Insert &Web Link…
-	// TODO Insert &File Link…
-	// TODO Insert &Symbol…
+	me.editMenu.AddSeparator()
+	me.editMenu.QWidget.AddAction(me.editBoldAction)
+	me.editMenu.QWidget.AddAction(me.editItalicAction)
+	me.editMenu.QWidget.AddAction(me.editMonospaceAction)
+	me.editMenu.AddSeparator()
+	me.editMenu.QWidget.AddAction(me.editBulletListAction)
+	me.editMenu.QWidget.AddAction(me.editNumberedListAction)
+	me.editMenu.QWidget.AddAction(me.editEndListAction)
+	me.editMenu.AddSeparator()
+	me.editMenu.QWidget.AddAction(me.editInsertWebLinkAction)
+	me.editMenu.QWidget.AddAction(me.editInsertFileLinkAction)
+	me.editMenu.QWidget.AddAction(me.editInsertSymbolAction)
 }
 
 func (me *App) makeMainCardMenu(menubar *qt.QMenuBar) {
@@ -252,12 +290,36 @@ func (me *App) MakeToolbars() {
 	fileToolbar.QWidget.AddAction(me.fileNewAction)
 	fileToolbar.QWidget.AddAction(me.fileOpenAction)
 	fileToolbar.QWidget.AddAction(me.fileSaveAction)
-	const EDIT = "Edit"
-	editToolbar := me.window.AddToolBarWithTitle(EDIT)
-	editToolbar.SetObjectName(EDIT)
-	editToolbar.QWidget.AddAction(me.editCopyAction)
-	editToolbar.QWidget.AddAction(me.editCutAction)
-	editToolbar.QWidget.AddAction(me.editPasteAction)
+	const EDIT1 = "Edit1"
+	edit1Toolbar := me.window.AddToolBarWithTitle(EDIT1)
+	edit1Toolbar.SetObjectName(EDIT1)
+	edit1Toolbar.QWidget.AddAction(me.editUndoAction)
+	edit1Toolbar.QWidget.AddAction(me.editRedoAction)
+	const EDIT2 = "Edit2"
+	edit2Toolbar := me.window.AddToolBarWithTitle(EDIT2)
+	edit2Toolbar.SetObjectName(EDIT2)
+	edit2Toolbar.QWidget.AddAction(me.editCopyAction)
+	edit2Toolbar.QWidget.AddAction(me.editCutAction)
+	edit2Toolbar.QWidget.AddAction(me.editPasteAction)
+	const EDIT3 = "Edit3"
+	edit3Toolbar := me.window.AddToolBarWithTitle(EDIT3)
+	edit3Toolbar.SetObjectName(EDIT3)
+	edit3Toolbar.QWidget.AddAction(me.editBoldAction)
+	edit3Toolbar.QWidget.AddAction(me.editItalicAction)
+	edit3Toolbar.QWidget.AddAction(me.editMonospaceAction)
+	const EDIT4 = "Edit4"
+	edit4Toolbar := me.window.AddToolBarWithTitle(EDIT4)
+	edit4Toolbar.SetObjectName(EDIT4)
+	edit4Toolbar.QWidget.AddAction(me.editBulletListAction)
+	edit4Toolbar.QWidget.AddAction(me.editNumberedListAction)
+	edit4Toolbar.QWidget.AddAction(me.editEndListAction)
+	const EDIT5 = "Edit5"
+	edit5Toolbar := me.window.AddToolBarWithTitle(EDIT5)
+	edit5Toolbar.SetObjectName(EDIT5)
+	edit5Toolbar.QWidget.AddAction(me.editInsertWebLinkAction)
+	edit5Toolbar.QWidget.AddAction(me.editInsertFileLinkAction)
+	edit5Toolbar.QWidget.AddAction(me.editInsertSymbolAction)
+	me.window.AddToolBarBreak()
 	const CARD = "Card"
 	cardToolbar := me.window.AddToolBarWithTitle(CARD)
 	cardToolbar.SetObjectName(CARD)
