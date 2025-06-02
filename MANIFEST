@@ -1,13 +1,13 @@
 cardindex.go
 app.go
 mainwindow.go
-fileactions.go # TODO
-editactions.go # TODO
-cardactions.go # TODO
-boxactions.go # TODO
-searchactions.go # TODO
-windowactions.go # TODO test windows menu's child windows
-helpactions.go # TODO Help→Help
+fileactions.go # TODO 1
+editactions.go # TODO 6
+cardactions.go # TODO 2
+boxactions.go # TODO 3
+searchactions.go # TODO 4
+windowactions.go # TODO 5 - test windows menu's child windows
+helpactions.go # TODO 7 - Help→Help
 recentfiles.go
 status.go
 gui.go

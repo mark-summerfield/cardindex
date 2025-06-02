@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/mappu/miqt/qt"
+	"github.com/mark-summerfield/cardindex/model"
+	"github.com/mark-summerfield/ufile"
 )
 
 func (me *App) fileMenuUpdate() {
@@ -61,9 +63,21 @@ func (me *App) fileNew() {
 }
 
 func (me *App) fileOpen() {
-	//   Builtin Dialog: choose existing filename
-	// me.loadModel(filename)
-	fmt.Println("fileOpen") // TODO
+	var dirname string
+	if me.model != nil {
+		dirname = filepath.Dir(me.model.Filename())
+	}
+	if dirname == "" {
+		dirname = ufile.HomeDir()
+	}
+	filename := qt.QFileDialog_GetOpenFileName3(me.window.QWidget,
+		"Open Card Index — "+APPNAME, dirname)
+	if filename != "" {
+		me.loadModel(filename)
+	} else {
+		me.window.SetWindowTitle(APPNAME)
+		me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
+	}
 }
 
 func (me *App) fileOpenRecent(filename string) {
@@ -103,13 +117,41 @@ func (me *App) fileConfigure() {
 }
 
 func (me *App) loadModel(filename string) {
-	// - save & close any existing model
-	// - close all MDI windows
-	// - create new model with this file
-	// - update window title to filename — APPNAME
-	// - create & size & position MDI windows as per new model's UI config
-	fmt.Println("loadModel", filename) // TODO
-	if filename != "" {
+	me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
+	if me.model != nil {
+		me.closeModel()
+	}
+	me.mdiArea.CloseAllSubWindows()
+	if model, err := model.NewModel(filename); err == nil {
+		me.model = model
 		me.config.RecentFiles.Add(filename)
+		me.readMdiWindowsFromModel()
+		me.StatusMessage("Opened "+filename, TIMEOUT_LONG)
+	} else {
+		onError(me.window.QWidget,
+			fmt.Sprintf("Failed to open %s:\n%s", filename, err))
+	}
+}
+
+func (me *App) saveMdiWindowsToModel() {
+	// TODO save all MDI window states to me.model CONFIG table
+	fmt.Println("saveMdiWindowsToModel")
+}
+
+func (me *App) readMdiWindowsFromModel() {
+	// TODO load all MDI window states from me.model CONFIG table &
+	// size & position MDI windows accordingly
+	fmt.Println("readMdiWindowsFromModel")
+}
+
+func (me *App) closeModel() {
+	if me.model != nil {
+		me.saveMdiWindowsToModel()
+		filename := me.model.Filename()
+		if err := me.model.Close(); err != nil {
+			onError(me.window.QWidget,
+				fmt.Sprintf("Error closing %s:\n%s", filename, err))
+		}
+		me.model = nil
 	}
 }

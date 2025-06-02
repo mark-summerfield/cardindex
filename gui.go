@@ -11,6 +11,10 @@ import (
 	"github.com/mappu/miqt/qt"
 )
 
+func onError(parent *qt.QWidget, message string) {
+	qt.QMessageBox_Warning3(parent, "Error — "+APPNAME, message, "&Close")
+}
+
 func getIcon(filename string) *qt.QIcon {
 	filename = "images/" + filename
 	if data, err := ICONS.ReadFile(filename); err != nil {

@@ -398,5 +398,6 @@ func (me *App) MakeConnections() {
 		event *qt.QCloseEvent,
 	) {
 		me.SaveSettings()
+		me.closeModel() // must be last since it closes the current model
 	})
 }
