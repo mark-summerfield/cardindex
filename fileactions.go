@@ -18,18 +18,20 @@ func (me *App) fileMenuUpdate() {
 	me.fileMenu.Clear()
 	me.addFileActions()
 	me.makeFileConnections()
-	if files := me.config.RecentFiles.Files(); len(files) > 0 {
-		me.fileMenu.AddSeparator()
-		var action *qt.QAction
-		for i, filename := range files {
-			text := filepath.Base(filename)
-			if i < len(ACCELS) {
-				text = fmt.Sprintf("&%c %s", ACCELS[i], text)
+	if me.config != nil {
+		if files := me.config.RecentFiles.Files(); len(files) > 0 {
+			me.fileMenu.AddSeparator()
+			var action *qt.QAction
+			for i, filename := range files {
+				text := filepath.Base(filename)
+				if i < len(ACCELS) {
+					text = fmt.Sprintf("&%c %s", ACCELS[i], text)
+				}
+				action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
+				action.SetToolTip("Open " + filename)
+				action.OnTriggered(func() { me.openModel(filename) })
+				me.fileMenu.QWidget.AddAction(action)
 			}
-			action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
-			action.SetToolTip("Open " + filename)
-			action.OnTriggered(func() { me.fileOpenRecent(filename) })
-			me.fileMenu.QWidget.AddAction(action)
 		}
 	}
 }
@@ -58,7 +60,7 @@ func (me *App) makeFileConnections() {
 
 func (me *App) fileNew() {
 	//   Builtin Dialog: choose nonexistent filename
-	// me.loadModel(filename)
+	// me.openModel(filename)
 	fmt.Println("fileNew") // TODO
 }
 
@@ -73,19 +75,16 @@ func (me *App) fileOpen() {
 	filename := qt.QFileDialog_GetOpenFileName3(me.window.QWidget,
 		"Open Card Index — "+APPNAME, dirname)
 	if filename != "" {
-		me.loadModel(filename)
+		me.openModel(filename)
 	} else {
 		me.window.SetWindowTitle(APPNAME)
 		me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
 	}
 }
 
-func (me *App) fileOpenRecent(filename string) {
-	me.loadModel(filename)
-}
-
 func (me *App) fileSave() {
 	// save any windows with unsaved changes
+	me.saveMdiWindowsToModel()
 	fmt.Println("fileSave") // TODO
 }
 
@@ -95,7 +94,7 @@ func (me *App) fileSaveAs() {
 	//	- copy .cix to new name
 	//	- close model
 	//	- open model using new name:
-	// me.loadModel(filename)
+	// me.openModel(filename)
 	fmt.Println("fileSaveAs") // TODO
 }
 
@@ -116,21 +115,42 @@ func (me *App) fileConfigure() {
 	fmt.Println("fileConfigure") // TODO
 }
 
-func (me *App) loadModel(filename string) {
-	me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
-	if me.model != nil {
-		me.closeModel()
+func (me *App) openModel(filename string) {
+	me.closeModel()
+	if me.mdiArea != nil {
+		me.mdiArea.CloseAllSubWindows()
 	}
-	me.mdiArea.CloseAllSubWindows()
 	if model, err := model.NewModel(filename); err == nil {
 		me.model = model
 		me.config.RecentFiles.Add(filename)
 		me.readMdiWindowsFromModel()
-		me.StatusMessage("Opened "+filename, TIMEOUT_LONG)
+		me.StatusMessage("Opened “"+filename+"”", TIMEOUT_LONG)
+		if counts, err := me.model.CardCounts(); err == nil {
+			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed)
+		} else {
+			me.onError(fmt.Sprintf("Failed to read card counts:\n%s", err))
+		}
+		me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
+		me.statusIndicator.QWidget.SetToolTip(filename)
+		me.fileMenuUpdate()
 	} else {
-		onError(me.window.QWidget,
-			fmt.Sprintf("Failed to open %s:\n%s", filename, err))
+		me.onError(fmt.Sprintf("Failed to open %s:\n%s", filename, err))
 	}
+}
+
+func (me *App) closeModel() {
+	me.window.SetWindowTitle(APPNAME)
+	me.StatusIndicatorUpdate(0, 0)
+	me.statusIndicator.QWidget.SetToolTip("")
+	if me.model != nil {
+		me.saveMdiWindowsToModel()
+		filename := me.model.Filename()
+		if err := me.model.Close(); err != nil {
+			me.onError(fmt.Sprintf("Error closing %s:\n%s", filename, err))
+		}
+		me.model = nil
+	}
+	me.fileMenuUpdate()
 }
 
 func (me *App) saveMdiWindowsToModel() {
@@ -142,16 +162,4 @@ func (me *App) readMdiWindowsFromModel() {
 	// TODO load all MDI window states from me.model CONFIG table &
 	// size & position MDI windows accordingly
 	fmt.Println("readMdiWindowsFromModel")
-}
-
-func (me *App) closeModel() {
-	if me.model != nil {
-		me.saveMdiWindowsToModel()
-		filename := me.model.Filename()
-		if err := me.model.Close(); err != nil {
-			onError(me.window.QWidget,
-				fmt.Sprintf("Error closing %s:\n%s", filename, err))
-		}
-		me.model = nil
-	}
 }

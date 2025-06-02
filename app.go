@@ -76,12 +76,17 @@ func NewApp() *App {
 	var app App
 	app.window = qt.NewQMainWindow(nil)
 	app.window.SetWindowIcon(getIcon(SVG_ICON))
-	app.LoadSettings()
 	app.MakeMainWindow()
+	app.LoadSettings()
 	return &app
 }
 
-func (me *App) Show() { me.window.Show() }
+func (me *App) Show() {
+	me.window.Show()
+	if me.config.MostRecentFile != "" {
+		me.openModel(me.config.MostRecentFile)
+	}
+}
 
 func (me *App) LoadSettings() {
 	filename, exists := ufile.GetIniFile(DOMAIN, APPNAME)
@@ -95,9 +100,6 @@ func (me *App) LoadSettings() {
 	}
 	me.window.RestoreGeometry(me.config.WindowGeometry)
 	me.window.RestoreState(me.config.WindowState)
-	if me.config.MostRecentFile != "" {
-		me.loadModel(me.config.MostRecentFile)
-	}
 }
 
 func (me *App) SaveSettings() {
@@ -110,4 +112,9 @@ func (me *App) SaveSettings() {
 		log.Printf("failed to save config in %q: %v\n", me.config.Filename,
 			err)
 	}
+}
+
+func (me *App) onError(message string) {
+	qt.QMessageBox_Warning3(me.window.QWidget, "Error — "+APPNAME, message,
+		"&Close")
 }
