@@ -36,8 +36,8 @@ type App struct {
 	// TODO &Monospace		editMonospaceAction
 	// TODO &Bullet List	editBulletListAction
 	// TODO &Numbered List	editNumberedListAction
-	// TODO &Clear List		editClearListAction
-	// TODO Insert &Symbol	editInsertSymbolAction
+	// TODO &End List		editEndListAction
+	// TODO Insert &Symbol…	editInsertSymbolAction
 	cardMenu                *qt.QMenu
 	cardNewAction           *qt.QAction
 	cardViewVisibleAction   *qt.QAction
@@ -61,6 +61,12 @@ type App struct {
 	searchDeleteAction      *qt.QAction
 	windowMenu              *qt.QMenu
 	// TODO actions
+	// TODO   &Next Ctrl+Tab
+	// TODO   &Previous Ctrl+Shift+Tab
+	// TODO   &Cascade
+	// TODO   &Tile
+	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
+	// TODO   &Close Ctrl+W
 	helpMenu        *qt.QMenu
 	helpHelpAction  *qt.QAction
 	helpAboutAction *qt.QAction

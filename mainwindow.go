@@ -21,7 +21,7 @@ func (me *App) MakeActions() {
 	me.makeCardActions()
 	me.makeBoxActions()
 	me.makeSearchActions()
-	// TODO Window
+	me.makeWindowActions()
 	me.makeHelpActions()
 }
 
@@ -132,6 +132,15 @@ func (me *App) makeSearchActions() {
 		"Permanently delete the current search")
 }
 
+func (me *App) makeWindowActions() {
+	// TODO   &Next Ctrl+Tab
+	// TODO   &Previous Ctrl+Shift+Tab
+	// TODO   &Cascade
+	// TODO   &Tile
+	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
+	// TODO   &Close Ctrl+W
+}
+
 func (me *App) makeHelpActions() {
 	me.helpHelpAction = qt.NewQAction3(getIcon(SVG_HELP_HELP), "&Help")
 	me.helpHelpAction.SetToolTip("Show help")
@@ -214,12 +223,7 @@ func (me *App) makeMainSearchMenu(menubar *qt.QMenuBar) {
 
 func (me *App) makeMainWindowMenu(menubar *qt.QMenuBar) {
 	me.windowMenu = menubar.AddMenuWithTitle("&Window")
-	// TODO   &Next Ctrl+Tab
-	// TODO   &Previous Ctrl+Shift+Tab
-	// TODO   &Cascade
-	// TODO   &Tile
-	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
-	// TODO   &Close Ctrl+W
+	me.windowMenuUpdate()
 }
 
 func (me *App) makeMainHelpMenu(menubar *qt.QMenuBar) {

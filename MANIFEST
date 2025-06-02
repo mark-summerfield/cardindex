@@ -7,7 +7,7 @@ editactions.go # TODO
 cardactions.go # TODO
 boxactions.go
 searchactions.go
-# TODO windowactions.go
+windowactions.go
 helpactions.go
 recentfiles.go
 gui.go
