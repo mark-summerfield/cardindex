@@ -60,16 +60,14 @@ type App struct {
 	searchViewAction        *qt.QAction
 	searchDeleteAction      *qt.QAction
 	windowMenu              *qt.QMenu
-	// TODO actions
-	// TODO   &Next Ctrl+Tab
-	// TODO   &Previous Ctrl+Shift+Tab
-	// TODO   &Cascade
-	// TODO   &Tile
-	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
-	// TODO   &Close Ctrl+W
-	helpMenu        *qt.QMenu
-	helpHelpAction  *qt.QAction
-	helpAboutAction *qt.QAction
+	windowNextAction        *qt.QAction
+	windowPrevAction        *qt.QAction
+	windowCascadeAction     *qt.QAction
+	windowTileAction        *qt.QAction
+	windowCloseAction       *qt.QAction
+	helpMenu                *qt.QMenu
+	helpHelpAction          *qt.QAction
+	helpAboutAction         *qt.QAction
 }
 
 func NewApp() *App {

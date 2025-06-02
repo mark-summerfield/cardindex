@@ -5,10 +5,10 @@ actions.go
 fileactions.go # TODO
 editactions.go # TODO
 cardactions.go # TODO
-boxactions.go
-searchactions.go
-windowactions.go
-helpactions.go
+boxactions.go # TODO
+searchactions.go # TODO
+windowactions.go # TODO test windows menu's child windows
+helpactions.go # TODO Help→Help
 recentfiles.go
 gui.go
 misc.go

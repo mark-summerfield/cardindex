@@ -133,12 +133,25 @@ func (me *App) makeSearchActions() {
 }
 
 func (me *App) makeWindowActions() {
-	// TODO   &Next Ctrl+Tab
-	// TODO   &Previous Ctrl+Shift+Tab
-	// TODO   &Cascade
-	// TODO   &Tile
-	// TODO   &Windows → 1. | 2. | … | 9. | A. | … | Z.
-	// TODO   &Close Ctrl+W
+	me.windowNextAction = qt.NewQAction3(getIcon(SVG_WINDOW_NEXT), "&Next")
+	me.windowNextAction.SetToolTip("Activate next window")
+	me.windowNextAction.SetShortcutsWithShortcuts(
+		qt.QKeySequence__NextChild)
+	me.windowPrevAction = qt.NewQAction3(getIcon(SVG_WINDOW_PREV),
+		"&Previous")
+	me.windowPrevAction.SetToolTip("Activate previous window")
+	me.windowPrevAction.SetShortcutsWithShortcuts(
+		qt.QKeySequence__PreviousChild)
+	me.windowCascadeAction = qt.NewQAction3(getIcon(SVG_WINDOW_CASCADE),
+		"C&ascade")
+	me.windowCascadeAction.SetToolTip("Cascade windows")
+	me.windowTileAction = qt.NewQAction3(getIcon(SVG_WINDOW_TILE), "&Tile")
+	me.windowTileAction.SetToolTip("Tile windows")
+	me.windowCloseAction = qt.NewQAction3(getIcon(SVG_WINDOW_CLOSE),
+		"&Close")
+	me.windowCloseAction.SetToolTip("Close active window")
+	me.windowCloseAction.SetShortcutsWithShortcuts(
+		qt.QKeySequence__Close)
 }
 
 func (me *App) makeHelpActions() {
@@ -271,11 +284,11 @@ func (me *App) MakeToolbars() {
 	searchToolbar.SetObjectName(SEARCH)
 	searchToolbar.QWidget.AddAction(me.searchNewAction)
 	searchToolbar.QWidget.AddAction(me.searchViewAction)
-	// TODO
 }
 
 func (me *App) MakeWidgets() {
 	me.mdiArea = qt.NewQMdiArea2()
+	me.windowMenuUpdate()
 	me.MakeStatusBar()
 	me.window.SetCentralWidget(me.mdiArea.QWidget)
 }
@@ -290,7 +303,10 @@ func (me *App) MakeStatusBar() {
 	me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
 }
 
+// For file actions see fileactions.go;
+// for window action see windowactions.go
 func (me *App) MakeConnections() {
+	// TODO
 	me.editCopyAction.OnTriggered(func() { me.editCopy() })
 	me.editCutAction.OnTriggered(func() { me.editCut() })
 	me.editPasteAction.OnTriggered(func() { me.editPaste() })
@@ -314,7 +330,6 @@ func (me *App) MakeConnections() {
 	me.searchNewAction.OnTriggered(func() { me.searchNew() })
 	me.searchViewAction.OnTriggered(func() { me.searchView() })
 	me.searchDeleteAction.OnTriggered(func() { me.searchDelete() })
-	// TODO
 	me.helpHelpAction.OnTriggered(func() { me.helpHelp() })
 	me.helpAboutAction.OnTriggered(func() { me.helpAbout() })
 	me.window.OnCloseEvent(func(super func(event *qt.QCloseEvent),

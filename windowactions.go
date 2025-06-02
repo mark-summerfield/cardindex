@@ -3,51 +3,56 @@
 
 package main
 
+import (
+	"fmt"
+
+	"github.com/mappu/miqt/qt"
+)
+
 func (me *App) windowMenuUpdate() {
 	me.windowMenu.Clear()
 	me.addWindowActions()
 	me.makeWindowConnections()
-	// Add windows
-	//if files := me.config.RecentFiles.Files(); len(files) > 0 {
-	//	me.fileMenu.AddSeparator()
-	//	var action *qt.QAction
-	//	for i, filename := range files {
-	//		text := filepath.Base(filename)
-	//		if i < 9 {
-	//			text = fmt.Sprintf("&%d %s", i+1, text)
-	//		}
-	//		action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
-	//		action.SetToolTip("Open " + filename)
-	//		action.OnTriggered(func() { me.fileOpenRecent(filename) })
-	//		me.fileMenu.QWidget.AddAction(action)
-	//	}
-	//}
+	if me.mdiArea == nil {
+		return
+	}
+	// ACCELS must not conflict with menu's Alt+{ACNPT}
+	ACCELS := []rune("123456789BDEFGHIJKLMOQRSUVWXYZ")
+	if children := me.mdiArea.SubWindowList(); len(children) > 0 {
+		me.windowMenu.AddSeparator()
+		var action *qt.QAction
+		for i, child := range children {
+			text := child.WindowTitle()
+			if i < len(ACCELS) {
+				text = fmt.Sprintf("&%c %s", ACCELS[i], text)
+			}
+			action = qt.NewQAction3(getIcon(SVG_WINDOW), text)
+			action.SetToolTip("Activate window " + text)
+			action.OnTriggered( // TODO check this works correctly
+				func() { me.mdiArea.SetActiveSubWindow(child) })
+			me.windowMenu.QWidget.AddAction(action)
+		}
+	}
 }
 
 func (me *App) addWindowActions() {
-	// me.fileMenu.QWidget.AddAction(me.fileNewAction)
-	// me.fileMenu.QWidget.AddAction(me.fileOpenAction)
-	// me.fileMenu.QWidget.AddAction(me.fileSaveAction)
-	// me.fileMenu.QWidget.AddAction(me.fileSaveAsAction)
-	// me.fileMenu.QWidget.AddAction(me.fileExportAction)
-	// me.fileMenu.AddSeparator()
-	// me.fileMenu.QWidget.AddAction(me.fileConfigureAction)
-	// me.fileMenu.AddSeparator()
-	// me.fileMenu.QWidget.AddAction(me.fileQuitAction)
+	me.windowMenu.QWidget.AddAction(me.windowNextAction)
+	me.windowMenu.QWidget.AddAction(me.windowPrevAction)
+	me.windowMenu.QWidget.AddAction(me.windowCascadeAction)
+	me.windowMenu.QWidget.AddAction(me.windowTileAction)
+	me.windowMenu.AddSeparator()
+	me.windowMenu.QWidget.AddAction(me.windowCloseAction)
 }
 
 func (me *App) makeWindowConnections() {
-	// me.fileNewAction.OnTriggered(func() { me.fileNew() })
-	// me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
-	// me.fileSaveAction.OnTriggered(func() { me.fileSave() })
-	// me.fileSaveAsAction.OnTriggered(func() { me.fileSaveAs() })
-	// me.fileExportAction.OnTriggered(func() { me.fileExport() })
-	// me.fileConfigureAction.OnTriggered(func() { me.fileConfigure() })
-	// me.fileQuitAction.OnTriggered(func() { me.window.Close() })
+	me.windowNextAction.OnTriggered(
+		func() { me.mdiArea.ActivateNextSubWindow() })
+	me.windowPrevAction.OnTriggered(
+		func() { me.mdiArea.ActivatePreviousSubWindow() })
+	me.windowCascadeAction.OnTriggered(
+		func() { me.mdiArea.CascadeSubWindows() })
+	me.windowTileAction.OnTriggered(
+		func() { me.mdiArea.TileSubWindows() })
+	me.windowCloseAction.OnTriggered(
+		func() { me.mdiArea.CloseActiveSubWindow() })
 }
-
-// func (me *App) fileNew() {
-// 	//   Builtin Dialog: choose nonexistent filename
-// 	// me.loadModel(filename)
-// 	fmt.Println("fileNew") // TODO
-// }

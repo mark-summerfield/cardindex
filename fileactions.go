@@ -11,6 +11,8 @@ import (
 )
 
 func (me *App) fileMenuUpdate() {
+	// ACCELS must not conflict with menu's Alt+{ACENOSQ}
+	ACCELS := []rune("123456789BDFGHIJKLMPRTUVWXYZ")
 	me.fileMenu.Clear()
 	me.addFileActions()
 	me.makeFileConnections()
@@ -19,8 +21,8 @@ func (me *App) fileMenuUpdate() {
 		var action *qt.QAction
 		for i, filename := range files {
 			text := filepath.Base(filename)
-			if i < 9 {
-				text = fmt.Sprintf("&%d %s", i+1, text)
+			if i < len(ACCELS) {
+				text = fmt.Sprintf("&%c %s", ACCELS[i], text)
 			}
 			action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
 			action.SetToolTip("Open " + filename)

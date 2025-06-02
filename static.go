@@ -59,6 +59,13 @@ const (
 	SVG_HELP_ABOUT           = "about.svg"
 	SVG_SEARCH_NEW           = "search-new.svg"
 	SVG_SEARCH_DELETE        = "search-delete.svg"
+	SVG_WINDOW               = "window.svg"
+	SVG_WINDOW_NEXT          = "window-next.svg"
+	SVG_WINDOW_PREV          = "window-prev.svg"
+	SVG_WINDOW_CASCADE       = "window-cascade.svg"
+	SVG_WINDOW_TILE          = "window-tile.svg"
+	SVG_WINDOWS              = "windows.svg"
+	SVG_WINDOW_CLOSE         = "window-close.svg"
 )
 
 // var E100 = errors.New("E100: failed to get counts")
