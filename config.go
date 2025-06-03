@@ -50,8 +50,10 @@ func NewConfigFrom(filename string) *Config {
 				config.WindowState = state
 			}
 		}
-		config.MostRecentFile = cfg.Str(ini.UNNAMED,
-			CONFIG_MOST_RECENT_FILE, "")
+		filename := cfg.Str(ini.UNNAMED, CONFIG_MOST_RECENT_FILE, "")
+		if filename != "" && ufile.FileExists(filename) {
+			config.MostRecentFile = filename
+		}
 		maximum := unum.Clamp(0, cfg.Int(ini.UNNAMED,
 			CONFIG_RECENT_FILES, DEFAULT_MAX_RECENT_FILES),
 			DEFAULT_MAX_RECENT_FILES)
@@ -89,9 +91,13 @@ func (me *Config) SaveTo(filename string) error {
 	cfg.SetStr(ini.UNNAMED, CONFIG_MOST_RECENT_FILE, me.MostRecentFile)
 	cfg.SetInt(ini.UNNAMED, CONFIG_MAX_RECENT_FILES, me.RecentFiles.maximum)
 	cfg.SetComment(ini.UNNAMED, CONFIG_MAX_RECENT_FILES, "0-9")
-	for i, filename := range me.RecentFiles.Files() {
-		cfg.SetStr(CONFIG_RECENT_FILES,
-			CONFIG_RECENT_FILE+strconv.Itoa(i+1), filename)
+	i := 1
+	for _, filename := range me.RecentFiles.Files() {
+		if ufile.FileExists(filename) {
+			cfg.SetStr(CONFIG_RECENT_FILES,
+				CONFIG_RECENT_FILE+strconv.Itoa(i), filename)
+			i++
+		}
 	}
 	return cfg.SaveFile(me.Filename)
 }

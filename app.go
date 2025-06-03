@@ -5,6 +5,7 @@ package main
 
 import (
 	"log"
+	"path/filepath"
 
 	"github.com/mappu/miqt/qt"
 	"github.com/mark-summerfield/cardindex/model"
@@ -17,6 +18,7 @@ type App struct {
 	window                   *qt.QMainWindow
 	mdiArea                  *qt.QMdiArea
 	statusIndicator          *qt.QLabel
+	inFileNew                bool
 	fileMenu                 *qt.QMenu
 	fileNewAction            *qt.QAction
 	fileOpenAction           *qt.QAction
@@ -86,6 +88,8 @@ func (me *App) Show() {
 	if me.config.MostRecentFile != "" {
 		me.openModel(me.config.MostRecentFile)
 	}
+	me.fileMenuUpdate()
+	me.windowMenuUpdate()
 }
 
 func (me *App) LoadSettings() {
@@ -117,4 +121,15 @@ func (me *App) SaveSettings() {
 func (me *App) onError(message string) {
 	qt.QMessageBox_Warning3(me.window.QWidget, "Error — "+APPNAME, message,
 		"&Close")
+}
+
+func (me *App) getDefaultDir() string {
+	var dirname string
+	if me.model != nil {
+		dirname = filepath.Dir(me.model.Filename())
+	}
+	if dirname == "" {
+		dirname = ufile.HomeDir()
+	}
+	return dirname
 }

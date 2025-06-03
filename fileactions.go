@@ -6,13 +6,25 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/mappu/miqt/qt"
 	"github.com/mark-summerfield/cardindex/model"
 	"github.com/mark-summerfield/ufile"
 )
 
+func (me *App) db(msg string, model *model.Model) {
+	extra := "(model is "
+	if model != nil {
+		extra += model.Filename() + ")"
+	} else {
+		extra += "nil)"
+	}
+	fmt.Println("DB", msg, extra, me.inFileNew)
+}
+
 func (me *App) fileMenuUpdate() {
+	me.db("fileMenuUpdate A", me.model)
 	// ACCELS must not conflict with menu's Alt+{ACENOSQ}
 	ACCELS := []rune("123456789BDFGHIJKLMPRTUVWXYZ")
 	me.fileMenu.Clear()
@@ -34,6 +46,7 @@ func (me *App) fileMenuUpdate() {
 			}
 		}
 	}
+	me.db("fileMenuUpdate B", me.model)
 }
 
 func (me *App) addFileActions() {
@@ -59,22 +72,24 @@ func (me *App) makeFileConnections() {
 }
 
 func (me *App) fileNew() {
-	//   Builtin Dialog: choose nonexistent filename
-	// me.openModel(filename)
-	fmt.Println("fileNew") // TODO
+	if me.inFileNew {
+		return
+	}
+	me.inFileNew = true
+	defer func() { me.inFileNew = false }()
+	me.db("fileNew A", me.model)
+	dirname := me.getDefaultDir()
+	if filename := qt.QFileDialog_GetSaveFileName3(me.window.QWidget,
+		"Create Card Index — "+APPNAME, dirname); filename != "" {
+		me.openModel(filename)
+	}
+	me.db("fileNew B", me.model)
 }
 
 func (me *App) fileOpen() {
-	var dirname string
-	if me.model != nil {
-		dirname = filepath.Dir(me.model.Filename())
-	}
-	if dirname == "" {
-		dirname = ufile.HomeDir()
-	}
-	filename := qt.QFileDialog_GetOpenFileName3(me.window.QWidget,
-		"Open Card Index — "+APPNAME, dirname)
-	if filename != "" {
+	dirname := me.getDefaultDir()
+	if filename := qt.QFileDialog_GetOpenFileName3(me.window.QWidget,
+		"Open Card Index — "+APPNAME, dirname); filename != "" {
 		me.openModel(filename)
 	} else {
 		me.window.SetWindowTitle(APPNAME)
@@ -116,15 +131,23 @@ func (me *App) fileConfigure() {
 }
 
 func (me *App) openModel(filename string) {
+	me.db("openModel A "+filename+"!", me.model)
 	me.closeModel()
 	if me.mdiArea != nil {
 		me.mdiArea.CloseAllSubWindows()
+	}
+	if !strings.HasSuffix(filename, ".cix") {
+		filename += ".cix"
+	}
+	action := "Opened"
+	if !ufile.FileExists(filename) {
+		action = "Created"
 	}
 	if model, err := model.NewModel(filename); err == nil {
 		me.model = model
 		me.config.RecentFiles.Add(filename)
 		me.readMdiWindowsFromModel()
-		me.StatusMessage("Opened “"+filename+"”", TIMEOUT_LONG)
+		me.StatusMessage(action+" “"+filename+"”", TIMEOUT_LONG)
 		if counts, err := me.model.CardCounts(); err == nil {
 			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed)
 		} else {
@@ -132,13 +155,15 @@ func (me *App) openModel(filename string) {
 		}
 		me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
 		me.statusIndicator.QWidget.SetToolTip(filename)
-		me.fileMenuUpdate()
 	} else {
 		me.onError(fmt.Sprintf("Failed to open %s:\n%s", filename, err))
 	}
+	me.fileMenuUpdate()
+	me.db("openModel B", me.model)
 }
 
 func (me *App) closeModel() {
+	me.db("closeModel A", me.model)
 	me.window.SetWindowTitle(APPNAME)
 	me.StatusIndicatorUpdate(0, 0)
 	me.statusIndicator.QWidget.SetToolTip("")
@@ -150,7 +175,7 @@ func (me *App) closeModel() {
 		}
 		me.model = nil
 	}
-	me.fileMenuUpdate()
+	me.db("closeModel B", me.model)
 }
 
 func (me *App) saveMdiWindowsToModel() {
