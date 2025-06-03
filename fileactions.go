@@ -20,7 +20,7 @@ func (me *App) db(msg string, model *model.Model) {
 	} else {
 		extra += "nil)"
 	}
-	fmt.Println("DB", msg, extra, me.inFileNew)
+	fmt.Println("DB", msg, extra)
 }
 
 func (me *App) fileMenuUpdate() {
@@ -72,11 +72,6 @@ func (me *App) makeFileConnections() {
 }
 
 func (me *App) fileNew() {
-	if me.inFileNew {
-		return
-	}
-	me.inFileNew = true
-	defer func() { me.inFileNew = false }()
 	me.db("fileNew A", me.model)
 	dirname := me.getDefaultDir()
 	if filename := qt.QFileDialog_GetSaveFileName3(me.window.QWidget,

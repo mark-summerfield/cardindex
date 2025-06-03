@@ -18,7 +18,6 @@ type App struct {
 	window                   *qt.QMainWindow
 	mdiArea                  *qt.QMdiArea
 	statusIndicator          *qt.QLabel
-	inFileNew                bool
 	fileMenu                 *qt.QMenu
 	fileNewAction            *qt.QAction
 	fileOpenAction           *qt.QAction
