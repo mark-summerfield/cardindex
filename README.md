@@ -14,7 +14,9 @@ may belong to more than one category and so may be put in multiple boxes).
 Also unlike physical cards, every word in every card is indexed to support
 full text search. The search also supports word stems and wildcards.
 
-## License: GPL-3
+## License
+
+GPL-3
 
 
 ---
