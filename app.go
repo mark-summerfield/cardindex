@@ -26,6 +26,7 @@ type App struct {
 	fileExportAction         *qt.QAction
 	fileConfigureAction      *qt.QAction
 	fileQuitAction           *qt.QAction
+	fileOpenActions          []*qt.QAction
 	editMenu                 *qt.QMenu
 	editUndoAction           *qt.QAction
 	editRedoAction           *qt.QAction
@@ -88,7 +89,6 @@ func (me *App) Show() {
 		me.openModel(me.config.MostRecentFile)
 	}
 	me.fileMenuUpdate()
-	me.windowMenuUpdate()
 }
 
 func (me *App) LoadSettings() {

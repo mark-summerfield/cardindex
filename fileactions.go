@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/mappu/miqt/qt"
@@ -13,72 +14,32 @@ import (
 	"github.com/mark-summerfield/ufile"
 )
 
-func (me *App) db(msg string, model *model.Model) {
-	extra := "(model is "
-	if model != nil {
-		extra += model.Filename() + ")"
-	} else {
-		extra += "nil)"
-	}
-	fmt.Println("DB", msg, extra)
-}
-
 func (me *App) fileMenuUpdate() {
-	me.db("fileMenuUpdate A", me.model)
-	// ACCELS must not conflict with menu's Alt+{ACENOSQ}
-	ACCELS := []rune("123456789BDFGHIJKLMPRTUVWXYZ")
-	me.fileMenu.Clear()
-	me.addFileActions()
-	me.makeFileConnections()
-	if me.config != nil {
-		if files := me.config.RecentFiles.Files(); len(files) > 0 {
-			me.fileMenu.AddSeparator()
-			var action *qt.QAction
-			for i, filename := range files {
-				text := filepath.Base(filename)
-				if i < len(ACCELS) {
-					text = fmt.Sprintf("&%c %s", ACCELS[i], text)
-				}
-				action = qt.NewQAction3(getIcon(SVG_FILE_OPEN), text)
-				action.SetToolTip("Open " + filename)
-				action.OnTriggered(func() { me.openModel(filename) })
-				me.fileMenu.QWidget.AddAction(action)
+	files := me.config.RecentFiles.Files()
+	for i, action := range me.fileOpenActions {
+		if i < len(files) {
+			filename := files[i]
+			text := filepath.Base(filename)
+			if i <= MAX_RECENT_FILES {
+				text = "&" + strconv.Itoa(i+1) + " " + text
 			}
+			action.SetText(text)
+			action.SetToolTip(filename)
+			action.SetVisible(true)
+		} else {
+			action.SetText("")
+			action.SetToolTip("")
+			action.SetVisible(false)
 		}
 	}
-	me.db("fileMenuUpdate B", me.model)
-}
-
-func (me *App) addFileActions() {
-	me.fileMenu.QWidget.AddAction(me.fileNewAction)
-	me.fileMenu.QWidget.AddAction(me.fileOpenAction)
-	me.fileMenu.QWidget.AddAction(me.fileSaveAction)
-	me.fileMenu.QWidget.AddAction(me.fileSaveAsAction)
-	me.fileMenu.QWidget.AddAction(me.fileExportAction)
-	me.fileMenu.AddSeparator()
-	me.fileMenu.QWidget.AddAction(me.fileConfigureAction)
-	me.fileMenu.AddSeparator()
-	me.fileMenu.QWidget.AddAction(me.fileQuitAction)
-}
-
-func (me *App) makeFileConnections() {
-	me.fileNewAction.OnTriggered(func() { me.fileNew() })
-	me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
-	me.fileSaveAction.OnTriggered(func() { me.fileSave() })
-	me.fileSaveAsAction.OnTriggered(func() { me.fileSaveAs() })
-	me.fileExportAction.OnTriggered(func() { me.fileExport() })
-	me.fileConfigureAction.OnTriggered(func() { me.fileConfigure() })
-	me.fileQuitAction.OnTriggered(func() { me.window.Close() })
 }
 
 func (me *App) fileNew() {
-	me.db("fileNew A", me.model)
 	dirname := me.getDefaultDir()
 	if filename := qt.QFileDialog_GetSaveFileName3(me.window.QWidget,
 		"Create Card Index — "+APPNAME, dirname); filename != "" {
 		me.openModel(filename)
 	}
-	me.db("fileNew B", me.model)
 }
 
 func (me *App) fileOpen() {
@@ -126,7 +87,6 @@ func (me *App) fileConfigure() {
 }
 
 func (me *App) openModel(filename string) {
-	me.db("openModel A "+filename+"!", me.model)
 	me.closeModel()
 	if me.mdiArea != nil {
 		me.mdiArea.CloseAllSubWindows()
@@ -154,11 +114,9 @@ func (me *App) openModel(filename string) {
 		me.onError(fmt.Sprintf("Failed to open %s:\n%s", filename, err))
 	}
 	me.fileMenuUpdate()
-	me.db("openModel B", me.model)
 }
 
 func (me *App) closeModel() {
-	me.db("closeModel A", me.model)
 	me.window.SetWindowTitle(APPNAME)
 	me.StatusIndicatorUpdate(0, 0)
 	me.statusIndicator.QWidget.SetToolTip("")
@@ -170,7 +128,6 @@ func (me *App) closeModel() {
 		}
 		me.model = nil
 	}
-	me.db("closeModel B", me.model)
 }
 
 func (me *App) saveMdiWindowsToModel() {

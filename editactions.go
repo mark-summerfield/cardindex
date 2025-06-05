@@ -29,6 +29,9 @@ func (me *App) editPaste() {
 // TODO &Numbered List	editNumberedListAction
 // TODO &End List		editEndListAction
 
-// TODO Insert &Symbol…	editInsertSymbolAction
+// TODO Insert &Web link…
+// TODO Insert &File link…
+
+// TODO Insert &Symbol…
 // dialog that shows common symbols (and recently inserted ones?) plus the
 // option of choosing by code point?

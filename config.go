@@ -54,9 +54,8 @@ func NewConfigFrom(filename string) *Config {
 		if filename != "" && ufile.FileExists(filename) {
 			config.MostRecentFile = filename
 		}
-		maximum := unum.Clamp(0, cfg.Int(ini.UNNAMED,
-			CONFIG_RECENT_FILES, DEFAULT_MAX_RECENT_FILES),
-			DEFAULT_MAX_RECENT_FILES)
+		maximum := unum.Clamp(0, cfg.Int(ini.UNNAMED, CONFIG_RECENT_FILES,
+			MAX_RECENT_FILES), MAX_RECENT_FILES)
 		config.RecentFiles = NewRecentFiles(maximum)
 		// .Add() adds newest first so we must add in reverse order
 		for i := config.RecentFiles.maximum; i > 0; i-- {

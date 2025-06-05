@@ -4,6 +4,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/mappu/miqt/qt"
 )
 
@@ -17,7 +19,7 @@ func (me *App) MakeMainWindow() {
 
 func (me *App) MakeActions() {
 	me.makeFileActions()
-	me.makeEditActions() // TODO complete
+	me.makeEditActions()
 	me.makeCardActions()
 	me.makeBoxActions()
 	me.makeSearchActions()
@@ -50,6 +52,12 @@ func (me *App) makeFileActions() {
 	me.fileQuitAction.SetToolTip(
 		"Save unsaved changed and quit the card index application")
 	me.fileQuitAction.SetShortcutsWithShortcuts(qt.QKeySequence__Quit)
+	for range MAX_RECENT_FILES {
+		action := qt.NewQAction3(getIcon(SVG_FILE_OPEN), "")
+		action.SetToolTip("Open an existing card index")
+		action.SetVisible(false)
+		me.fileOpenActions = append(me.fileOpenActions, action)
+	}
 }
 
 func (me *App) makeEditActions() {
@@ -210,7 +218,19 @@ func (me *App) MakeMainMenu() {
 
 func (me *App) makeMainFileMenu(menubar *qt.QMenuBar) {
 	me.fileMenu = menubar.AddMenuWithTitle("&File")
-	me.fileMenuUpdate()
+	me.fileMenu.QWidget.AddAction(me.fileNewAction)
+	me.fileMenu.QWidget.AddAction(me.fileOpenAction)
+	me.fileMenu.QWidget.AddAction(me.fileSaveAction)
+	me.fileMenu.QWidget.AddAction(me.fileSaveAsAction)
+	me.fileMenu.QWidget.AddAction(me.fileExportAction)
+	me.fileMenu.AddSeparator()
+	me.fileMenu.QWidget.AddAction(me.fileConfigureAction)
+	me.fileMenu.AddSeparator()
+	me.fileMenu.QWidget.AddAction(me.fileQuitAction)
+	me.fileMenu.AddSeparator()
+	for _, action := range me.fileOpenActions {
+		me.fileMenu.QWidget.AddAction(action)
+	}
 }
 
 func (me *App) makeMainEditMenu(menubar *qt.QMenuBar) {
@@ -274,7 +294,12 @@ func (me *App) makeMainSearchMenu(menubar *qt.QMenuBar) {
 
 func (me *App) makeMainWindowMenu(menubar *qt.QMenuBar) {
 	me.windowMenu = menubar.AddMenuWithTitle("&Window")
-	me.windowMenuUpdate()
+	me.windowMenu.QWidget.AddAction(me.windowNextAction)
+	me.windowMenu.QWidget.AddAction(me.windowPrevAction)
+	me.windowMenu.QWidget.AddAction(me.windowCascadeAction)
+	me.windowMenu.QWidget.AddAction(me.windowTileAction)
+	me.windowMenu.AddSeparator()
+	me.windowMenu.QWidget.AddAction(me.windowCloseAction)
 }
 
 func (me *App) makeMainHelpMenu(menubar *qt.QMenuBar) {
@@ -350,7 +375,6 @@ func (me *App) MakeToolbars() {
 
 func (me *App) MakeWidgets() {
 	me.mdiArea = qt.NewQMdiArea2()
-	me.windowMenuUpdate()
 	me.MakeStatusBar()
 	me.window.SetCentralWidget(me.mdiArea.QWidget)
 }
@@ -365,9 +389,8 @@ func (me *App) MakeStatusBar() {
 	me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
 }
 
-// For file actions see fileactions.go;
-// for window action see windowactions.go
 func (me *App) MakeConnections() {
+	me.makeFileConnections()
 	// TODO
 	me.editCopyAction.OnTriggered(func() { me.editCopy() })
 	me.editCutAction.OnTriggered(func() { me.editCut() })
@@ -392,6 +415,15 @@ func (me *App) MakeConnections() {
 	me.searchNewAction.OnTriggered(func() { me.searchNew() })
 	me.searchViewAction.OnTriggered(func() { me.searchView() })
 	me.searchDeleteAction.OnTriggered(func() { me.searchDelete() })
+	me.windowNextAction.OnTriggered(
+		func() { me.mdiArea.ActivateNextSubWindow() })
+	me.windowPrevAction.OnTriggered(
+		func() { me.mdiArea.ActivatePreviousSubWindow() })
+	me.windowCascadeAction.OnTriggered(
+		func() { me.mdiArea.CascadeSubWindows() })
+	me.windowTileAction.OnTriggered(func() { me.mdiArea.TileSubWindows() })
+	me.windowCloseAction.OnTriggered(
+		func() { me.mdiArea.CloseActiveSubWindow() })
 	me.helpHelpAction.OnTriggered(func() { me.helpHelp() })
 	me.helpAboutAction.OnTriggered(func() { me.helpAbout() })
 	me.window.OnCloseEvent(func(super func(event *qt.QCloseEvent),
@@ -400,4 +432,24 @@ func (me *App) MakeConnections() {
 		me.SaveSettings()
 		me.closeModel() // must be last since it closes the current model
 	})
+}
+
+func (me *App) makeFileConnections() {
+	me.fileNewAction.OnTriggered(func() { me.fileNew() })
+	me.fileOpenAction.OnTriggered(func() { me.fileOpen() })
+	me.fileSaveAction.OnTriggered(func() { me.fileSave() })
+	me.fileSaveAsAction.OnTriggered(func() { me.fileSaveAs() })
+	me.fileExportAction.OnTriggered(func() { me.fileExport() })
+	me.fileConfigureAction.OnTriggered(func() { me.fileConfigure() })
+	me.fileQuitAction.OnTriggered(func() { me.window.Close() })
+	for _, action := range me.fileOpenActions {
+		action.OnTriggered(func() {
+			filename := action.ToolTip()
+			if strings.HasPrefix(filename, "&") {
+				i := strings.Index(filename, " ")
+				filename = strings.TrimSpace(filename[i:])
+			}
+			me.openModel(filename)
+		})
+	}
 }
