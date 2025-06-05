@@ -39,8 +39,6 @@ build.sh
 st.sh
 t.sh
 
-# TODO config load/save last .cix file
-# TODO file menu recent files handling
 # TODO complete View, Window, Help, Edit menus
 
 # TODO 4 MDI window types (each with its own unique type-specific icon):
