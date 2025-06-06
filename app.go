@@ -9,13 +9,13 @@ import (
 	"path/filepath"
 
 	"github.com/mappu/miqt/qt"
-	"github.com/mark-summerfield/cardindex/model"
+	"github.com/mark-summerfield/cardindex/database"
 	"github.com/mark-summerfield/ufile"
 )
 
 type App struct {
 	config                   *Config
-	model                    *model.Model
+	db                       *database.Database
 	window                   *qt.QMainWindow
 	mdiArea                  *qt.QMdiArea
 	statusIndicator          *qt.QLabel
@@ -96,7 +96,7 @@ func NewApp() *App {
 func (me *App) Show() {
 	me.window.Show()
 	if me.config.MostRecentFile != "" {
-		me.fileOpenModel(me.config.MostRecentFile)
+		me.fileOpenDatabase(me.config.MostRecentFile)
 	} else {
 		me.updateUi()
 	}
@@ -119,8 +119,8 @@ func (me *App) LoadSettings() {
 func (me *App) SaveSettings() {
 	me.config.WindowGeometry = me.window.SaveGeometry()
 	me.config.WindowState = me.window.SaveState()
-	if me.model != nil {
-		me.config.MostRecentFile = me.model.Filename()
+	if me.db != nil {
+		me.config.MostRecentFile = me.db.Filename()
 	}
 	if err := me.config.Save(); err != nil {
 		log.Printf("failed to save config in %q: %v\n", me.config.Filename,
@@ -130,7 +130,7 @@ func (me *App) SaveSettings() {
 
 func (me *App) updateUi() {
 	me.fileMenuUpdate()
-	enable := me.model != nil
+	enable := me.db != nil
 	for _, menu := range []*qt.QMenu{
 		me.editMenu, me.cardMenu, me.boxMenu, me.searchMenu, me.windowMenu,
 	} {
@@ -149,7 +149,7 @@ func (me *App) updateUi() {
 		action.SetEnabled(enable)
 	}
 	if enable {
-		if counts, err := me.model.CardCounts(); err == nil {
+		if counts, err := me.db.CardCounts(); err == nil {
 			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed, true)
 		} else {
 			me.onError(fmt.Sprintf("Failed to read card counts:\n%s", err))
@@ -169,8 +169,8 @@ func (me *App) onError(message string) {
 
 func (me *App) getDefaultDir() string {
 	var dirname string
-	if me.model != nil {
-		dirname = filepath.Dir(me.model.Filename())
+	if me.db != nil {
+		dirname = filepath.Dir(me.db.Filename())
 	}
 	if dirname == "" {
 		dirname = ufile.HomeDir()

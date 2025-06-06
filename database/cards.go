@@ -1,14 +1,14 @@
 // Copyright © 2025 Mark Summerfield. All rights reserved.
 // License: GPL-3
 
-package model
+package database
 
 import (
 	"strings"
 	"time"
 )
 
-func (me *Model) CardCounts() (CardCounts, error) {
+func (me *Database) CardCounts() (CardCounts, error) {
 	var counts CardCounts
 	row := me.db.QueryRow(SQL_CARD_COUNTS)
 	if err := row.Scan(&counts.Visible, &counts.Unboxed,
@@ -18,7 +18,7 @@ func (me *Model) CardCounts() (CardCounts, error) {
 	return counts, nil
 }
 
-func (me *Model) Card(cid int) (Card, error) {
+func (me *Database) Card(cid int) (Card, error) {
 	card := Card{cid: cid}
 	row := me.db.QueryRow(SQL_CARD_GET, cid)
 	var created, updated string
@@ -36,7 +36,7 @@ func (me *Model) Card(cid int) (Card, error) {
 	return card, err
 }
 
-func (me *Model) CardAdd(body string) (int, error) {
+func (me *Database) CardAdd(body string) (int, error) {
 	reply, err := me.db.Exec(SQL_CARD_INSERT, body)
 	if err != nil {
 		return INVALID_ID, err
@@ -48,46 +48,46 @@ func (me *Model) CardAdd(body string) (int, error) {
 	}
 }
 
-func (me *Model) CardEdit(cid int, body string) error {
+func (me *Database) CardEdit(cid int, body string) error {
 	_, err := me.db.Exec(SQL_CARD_UPDATE, body, cid)
 	return err
 }
 
-func (me *Model) CardHidden(cid int) (bool, error) {
+func (me *Database) CardHidden(cid int) (bool, error) {
 	var hidden bool
 	row := me.db.QueryRow(SQL_CARD_GET_HIDDEN, cid)
 	err := row.Scan(&hidden)
 	return hidden, err
 }
 
-func (me *Model) CardHide(cid int) error {
+func (me *Database) CardHide(cid int) error {
 	_, err := me.db.Exec(SQL_CARD_VISIBILITY, true, cid)
 	return err
 }
 
-func (me *Model) CardUnhide(cid int) error {
+func (me *Database) CardUnhide(cid int) error {
 	_, err := me.db.Exec(SQL_CARD_VISIBILITY, false, cid)
 	return err
 }
 
-func (me *Model) CardDelete(cid int) error {
+func (me *Database) CardDelete(cid int) error {
 	_, err := me.db.Exec(SQL_CARD_DELETE, cid)
 	return err
 }
 
-func (me *Model) CardNamesVisible(oid Oid) ([]CardName, error) {
+func (me *Database) CardNamesVisible(oid Oid) ([]CardName, error) {
 	return me.cardNames(SQL_CARD_NAMES_VISIBLE, oid)
 }
 
-func (me *Model) CardNamesUnboxed(oid Oid) ([]CardName, error) {
+func (me *Database) CardNamesUnboxed(oid Oid) ([]CardName, error) {
 	return me.cardNames(SQL_CARD_NAMES_UNBOXED, oid)
 }
 
-func (me *Model) CardNamesHidden(oid Oid) ([]CardName, error) {
+func (me *Database) CardNamesHidden(oid Oid) ([]CardName, error) {
 	return me.cardNames(SQL_CARD_NAMES_HIDDEN, oid)
 }
 
-func (me *Model) CardNamesForSid(sid int) ([]CardName, error) {
+func (me *Database) CardNamesForSid(sid int) ([]CardName, error) {
 	if search, err := me.Search(sid); err == nil {
 		return me.CardNamesForSearch(search)
 	} else {
@@ -95,12 +95,12 @@ func (me *Model) CardNamesForSid(sid int) ([]CardName, error) {
 	}
 }
 
-func (me *Model) CardNamesForSearch(search Search) ([]CardName, error) {
+func (me *Database) CardNamesForSearch(search Search) ([]CardName, error) {
 	query, args := search.Query(false)
 	return me.cardNames(query, search.oid, args...)
 }
 
-func (me *Model) cardNames(query string, oid Oid, args ...any) ([]CardName,
+func (me *Database) cardNames(query string, oid Oid, args ...any) ([]CardName,
 	error,
 ) {
 	query, _ = strings.CutSuffix(query, ";")

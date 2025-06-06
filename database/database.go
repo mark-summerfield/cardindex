@@ -1,7 +1,7 @@
 // Copyright © 2025 Mark Summerfield. All rights reserved.
 // License: GPL-3
 
-package model
+package database
 
 import (
 	"database/sql"
@@ -11,12 +11,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type Model struct {
+type Database struct {
 	filename string
 	db       *sql.DB
 }
 
-func NewModel(filename string) (*Model, error) {
+func NewDatabase(filename string) (*Database, error) {
 	exists := ufile.FileExists(filename)
 	db, err := sql.Open(DRIVER, filename)
 	if err != nil {
@@ -32,10 +32,10 @@ func NewModel(filename string) (*Model, error) {
 			return nil, errors.Join(err, db.Close())
 		}
 	}
-	return &Model{filename, db}, nil
+	return &Database{filename, db}, nil
 }
 
-func (me *Model) Close() error {
+func (me *Database) Close() error {
 	var err error
 	if me.db != nil {
 		query := SQL_BEGIN + SQL_CONFIG_UPDATE
@@ -59,4 +59,4 @@ func (me *Model) Close() error {
 	return err
 }
 
-func (me *Model) Filename() string { return me.filename }
+func (me *Database) Filename() string { return me.filename }

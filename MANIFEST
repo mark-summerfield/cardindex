@@ -1,6 +1,5 @@
 # TODO create 6 MDI window types:
 # - 'c' Card
-# - 'l' List (list of visible or unboxed or hidden cards)
 # - 'b' Box (list of cards in box based on bid)
 # - 'B' Boxes (list of all boxes)
 # - 's' Search (search criteria & list of cards for search based on sid)
@@ -20,31 +19,34 @@ cardactions.go # TODO
 boxactions.go # TODO
 searchactions.go # TODO
 helpactions.go # TODO
+listwindow.go # TODO ####################
+listkind.go
 recentfiles.go
 status.go
+state.go
 gui.go
 misc.go
 config.go
 static.go
 
-model/model.go
-model/config.go
-model/cards.go
-model/boxes.go
-model/searches.go
-model/search.go
-model/types.go
-model/orderby.go
-model/db.go
-model/static.go
+database/database.go
+database/config.go
+database/cards.go
+database/boxes.go
+database/searches.go
+database/search.go
+database/types.go
+database/orderby.go
+database/db.go
+database/static.go
 
 recentfiles_test.go
-model/model_test.go
+database/database_test.go
 
 go.mod
 
-sql/prepare.sql
-sql/create.sql
+database/sql/prepare.sql
+database/sql/create.sql
 
 README.md
 
@@ -62,16 +64,6 @@ t.sh
 # |__Created__| |__Updated__|
 # # Context Menu: New | Save | Add to Box… | Remove from Box… | Unhide |
 #                 Hide | Delete
-
-# 'l' List
-# Name (of List)        (X)
-# Order by [   Name v] # Updated | Created
-# ... use a vertical splitter
-# Card Name1
-# Card Name2
-#     :
-# 0 cards in list
-# # Context Menu: (none)
 
 # 'b' Box
 # Name (of Box)        (X)

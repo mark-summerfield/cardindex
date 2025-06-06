@@ -1,16 +1,16 @@
 // Copyright © 2025 Mark Summerfield. All rights reserved.
 // License: GPL-3
 
-package model
+package database
 
-func (me *Model) Search(sid int) (Search, error) {
+func (me *Database) Search(sid int) (Search, error) {
 	search := Search{sid: sid}
 	row := me.db.QueryRow(SQL_SEARCH_GET, sid)
 	err := row.Scan(&search.searchText, &search.hidden, &search.oid)
 	return search, err
 }
 
-func (me *Model) SearchAdd(search Search) (int, error) {
+func (me *Database) SearchAdd(search Search) (int, error) {
 	reply, err := me.db.Exec(SQL_SEARCH_INSERT, search.searchText,
 		search.hidden, search.oid)
 	if err != nil {
@@ -23,18 +23,18 @@ func (me *Model) SearchAdd(search Search) (int, error) {
 	}
 }
 
-func (me *Model) SearchEdit(search Search) error {
+func (me *Database) SearchEdit(search Search) error {
 	_, err := me.db.Exec(SQL_SEARCH_UPDATE, search.sid, search.searchText,
 		search.hidden, search.oid)
 	return err
 }
 
-func (me *Model) SearchDelete(sid int) error {
+func (me *Database) SearchDelete(sid int) error {
 	_, err := me.db.Exec(SQL_SEARCH_DELETE, sid)
 	return err
 }
 
-func (me *Model) Searches() ([]Search, error) {
+func (me *Database) Searches() ([]Search, error) {
 	rows, err := me.db.Query(SQL_SEARCHES)
 	if err != nil {
 		return nil, err

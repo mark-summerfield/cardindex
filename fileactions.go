@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/mappu/miqt/qt"
-	"github.com/mark-summerfield/cardindex/model"
+	"github.com/mark-summerfield/cardindex/database"
 	"github.com/mark-summerfield/ufile"
 )
 
@@ -39,7 +39,7 @@ func (me *App) fileNew() {
 	if filename := qt.QFileDialog_GetSaveFileName4(me.window.QWidget,
 		"Create Card Index — "+APPNAME, dirname,
 		FILE_FILTER); filename != "" {
-		me.fileOpenModel(filename)
+		me.fileOpenDatabase(filename)
 	}
 }
 
@@ -48,7 +48,7 @@ func (me *App) fileOpen() {
 	if filename := qt.QFileDialog_GetOpenFileName4(me.window.QWidget,
 		"Open Card Index — "+APPNAME, dirname,
 		FILE_FILTER); filename != "" {
-		me.fileOpenModel(filename)
+		me.fileOpenDatabase(filename)
 	} else {
 		me.window.SetWindowTitle(APPNAME)
 		me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
@@ -58,7 +58,7 @@ func (me *App) fileOpen() {
 
 func (me *App) fileSave() {
 	// save any windows with unsaved changes
-	me.fileSaveMdiWindowsToModel()
+	me.fileSaveMdiWindowsToDatabase()
 	fmt.Println("fileSave") // TODO
 }
 
@@ -68,7 +68,7 @@ func (me *App) fileSaveAs() {
 	//	- copy .cix to new name
 	//	- close model
 	//	- open model using new name:
-	// me.fileOpenModel(filename)
+	// me.fileOpenDatabase(filename)
 	fmt.Println("fileSaveAs") // TODO
 }
 
@@ -90,8 +90,8 @@ func (me *App) fileConfigure() {
 	me.updateUi()
 }
 
-func (me *App) fileOpenModel(filename string) {
-	me.fileCloseModel()
+func (me *App) fileOpenDatabase(filename string) {
+	me.fileCloseDatabase()
 	if me.mdiArea != nil {
 		me.mdiArea.CloseAllSubWindows()
 	}
@@ -102,10 +102,10 @@ func (me *App) fileOpenModel(filename string) {
 	if !ufile.FileExists(filename) {
 		action = "Created"
 	}
-	if model, err := model.NewModel(filename); err == nil {
-		me.model = model
+	if db, err := database.NewDatabase(filename); err == nil {
+		me.db = db
 		me.config.RecentFiles.Add(filename)
-		me.fileReadMdiWindowsFromModel()
+		me.fileReadMdiWindowsFromDatabase()
 		me.StatusMessage(action+" “"+filename+"”", TIMEOUT_LONG)
 		me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
 		me.statusIndicator.QWidget.SetToolTip(filename)
@@ -115,26 +115,26 @@ func (me *App) fileOpenModel(filename string) {
 	me.updateUi()
 }
 
-func (me *App) fileCloseModel() {
+func (me *App) fileCloseDatabase() {
 	me.window.SetWindowTitle(APPNAME)
 	me.statusIndicator.QWidget.SetToolTip("")
-	if me.model != nil {
-		me.fileSaveMdiWindowsToModel()
-		filename := me.model.Filename()
-		if err := me.model.Close(); err != nil {
+	if me.db != nil {
+		me.fileSaveMdiWindowsToDatabase()
+		filename := me.db.Filename()
+		if err := me.db.Close(); err != nil {
 			me.onError(fmt.Sprintf("Error closing %s:\n%s", filename, err))
 		}
-		me.model = nil
+		me.db = nil
 	}
 }
 
-func (me *App) fileSaveMdiWindowsToModel() {
-	// TODO save all MDI window states to me.model CONFIG table
-	fmt.Println("fileSaveMdiWindowsToModel")
+func (me *App) fileSaveMdiWindowsToDatabase() {
+	// TODO save all MDI window states to me.db CONFIG table
+	fmt.Println("fileSaveMdiWindowsToDatabase")
 }
 
-func (me *App) fileReadMdiWindowsFromModel() {
-	// TODO load all MDI window states from me.model CONFIG table &
+func (me *App) fileReadMdiWindowsFromDatabase() {
+	// TODO load all MDI window states from me.db CONFIG table &
 	// size & position MDI windows accordingly
-	fmt.Println("fileReadMdiWindowsFromModel")
+	fmt.Println("fileReadMdiWindowsFromDatabase")
 }

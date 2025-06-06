@@ -34,7 +34,7 @@ func (me *App) makeFileConnections() {
 				i := strings.Index(filename, " ")
 				filename = strings.TrimSpace(filename[i:])
 			}
-			me.fileOpenModel(filename)
+			me.fileOpenDatabase(filename)
 		})
 	}
 }
@@ -105,6 +105,6 @@ func (me *App) makeHelpConnections() {
 		event *qt.QCloseEvent,
 	) {
 		me.SaveSettings()
-		me.fileCloseModel() // must be last since it closes the current model
+		me.fileCloseDatabase() // must be last since it closes current db
 	})
 }

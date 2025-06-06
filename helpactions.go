@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/mappu/miqt/qt"
-	"github.com/mark-summerfield/cardindex/model"
+	"github.com/mark-summerfield/cardindex/database"
 )
 
 var (
@@ -49,7 +49,7 @@ func aboutHtml() string {
 	sysname := int8ToStr(utsname.Sysname[:])
 	cpu := int8ToStr(utsname.Machine[:])
 	release := int8ToStr(utsname.Release[:])
-	sqlite_version, _ := model.SqliteVersion()
+	sqlite_version, _ := database.SqliteVersion()
 	qt_version := qt.QLibraryInfo_Version().ToString()
 	return fmt.Sprintf(
 		`<h3 align=center><font color=navy>%s v%s</font></h3>
