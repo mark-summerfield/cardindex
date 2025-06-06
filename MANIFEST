@@ -1,12 +1,25 @@
+# TODO create 6 MDI window types:
+# - 'c' Card
+# - 'l' List (list of visible or unboxed or hidden cards)
+# - 'b' Box (list of cards in box based on bid)
+# - 'B' Boxes (list of all boxes)
+# - 's' Search (search criteria & list of cards for search based on sid)
+# - 'S' Searches (list of all searches)
+# TODO save/restore MDI windows for each .cix file
+
 cardindex.go
 app.go
 mainwindow.go
-fileactions.go # TODO 1
-editactions.go # TODO 5
-cardactions.go # TODO 2
-boxactions.go # TODO 3
-searchactions.go # TODO 4
-helpactions.go # TODO 6 - Help→Help
+makeactions.go
+makemenus.go
+maketoolbars.go
+makeconnections.go
+fileactions.go # TODO
+editactions.go # TODO
+cardactions.go # TODO
+boxactions.go # TODO
+searchactions.go # TODO
+helpactions.go # TODO
 recentfiles.go
 status.go
 gui.go
@@ -39,10 +52,9 @@ build.sh
 st.sh
 t.sh
 
-# TODO complete View, Window, Help, Edit menus
+# TODO 5 MDI window types (each with its own unique type-specific icon):
 
-# TODO 4 MDI window types (each with its own unique type-specific icon):
-
+# 'c' Card
 # Name (of Card)  (X)
 # Body
 # ...
@@ -51,6 +63,36 @@ t.sh
 # # Context Menu: New | Save | Add to Box… | Remove from Box… | Unhide |
 #                 Hide | Delete
 
+# 'l' List
+# Name (of List)        (X)
+# Order by [   Name v] # Updated | Created
+# ... use a vertical splitter
+# Card Name1
+# Card Name2
+#     :
+# 0 cards in list
+# # Context Menu: (none)
+
+# 'b' Box
+# Name (of Box)        (X)
+# Order by [   Name v] # Updated | Created
+# ... use a vertical splitter
+# Card Name1
+# Card Name2
+#     :
+# 0 cards in box
+# # Context Menu: New | Add Cards from Search… | Add Cards from Box… |
+#		  Delete
+
+# 'B' Boxes
+# Boxes           (X) # list of boxes
+# Box Name1
+# Box Name2
+#    :
+# # Context Menu: New… | Add Cards from Search… | Add Cards from Box… |
+#		  Delete 
+
+# 's' Search
 # SearchText        (X)
 # Match [SearchText                      ]
 # In (*) Visible cards ( ) Hidden cards
@@ -65,22 +107,12 @@ t.sh
 #   # choose an existing box to add all the matched cards to obviously
 #   # disable if 0 cards match
 
-# Boxes           (X) # list of boxes
-# Box Name1
-# Box Name2
+# 'S' Searches
+# Searches           (X) # list of searches
+# Search Name1
+# Search Name2
 #    :
-# # Context Menu: New… | Add Cards from Search… | Add Cards from Box… |
-#		  Delete 
-
-# Name (of View)        (X)
-# Order by [   Name v] # Updated | Created
-# ... use a vertical splitter, Search at the top List of cards below ...
-# Card Name1
-# Card Name2
-#     :
-# 0 cards match
-# # Context Menu: New | Save | Add Cards to Box… | Delete
-# # Views are: Visible Cards | Unboxed Cards | Hidden Cards
+# # Context Menu: New… | Delete 
 
 # TODO Help text (HTML with pandoc or asciidoctor or PDF with lout?)
 
@@ -89,6 +121,7 @@ t.sh
 #     &Find… ^F # In: All | Box (choice) | Search (choice) | Card (choice)
 #     Find &Again F3
 #     &Replace…
+
 # NOTE Markup is CommonMark
 
 # NOTE Could do "fields" using key=value syntax and searches like this:
@@ -96,10 +129,5 @@ t.sh
 # or
 #   SELECT Name, Cards.Body FROM Cards, vt_fts_cards
 #	WHERE vt_fts_cards MATCH '"key="' AND Cards.cid = vt_fts_cards.ROWID;
-
-# NOTE consider TUI version e.g., using
-# https://pkg.go.dev/github.com/rivo/tview &
-# (example: https://github.com/BekBrace/inv-tui-go & 
-# https://dev.to/bekbrace/build-tui-application-with-go-tview-l18)
 
 # vim: syn=yaml

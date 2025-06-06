@@ -96,7 +96,7 @@ func NewApp() *App {
 func (me *App) Show() {
 	me.window.Show()
 	if me.config.MostRecentFile != "" {
-		me.openModel(me.config.MostRecentFile)
+		me.fileOpenModel(me.config.MostRecentFile)
 	} else {
 		me.updateUi()
 	}
@@ -130,38 +130,35 @@ func (me *App) SaveSettings() {
 
 func (me *App) updateUi() {
 	me.fileMenuUpdate()
-	menus := []*qt.QMenu{
-		me.editMenu, me.cardMenu, me.boxMenu, me.searchMenu, me.windowMenu,
-	}
-	toolbars := []*qt.QToolBar{
-		me.edit1Toolbar, me.edit2Toolbar, me.edit3Toolbar, me.edit4Toolbar,
-		me.edit5Toolbar, me.cardToolbar, me.boxToolbar, me.searchToolbar,
-	}
-	fileActions := []*qt.QAction{
-		me.fileSaveAction, me.fileSaveAsAction,
-		me.fileExportAction,
-	}
 	enable := me.model != nil
-	for _, menu := range menus {
+	for _, menu := range []*qt.QMenu{
+		me.editMenu, me.cardMenu, me.boxMenu, me.searchMenu, me.windowMenu,
+	} {
 		menu.SetEnabled(enable)
 	}
-	for _, toolbar := range toolbars {
+	for _, toolbar := range []*qt.QToolBar{
+		me.edit1Toolbar, me.edit2Toolbar, me.edit3Toolbar, me.edit4Toolbar,
+		me.edit5Toolbar, me.cardToolbar, me.boxToolbar, me.searchToolbar,
+	} {
 		toolbar.SetEnabled(enable)
 	}
-	for _, action := range fileActions {
+	for _, action := range []*qt.QAction{
+		me.fileSaveAction, me.fileSaveAsAction,
+		me.fileExportAction,
+	} {
 		action.SetEnabled(enable)
 	}
-	if me.model == nil {
-		me.StatusIndicatorUpdate(0, 0)
-		me.statusIndicator.QWidget.SetToolTip("")
-		// TODO edit actions etc.
-	} else {
+	if enable {
 		if counts, err := me.model.CardCounts(); err == nil {
-			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed)
+			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed, true)
 		} else {
 			me.onError(fmt.Sprintf("Failed to read card counts:\n%s", err))
 		}
-		// TODO edit actions etc.
+		// TODO enable edit actions depending on visible windows etc.
+	} else {
+		me.StatusIndicatorUpdate(0, 0, false)
+		me.statusIndicator.QWidget.SetToolTip("")
+		// TODO disable edit actions depending on visible windows etc.
 	}
 }
 

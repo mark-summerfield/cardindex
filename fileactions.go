@@ -39,7 +39,7 @@ func (me *App) fileNew() {
 	if filename := qt.QFileDialog_GetSaveFileName4(me.window.QWidget,
 		"Create Card Index — "+APPNAME, dirname,
 		FILE_FILTER); filename != "" {
-		me.openModel(filename)
+		me.fileOpenModel(filename)
 	}
 }
 
@@ -48,7 +48,7 @@ func (me *App) fileOpen() {
 	if filename := qt.QFileDialog_GetOpenFileName4(me.window.QWidget,
 		"Open Card Index — "+APPNAME, dirname,
 		FILE_FILTER); filename != "" {
-		me.openModel(filename)
+		me.fileOpenModel(filename)
 	} else {
 		me.window.SetWindowTitle(APPNAME)
 		me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
@@ -58,7 +58,7 @@ func (me *App) fileOpen() {
 
 func (me *App) fileSave() {
 	// save any windows with unsaved changes
-	me.saveMdiWindowsToModel()
+	me.fileSaveMdiWindowsToModel()
 	fmt.Println("fileSave") // TODO
 }
 
@@ -68,7 +68,7 @@ func (me *App) fileSaveAs() {
 	//	- copy .cix to new name
 	//	- close model
 	//	- open model using new name:
-	// me.openModel(filename)
+	// me.fileOpenModel(filename)
 	fmt.Println("fileSaveAs") // TODO
 }
 
@@ -90,8 +90,8 @@ func (me *App) fileConfigure() {
 	me.updateUi()
 }
 
-func (me *App) openModel(filename string) {
-	me.closeModel()
+func (me *App) fileOpenModel(filename string) {
+	me.fileCloseModel()
 	if me.mdiArea != nil {
 		me.mdiArea.CloseAllSubWindows()
 	}
@@ -105,7 +105,7 @@ func (me *App) openModel(filename string) {
 	if model, err := model.NewModel(filename); err == nil {
 		me.model = model
 		me.config.RecentFiles.Add(filename)
-		me.readMdiWindowsFromModel()
+		me.fileReadMdiWindowsFromModel()
 		me.StatusMessage(action+" “"+filename+"”", TIMEOUT_LONG)
 		me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
 		me.statusIndicator.QWidget.SetToolTip(filename)
@@ -115,11 +115,11 @@ func (me *App) openModel(filename string) {
 	me.updateUi()
 }
 
-func (me *App) closeModel() {
+func (me *App) fileCloseModel() {
 	me.window.SetWindowTitle(APPNAME)
 	me.statusIndicator.QWidget.SetToolTip("")
 	if me.model != nil {
-		me.saveMdiWindowsToModel()
+		me.fileSaveMdiWindowsToModel()
 		filename := me.model.Filename()
 		if err := me.model.Close(); err != nil {
 			me.onError(fmt.Sprintf("Error closing %s:\n%s", filename, err))
@@ -128,13 +128,13 @@ func (me *App) closeModel() {
 	}
 }
 
-func (me *App) saveMdiWindowsToModel() {
+func (me *App) fileSaveMdiWindowsToModel() {
 	// TODO save all MDI window states to me.model CONFIG table
-	fmt.Println("saveMdiWindowsToModel")
+	fmt.Println("fileSaveMdiWindowsToModel")
 }
 
-func (me *App) readMdiWindowsFromModel() {
+func (me *App) fileReadMdiWindowsFromModel() {
 	// TODO load all MDI window states from me.model CONFIG table &
 	// size & position MDI windows accordingly
-	fmt.Println("readMdiWindowsFromModel")
+	fmt.Println("fileReadMdiWindowsFromModel")
 }

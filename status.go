@@ -15,7 +15,11 @@ func (me *App) StatusMessage(message string, timeout int) {
 
 func (me *App) StatusClear() { me.window.StatusBar().ClearMessage() }
 
-func (me *App) StatusIndicatorUpdate(cards, unboxed int) {
-	me.statusIndicator.SetText(fmt.Sprintf("%s Cards • %s Unboxed",
-		unum.Commas(cards), unum.Commas(unboxed)))
+func (me *App) StatusIndicatorUpdate(cards, unboxed int, hasModel bool) {
+	if hasModel {
+		me.statusIndicator.SetText(fmt.Sprintf("%s Cards • %s Unboxed",
+			unum.Commas(cards), unum.Commas(unboxed)))
+	} else {
+		me.statusIndicator.SetText("")
+	}
 }

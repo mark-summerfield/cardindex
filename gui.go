@@ -12,6 +12,9 @@ import (
 )
 
 func getIcon(filename string) *qt.QIcon {
+	if !strings.HasSuffix(filename, ".svg") {
+		filename += ".svg"
+	}
 	filename = "images/" + filename
 	if data, err := ICONS.ReadFile(filename); err != nil {
 		log.Printf("failed to read icon %q: %v\n", filename, err)
@@ -23,7 +26,7 @@ func getIcon(filename string) *qt.QIcon {
 	}
 }
 
-// TODO replace with QtVersion() when available
+// TODO replace with qt.Version() when available
 func miqtVersion() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, dependency := range info.Deps {
