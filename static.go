@@ -16,6 +16,7 @@ const (
 	DOMAIN  = "MNS"
 
 	MAX_RECENT_FILES = 9
+	FILE_FILTER      = "Card Indexes (*.cix)"
 	TIMEOUT_LONG     = 10000
 
 	CONFIG_WINDOW           = "Window"

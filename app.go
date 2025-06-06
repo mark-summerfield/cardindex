@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 
@@ -18,6 +19,7 @@ type App struct {
 	window                   *qt.QMainWindow
 	mdiArea                  *qt.QMdiArea
 	statusIndicator          *qt.QLabel
+	fileToolbar              *qt.QToolBar
 	fileMenu                 *qt.QMenu
 	fileNewAction            *qt.QAction
 	fileOpenAction           *qt.QAction
@@ -27,6 +29,11 @@ type App struct {
 	fileConfigureAction      *qt.QAction
 	fileQuitAction           *qt.QAction
 	fileOpenActions          []*qt.QAction
+	edit1Toolbar             *qt.QToolBar
+	edit2Toolbar             *qt.QToolBar
+	edit3Toolbar             *qt.QToolBar
+	edit4Toolbar             *qt.QToolBar
+	edit5Toolbar             *qt.QToolBar
 	editMenu                 *qt.QMenu
 	editUndoAction           *qt.QAction
 	editRedoAction           *qt.QAction
@@ -42,6 +49,7 @@ type App struct {
 	editInsertWebLinkAction  *qt.QAction
 	editInsertFileLinkAction *qt.QAction
 	editInsertSymbolAction   *qt.QAction
+	cardToolbar              *qt.QToolBar
 	cardMenu                 *qt.QMenu
 	cardNewAction            *qt.QAction
 	cardViewVisibleAction    *qt.QAction
@@ -53,12 +61,14 @@ type App struct {
 	cardUnhideAction         *qt.QAction
 	cardHideAction           *qt.QAction
 	cardDeleteAction         *qt.QAction
+	boxToolbar               *qt.QToolBar
 	boxMenu                  *qt.QMenu
 	boxNewAction             *qt.QAction
 	boxViewAction            *qt.QAction
 	boxAddFromSearchAction   *qt.QAction
 	boxAddFromBoxAction      *qt.QAction
 	boxDeleteAction          *qt.QAction
+	searchToolbar            *qt.QToolBar
 	searchMenu               *qt.QMenu
 	searchNewAction          *qt.QAction
 	searchViewAction         *qt.QAction
@@ -87,8 +97,9 @@ func (me *App) Show() {
 	me.window.Show()
 	if me.config.MostRecentFile != "" {
 		me.openModel(me.config.MostRecentFile)
+	} else {
+		me.updateUi()
 	}
-	me.fileMenuUpdate()
 }
 
 func (me *App) LoadSettings() {
@@ -114,6 +125,43 @@ func (me *App) SaveSettings() {
 	if err := me.config.Save(); err != nil {
 		log.Printf("failed to save config in %q: %v\n", me.config.Filename,
 			err)
+	}
+}
+
+func (me *App) updateUi() {
+	me.fileMenuUpdate()
+	menus := []*qt.QMenu{
+		me.editMenu, me.cardMenu, me.boxMenu, me.searchMenu, me.windowMenu,
+	}
+	toolbars := []*qt.QToolBar{
+		me.edit1Toolbar, me.edit2Toolbar, me.edit3Toolbar, me.edit4Toolbar,
+		me.edit5Toolbar, me.cardToolbar, me.boxToolbar, me.searchToolbar,
+	}
+	fileActions := []*qt.QAction{
+		me.fileSaveAction, me.fileSaveAsAction,
+		me.fileExportAction,
+	}
+	enable := me.model != nil
+	for _, menu := range menus {
+		menu.SetEnabled(enable)
+	}
+	for _, toolbar := range toolbars {
+		toolbar.SetEnabled(enable)
+	}
+	for _, action := range fileActions {
+		action.SetEnabled(enable)
+	}
+	if me.model == nil {
+		me.StatusIndicatorUpdate(0, 0)
+		me.statusIndicator.QWidget.SetToolTip("")
+		// TODO edit actions etc.
+	} else {
+		if counts, err := me.model.CardCounts(); err == nil {
+			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed)
+		} else {
+			me.onError(fmt.Sprintf("Failed to read card counts:\n%s", err))
+		}
+		// TODO edit actions etc.
 	}
 }
 

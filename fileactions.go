@@ -36,20 +36,23 @@ func (me *App) fileMenuUpdate() {
 
 func (me *App) fileNew() {
 	dirname := me.getDefaultDir()
-	if filename := qt.QFileDialog_GetSaveFileName3(me.window.QWidget,
-		"Create Card Index — "+APPNAME, dirname); filename != "" {
+	if filename := qt.QFileDialog_GetSaveFileName4(me.window.QWidget,
+		"Create Card Index — "+APPNAME, dirname,
+		FILE_FILTER); filename != "" {
 		me.openModel(filename)
 	}
 }
 
 func (me *App) fileOpen() {
 	dirname := me.getDefaultDir()
-	if filename := qt.QFileDialog_GetOpenFileName3(me.window.QWidget,
-		"Open Card Index — "+APPNAME, dirname); filename != "" {
+	if filename := qt.QFileDialog_GetOpenFileName4(me.window.QWidget,
+		"Open Card Index — "+APPNAME, dirname,
+		FILE_FILTER); filename != "" {
 		me.openModel(filename)
 	} else {
 		me.window.SetWindowTitle(APPNAME)
 		me.StatusMessage("Click File→New or File→Open", TIMEOUT_LONG)
+		me.updateUi()
 	}
 }
 
@@ -84,6 +87,7 @@ func (me *App) fileConfigure() {
 	//		+-----------------------------------------+
 	//		[X] Cursor Blink # set config.CursorBlink directly)
 	fmt.Println("fileConfigure") // TODO
+	me.updateUi()
 }
 
 func (me *App) openModel(filename string) {
@@ -103,22 +107,16 @@ func (me *App) openModel(filename string) {
 		me.config.RecentFiles.Add(filename)
 		me.readMdiWindowsFromModel()
 		me.StatusMessage(action+" “"+filename+"”", TIMEOUT_LONG)
-		if counts, err := me.model.CardCounts(); err == nil {
-			me.StatusIndicatorUpdate(counts.Visible, counts.Unboxed)
-		} else {
-			me.onError(fmt.Sprintf("Failed to read card counts:\n%s", err))
-		}
 		me.window.SetWindowTitle(filepath.Base(filename) + " — " + APPNAME)
 		me.statusIndicator.QWidget.SetToolTip(filename)
 	} else {
 		me.onError(fmt.Sprintf("Failed to open %s:\n%s", filename, err))
 	}
-	me.fileMenuUpdate()
+	me.updateUi()
 }
 
 func (me *App) closeModel() {
 	me.window.SetWindowTitle(APPNAME)
-	me.StatusIndicatorUpdate(0, 0)
 	me.statusIndicator.QWidget.SetToolTip("")
 	if me.model != nil {
 		me.saveMdiWindowsToModel()

@@ -9,12 +9,15 @@ import (
 
 func (me *App) searchNew() {
 	fmt.Println("searchNew") // TODO
+	me.updateUi()
 }
 
 func (me *App) searchView() {
 	fmt.Println("searchView") // TODO
+	me.updateUi()
 }
 
 func (me *App) searchDelete() {
 	fmt.Println("searchDelete") // TODO
+	me.updateUi()
 }
