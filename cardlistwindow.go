@@ -83,4 +83,5 @@ func (me *CardListWindow) Refresh(oid database.Oid) {
 	}
 	// TODO clear widgets & repopulate them
 	fmt.Println("CardListWindow.Update", cardNames)
+	me.window.Show()
 }

@@ -1,6 +1,6 @@
 # CardIndex
 
-**Experimental and Incomplete**
+**Experimental and Incomplete and Abandoned**
 
 A GUI application that provides the facilities of a physical card index with
 the added advantages of software.

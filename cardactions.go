@@ -16,6 +16,7 @@ func (me *App) cardViewVisible() {
 	if me.cardListVisibleWindow == nil {
 		me.cardListVisibleWindow = NewListWindow(me.db, me.onError,
 			CARD_LIST_VISIBLE_KIND)
+		me.mdiArea.AddSubWindow(me.cardListVisibleWindow.window.QWidget)
 	} else {
 		me.cardListVisibleWindow.db = me.db // in case it's changed
 	}
@@ -29,6 +30,7 @@ func (me *App) cardViewUnboxed() {
 	if me.cardListUnboxedWindow == nil {
 		me.cardListUnboxedWindow = NewListWindow(me.db, me.onError,
 			CARD_LIST_UNBOXED_KIND)
+		me.mdiArea.AddSubWindow(me.cardListUnboxedWindow.window.QWidget)
 	} else {
 		me.cardListUnboxedWindow.db = me.db // in case it's changed
 	}
@@ -40,6 +42,7 @@ func (me *App) cardViewHidden() {
 	if me.cardListHiddenWindow == nil {
 		me.cardListHiddenWindow = NewListWindow(me.db, me.onError,
 			CARD_LIST_HIDDEN_KIND)
+		me.mdiArea.AddSubWindow(me.cardListHiddenWindow.window.QWidget)
 	} else {
 		me.cardListHiddenWindow.db = me.db // in case it's changed
 	}
