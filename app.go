@@ -19,6 +19,9 @@ type App struct {
 	window                   *qt.QMainWindow
 	mdiArea                  *qt.QMdiArea
 	statusIndicator          *qt.QLabel
+	cardListVisibleWindow    *CardListWindow
+	cardListUnboxedWindow    *CardListWindow
+	cardListHiddenWindow     *CardListWindow
 	fileToolbar              *qt.QToolBar
 	fileMenu                 *qt.QMenu
 	fileNewAction            *qt.QAction

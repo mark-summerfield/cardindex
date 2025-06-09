@@ -13,17 +13,38 @@ func (me *App) cardNew() {
 }
 
 func (me *App) cardViewVisible() {
-	fmt.Println("cardViewVisible") // TODO
+	if me.cardListVisibleWindow == nil {
+		me.cardListVisibleWindow = NewListWindow(me.db, me.onError,
+			CARD_LIST_VISIBLE_KIND)
+	} else {
+		me.cardListVisibleWindow.db = me.db // in case it's changed
+	}
+	// refresh using default or last specified oid
+	me.cardListVisibleWindow.Refresh(me.cardListVisibleWindow.oid)
 	me.updateUi()
 }
 
 func (me *App) cardViewUnboxed() {
-	fmt.Println("cardViewUnboxed") // TODO
 	me.updateUi()
+	if me.cardListUnboxedWindow == nil {
+		me.cardListUnboxedWindow = NewListWindow(me.db, me.onError,
+			CARD_LIST_UNBOXED_KIND)
+	} else {
+		me.cardListUnboxedWindow.db = me.db // in case it's changed
+	}
+	// refresh using default or last specified oid
+	me.cardListUnboxedWindow.Refresh(me.cardListUnboxedWindow.oid)
 }
 
 func (me *App) cardViewHidden() {
-	fmt.Println("cardViewHidden") // TODO
+	if me.cardListHiddenWindow == nil {
+		me.cardListHiddenWindow = NewListWindow(me.db, me.onError,
+			CARD_LIST_HIDDEN_KIND)
+	} else {
+		me.cardListHiddenWindow.db = me.db // in case it's changed
+	}
+	// refresh using default or last specified oid
+	me.cardListHiddenWindow.Refresh(me.cardListHiddenWindow.oid)
 	me.updateUi()
 }
 

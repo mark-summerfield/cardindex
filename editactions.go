@@ -8,6 +8,8 @@ import (
 )
 
 func (me *App) editUndo() {
+	// see if I can undo/redo every action for which it makes sense, not
+	// only editing actions in a card but delete {card,box,search}, etc.
 	fmt.Println("editUndo") // TODO
 }
 

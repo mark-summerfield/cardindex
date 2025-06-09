@@ -11,6 +11,8 @@ var Version string
 //go:embed images/*.svg
 var ICONS embed.FS
 
+type OnError func(string)
+
 const (
 	APPNAME = "CardIndex"
 	DOMAIN  = "MNS"

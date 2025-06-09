@@ -19,11 +19,10 @@ cardactions.go # TODO
 boxactions.go # TODO
 searchactions.go # TODO
 helpactions.go # TODO
-listwindow.go # TODO ####################
-listkind.go
+cardlistwindow.go # TODO ####################
+cardlistkind.go
 recentfiles.go
 status.go
-state.go
 gui.go
 misc.go
 config.go

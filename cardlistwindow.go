@@ -10,17 +10,21 @@ import (
 	"github.com/mark-summerfield/cardindex/database"
 )
 
-type ListWindow struct {
-	state  *State
-	window *qt.QMdiSubWindow
-	kind   ListKind
-	oid    database.Oid
+type CardListWindow struct {
+	db      *database.Database
+	onError OnError
+	window  *qt.QMdiSubWindow
+	kind    CardListKind
+	oid     database.Oid
 	// TODO widgets for makeListWindow & Refresh
 }
 
-func NewListWindow(state *State, kind ListKind) *ListWindow {
+func NewListWindow(db *database.Database, onError OnError,
+	kind CardListKind,
+) *CardListWindow {
 	switch kind {
-	case VISIBLE_LIST_KIND, UNBOXED_LIST_KIND, HIDDEN_LIST_KIND:
+	case CARD_LIST_VISIBLE_KIND, CARD_LIST_UNBOXED_KIND,
+		CARD_LIST_HIDDEN_KIND: // OK
 	default:
 		panic("internal error: invalid list kind: " + kind.String())
 	}
@@ -28,8 +32,8 @@ func NewListWindow(state *State, kind ListKind) *ListWindow {
 	window.SetWindowTitle(kind.String() + " Cards")
 	window.SetWindowIcon(getIcon(kind.IconName()))
 	window.SetWidget(makeListWindow())
-	return &ListWindow{
-		state: state, window: window, kind: kind,
+	return &CardListWindow{
+		db: db, onError: onError, window: window, kind: kind,
 		oid: database.NewOid(database.NAME),
 	}
 }
@@ -62,22 +66,21 @@ func makeListWindow() *qt.QWidget {
 // 0 cards in list
 // # Context Menu: (none)
 
-func (me *ListWindow) Refresh(oid database.Oid) {
+func (me *CardListWindow) Refresh(oid database.Oid) {
 	var cardNames []database.CardName
 	var err error
 	switch me.kind {
-	case VISIBLE_LIST_KIND:
-		cardNames, err = me.state.db.CardNamesVisible(oid)
-	case UNBOXED_LIST_KIND:
-		cardNames, err = me.state.db.CardNamesUnboxed(oid)
-	case HIDDEN_LIST_KIND:
-		cardNames, err = me.state.db.CardNamesHidden(oid)
+	case CARD_LIST_VISIBLE_KIND:
+		cardNames, err = me.db.CardNamesVisible(oid)
+	case CARD_LIST_UNBOXED_KIND:
+		cardNames, err = me.db.CardNamesUnboxed(oid)
+	case CARD_LIST_HIDDEN_KIND:
+		cardNames, err = me.db.CardNamesHidden(oid)
 	}
 	if err != nil {
-		me.state.onError(fmt.Sprintf("failed to show %s cards: %s", me.kind,
-			err))
+		me.onError(fmt.Sprintf("failed to show %s cards: %s", me.kind, err))
 		return
 	}
 	// TODO clear widgets & repopulate them
-	fmt.Println("ListWindow.Update", cardNames)
+	fmt.Println("CardListWindow.Update", cardNames)
 }
